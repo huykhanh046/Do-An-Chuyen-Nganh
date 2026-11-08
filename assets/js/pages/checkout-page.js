@@ -92,7 +92,7 @@
           <img src="${item.image}" alt="${Storage.escapeHTML(item.name)}" style="width: 50px; aspect-ratio: 3/4; object-fit: cover; border-radius: 2px;" onerror="this.src='assets/images/placeholder.svg'" />
           <div style="flex-grow: 1; font-size: 0.85rem;">
             <strong>${Storage.escapeHTML(item.name)}</strong>
-            <div class="text-muted"><small>${item.size} / ${item.colorName} × ${item.quantity}</small></div>
+            <div class="text-muted"><small>${Storage.escapeHTML(item.size)} / ${Storage.escapeHTML(item.colorName)} × ${item.quantity}</small></div>
           </div>
           <div style="font-weight: 700; font-size: 0.9rem;">${Storage.formatCurrency(item.lineTotal)}</div>
         </div>

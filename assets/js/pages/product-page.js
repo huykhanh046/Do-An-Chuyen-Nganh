@@ -295,9 +295,9 @@
       colorContainer.innerHTML = colors
         .map(
           (c, cIdx) => `
-        <button type="button" class="variant-btn js-color-btn ${c.name === selectedColor ? "active" : ""}" data-color="${c.name}" data-color-idx="${cIdx}">
-          <span class="color-swatch-circle" style="background-color: ${c.code};"></span>
-          ${c.name}
+        <button type="button" class="variant-btn js-color-btn ${c.name === selectedColor ? "active" : ""}" data-color="${Storage.escapeHTML(c.name)}" data-color-idx="${cIdx}">
+          <span class="color-swatch-circle" style="background-color: ${Storage.escapeHTML(c.code)};"></span>
+          ${Storage.escapeHTML(c.name)}
         </button>`
         )
         .join("");

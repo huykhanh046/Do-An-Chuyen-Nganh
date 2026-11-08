@@ -1128,6 +1128,15 @@ window.HKStore = window.HKStore || {};
       if (UI._globalEventsBound) return;
       UI._globalEventsBound = true;
 
+      // Global Error Handler bảo mật giao diện (ngăn lộ file paths & stack trace thô ra ngoài)
+      window.addEventListener("error", (event) => {
+        console.warn("[HKStore Security Guard] Unhandled script error:", event.message);
+      });
+
+      window.addEventListener("unhandledrejection", (event) => {
+        console.warn("[HKStore Security Guard] Unhandled promise rejection:", event.reason);
+      });
+
       // Tự động xóa lỗi inline khi người dùng sửa lại nội dung ô nhập
       document.addEventListener("input", (e) => {
         if (e.target && e.target.classList && e.target.classList.contains("is-invalid")) {
