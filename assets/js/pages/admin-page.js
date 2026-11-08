@@ -266,6 +266,40 @@
       addBtn.onclick = () => openProductModal(null);
     }
 
+    // Nút Xuất file seed.js để lưu trực tiếp vào source code
+    const exportBtn = document.getElementById("btn-export-seed");
+    if (exportBtn) {
+      exportBtn.onclick = () => {
+        const products = Storage.get(Storage.KEYS.PRODUCTS, []);
+        const users = Storage.get(Storage.KEYS.USERS, []);
+        const orders = Storage.get(Storage.KEYS.ORDERS, []);
+
+        const fileContent = `/**
+ * HK STORE - STREETWEAR MINIMALIST
+ * Dữ liệu hạt giống (Seed Data) chuẩn từ Admin Dashboard.
+ * Cập nhật lúc: ${new Date().toLocaleString("vi-VN")}
+ */
+window.HK_SEED_DATA = {
+  products: ${JSON.stringify(products, null, 2)},
+  users: ${JSON.stringify(users, null, 2)},
+  orders: ${JSON.stringify(orders, null, 2)}
+};
+`;
+
+        const blob = new Blob([fileContent], { type: "application/javascript;charset=utf-8" });
+        const downloadUrl = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = downloadUrl;
+        a.download = "seed.js";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(downloadUrl);
+
+        UI.showToast("Đã tải file seed.js! Hãy lưu đè vào assets/js/seed.js để cập nhật vĩnh viễn vào source code.", "success");
+      };
+    }
+
     filterAndRender();
   }
 
