@@ -245,7 +245,7 @@
             () => {
               const res = Products.deleteProduct(id);
               if (res.success) {
-                UI.showToast(res.message, "success");
+                UI.showToast("Đã xóa sản phẩm", "success");
                 renderProductsTab();
                 renderOverviewTab();
               } else {

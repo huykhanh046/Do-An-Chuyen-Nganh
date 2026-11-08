@@ -263,7 +263,7 @@ window.HKStore = window.HKStore || {};
       return {
         success: true,
         archived: false,
-        message: "Đã xóa vĩnh viễn sản phẩm khỏi hệ thống. Sản phẩm trong các đơn hàng cũ sẽ tự động chuyển sang data ẩn."
+        message: "Đã xóa sản phẩm"
       };
     }
   };
