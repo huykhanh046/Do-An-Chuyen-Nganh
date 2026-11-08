@@ -1,0 +1,1167 @@
+/**
+ * HK STORE — ACCESSIBLE STREETWEAR EDITORIAL (DESIGN DNA)
+ * CSS Module cho các tính năng Thời trang mở rộng (Fashion E-Commerce Features)
+ * Có thể bật/tắt từng tính năng độc lập qua window.HK_FEATURE_FLAGS trong assets/js/fashion-features.js
+ */
+
+/* ==========================================================================
+   1. SCROLL PROGRESS BAR & FLOATING BACK-TO-TOP
+   ========================================================================== */
+.hk-scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2.5px;
+  background-color: var(--color-primary);
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+  z-index: 1100;
+  pointer-events: none;
+}
+
+.hk-back-to-top {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 950;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: var(--color-primary);
+  color: var(--color-surface);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: var(--shadow-md);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(12px) scale(0.92);
+  transition: opacity var(--duration-reveal) var(--ease-out),
+              transform var(--spring-press),
+              background-color var(--duration-color) var(--ease-color),
+              visibility 0ms linear var(--duration-reveal);
+}
+
+.hk-back-to-top.is-visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+  transition: opacity var(--duration-reveal) var(--ease-out),
+              transform var(--spring-press),
+              background-color var(--duration-color) var(--ease-color),
+              visibility 0ms linear 0ms;
+}
+
+.hk-back-to-top:active {
+  transform: scale(var(--scale-press));
+}
+
+.hk-back-to-top:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .hk-back-to-top:hover {
+    background-color: var(--color-accent);
+  }
+}
+
+/* Khi có Sticky Buy Bar trên trang chi tiết sản phẩm, đẩy nút Back-to-top lên trên */
+body.has-sticky-buy-bar .hk-back-to-top {
+  bottom: 92px;
+}
+
+/* ==========================================================================
+   2. PRODUCT CARD ENHANCEMENTS: WISHLIST HEART, QUICK VIEW, SWATCHES & SIZES
+   ========================================================================== */
+.card-wishlist-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 4;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(17, 17, 17, 0.1);
+  color: var(--color-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-sm);
+  transform: scale(1);
+  transition: background-color var(--duration-color) var(--ease-color),
+              color var(--duration-color) var(--ease-color),
+              border-color var(--duration-color) var(--ease-color),
+              transform var(--spring-press);
+}
+
+.card-wishlist-btn svg {
+  width: 18px;
+  height: 18px;
+  transition: transform var(--spring-pop),
+              fill var(--duration-color) var(--ease-color);
+}
+
+.card-wishlist-btn:active {
+  transform: scale(0.9);
+}
+
+.card-wishlist-btn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.card-wishlist-btn.is-active {
+  color: var(--color-accent);
+  background-color: #FFFFFF;
+  border-color: rgba(200, 62, 43, 0.28);
+}
+
+.card-wishlist-btn.is-active svg {
+  fill: var(--color-accent);
+  stroke: var(--color-accent);
+}
+
+@keyframes hkHeartPop {
+  0% { transform: scale(0.75); }
+  55% { transform: scale(1.26); }
+  100% { transform: scale(1); }
+}
+
+.card-wishlist-btn.heart-pop svg {
+  animation: hkHeartPop 380ms var(--ease-drawer);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .card-wishlist-btn:hover {
+    background-color: #FFFFFF;
+    color: var(--color-accent);
+  }
+}
+
+/* Nút Xem nhanh (Quick View) trượt từ cạnh dưới ảnh sản phẩm */
+.card-quickview-btn {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  z-index: 4;
+  padding: 9px 12px;
+  border-radius: var(--radius-sm);
+  background-color: rgba(17, 17, 17, 0.88);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #FFFFFF;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  opacity: 0;
+  transform: translateY(8px) scale(1);
+  transition: opacity var(--duration-reveal) var(--ease-out),
+              transform var(--spring-press),
+              background-color var(--duration-color) var(--ease-color);
+}
+
+.card-quickview-btn svg {
+  width: 15px;
+  height: 15px;
+}
+
+.card-quickview-btn:active {
+  transform: translateY(0) scale(var(--scale-press));
+}
+
+.card-quickview-btn:focus-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  outline: 2px solid #FFFFFF;
+  outline-offset: -3px;
+}
+
+.product-card:focus-within .card-quickview-btn {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .product-card:hover .card-quickview-btn {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  .card-quickview-btn:hover {
+    background-color: #111111;
+  }
+}
+
+/* Thiết bị cảm ứng không có hover: hiện nút Chọn nhanh & mở rộng vùng chạm tim >= 44px */
+@media (hover: none) {
+  .card-wishlist-btn {
+    width: 44px;
+    height: 44px;
+    top: 8px;
+    right: 8px;
+  }
+  .card-quickview-btn {
+    left: auto;
+    right: 8px;
+    bottom: 8px;
+    min-height: 36px;
+    padding: 8px 12px;
+    font-size: 0.72rem;
+    opacity: 0.96;
+    transform: none;
+  }
+  .card-quickview-btn .qv-label-full {
+    display: none;
+  }
+}
+
+/* Chấm màu sắc & Size có sẵn trên Product Card */
+.card-variants-preview {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 20px;
+  margin-top: 2px;
+}
+
+.card-color-dots {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.card-color-dot {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  border: 1px solid rgba(17, 17, 17, 0.25);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.45);
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.card-color-more {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--color-muted);
+}
+
+.card-sizes-hint {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--color-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-sizes-hint.is-out {
+  color: var(--color-danger);
+}
+
+/* ==========================================================================
+   3. HEADER WISHLIST BADGE & LIVE INSTANT SEARCH DROPDOWN
+   ========================================================================== */
+.wishlist-header-btn {
+  position: relative;
+}
+
+.wishlist-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background-color: var(--color-accent);
+  color: #FFFFFF;
+  font-size: 0.68rem;
+  font-weight: 800;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+.search-shortcut-kbd {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--color-muted);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  padding: 1px 5px;
+  margin-right: 2px;
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
+.search-form:focus-within .search-shortcut-kbd {
+  display: none;
+}
+
+.live-search-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 360px;
+  max-width: calc(100vw - 32px);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: 250;
+  overflow: hidden;
+  transform-origin: top right;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: scale(var(--scale-menu));
+  transition: opacity var(--duration-menu) var(--ease-soft),
+              transform var(--duration-menu) var(--ease-soft),
+              visibility 0ms linear var(--duration-menu);
+}
+
+.live-search-dropdown.is-open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: scale(1);
+  transition: opacity var(--duration-menu) var(--ease-soft),
+              transform var(--duration-menu) var(--ease-soft),
+              visibility 0ms linear 0ms;
+}
+
+.live-search-section-label {
+  padding: 10px 14px 6px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-muted);
+  border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-bg);
+}
+
+.live-search-tags {
+  padding: 12px 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.live-search-tag {
+  padding: 5px 10px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  color: var(--color-primary);
+  transition: background-color var(--duration-color) var(--ease-color),
+              color var(--duration-color) var(--ease-color),
+              border-color var(--duration-color) var(--ease-color);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .live-search-tag:hover {
+    background-color: var(--color-primary);
+    color: var(--color-surface);
+    border-color: var(--color-primary);
+  }
+}
+
+.live-search-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(222, 220, 211, 0.55);
+  transition: background-color var(--duration-color) var(--ease-color);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .live-search-item:hover {
+    background-color: var(--color-bg);
+  }
+}
+
+.live-search-item:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+  background-color: var(--color-bg);
+}
+
+.live-search-thumb {
+  width: 44px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  background-color: #EAE9E2;
+  flex-shrink: 0;
+}
+
+.live-search-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.live-search-title {
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.live-search-sub {
+  font-size: 0.74rem;
+  color: var(--color-muted);
+  margin-top: 2px;
+}
+
+.live-search-price {
+  font-family: var(--font-heading);
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+
+.live-search-footer {
+  display: block;
+  padding: 10px 14px;
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  background-color: var(--color-bg);
+  color: var(--color-primary);
+}
+
+.live-search-footer:hover {
+  text-decoration: underline;
+}
+
+.live-search-empty {
+  padding: 20px 14px;
+  text-align: center;
+  font-size: 0.84rem;
+  color: var(--color-muted);
+}
+
+/* ==========================================================================
+   4. RIGHT-EDGE SLIDE-OVER DRAWER (MINI-CART & WISHLIST SHEET)
+   ========================================================================== */
+.hk-side-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 1400;
+  display: none;
+}
+
+.hk-side-sheet.sheet-open {
+  display: block;
+}
+
+.hk-sheet-overlay {
+  position: absolute;
+  inset: 0;
+  background-color: transparent;
+  backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px);
+  transition: background-color var(--duration-overlay) var(--ease-soft),
+              backdrop-filter var(--duration-overlay) var(--ease-soft),
+              -webkit-backdrop-filter var(--duration-overlay) var(--ease-soft);
+}
+
+.hk-side-sheet.sheet-active .hk-sheet-overlay {
+  background-color: rgba(12, 12, 12, 0.58);
+  backdrop-filter: blur(var(--blur-surface));
+  -webkit-backdrop-filter: blur(var(--blur-surface));
+}
+
+.hk-sheet-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 92%;
+  max-width: 420px;
+  background-color: var(--color-surface);
+  /* Bleed +24px bên phải che khoảng hở overshoot ~1% của ease-drawer (Animate UI sheet.md) */
+  box-shadow: 24px 0 0 0 var(--color-surface);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform var(--duration-drawer) var(--ease-drawer),
+              box-shadow var(--duration-drawer) var(--ease-soft),
+              opacity var(--duration-overlay) var(--ease-soft);
+}
+
+.hk-side-sheet.sheet-active .hk-sheet-panel {
+  transform: translateX(0%);
+  box-shadow: 24px 0 0 0 var(--color-surface), var(--shadow-lg);
+}
+
+.hk-side-sheet.sheet-leaving .hk-sheet-panel {
+  transform: translateX(100%);
+  box-shadow: 24px 0 0 0 var(--color-surface);
+  transition: transform var(--duration-drawer-out) var(--ease-drawer-out),
+              box-shadow var(--duration-drawer-out) var(--ease-drawer-out),
+              opacity var(--duration-dismiss) var(--ease-away);
+}
+
+.hk-sheet-header {
+  padding: 18px var(--space-lg);
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+
+.hk-sheet-title {
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hk-sheet-close {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--color-muted);
+  transition: background-color var(--duration-color) var(--ease-color),
+              color var(--duration-color) var(--ease-color),
+              transform var(--spring-press);
+}
+
+.hk-sheet-close:active {
+  transform: scale(var(--scale-press));
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .hk-sheet-close:hover {
+    background-color: var(--color-bg);
+    color: var(--color-primary);
+  }
+}
+
+/* Thanh tiến trình Freeship 500k trong Mini-Cart */
+.hk-freeship-box {
+  padding: 12px var(--space-lg);
+  background-color: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+  font-size: 0.82rem;
+}
+
+.hk-freeship-text {
+  margin-bottom: 8px;
+  line-height: 1.4;
+  color: var(--color-primary);
+}
+
+.hk-freeship-track {
+  width: 100%;
+  height: 6px;
+  background-color: #DFDDD4;
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+
+.hk-freeship-fill {
+  height: 100%;
+  background-color: var(--color-primary);
+  border-radius: var(--radius-pill);
+  transition: width 360ms var(--ease-out),
+              background-color var(--duration-color) var(--ease-color);
+}
+
+.hk-freeship-fill.is-achieved {
+  background-color: var(--color-success);
+}
+
+.hk-sheet-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-md) var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.hk-sheet-item {
+  display: flex;
+  gap: 12px;
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.hk-sheet-item:last-child {
+  border-bottom: none;
+}
+
+.hk-sheet-item-img {
+  width: 68px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  background-color: #EAE9E2;
+  flex-shrink: 0;
+}
+
+.hk-sheet-item-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hk-sheet-item-name {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  line-height: 1.35;
+}
+
+.hk-sheet-item-variant {
+  font-size: 0.76rem;
+  color: var(--color-muted);
+}
+
+.hk-sheet-item-bottom {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 4px;
+}
+
+.hk-mini-qty {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface);
+}
+
+.hk-mini-qty button {
+  width: 34px;
+  height: 34px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hk-mini-qty span {
+  min-width: 24px;
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.hk-sheet-item-price {
+  font-family: var(--font-heading);
+  font-size: 0.92rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.hk-sheet-remove {
+  font-size: 0.75rem;
+  color: var(--color-muted);
+  text-decoration: underline;
+  align-self: flex-start;
+}
+
+.hk-sheet-remove:hover {
+  color: var(--color-danger);
+}
+
+.hk-sheet-footer {
+  padding: var(--space-md) var(--space-lg) 20px;
+  border-top: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.hk-sheet-subtotal-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 0.95rem;
+}
+
+.hk-sheet-subtotal-val {
+  font-family: var(--font-heading);
+  font-size: 1.2rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.hk-sheet-actions {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 10px;
+}
+
+/* ==========================================================================
+   5. QUICK VIEW MODAL (XEM NHANH & CHỌN BIẾN THỂ TRỰC TIẾP)
+   ========================================================================== */
+.modal-overlay.hk-quickview-modal .modal-box {
+  max-width: 840px;
+}
+
+.hk-qv-grid {
+  display: grid;
+  grid-template-columns: 0.95fr 1.05fr;
+  gap: var(--space-xl);
+  align-items: start;
+}
+
+.hk-qv-main-img-wrap {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  background-color: #EAE9E2;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+}
+
+.hk-qv-main-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity var(--duration-swap) var(--ease-out),
+              filter var(--duration-swap) var(--ease-out);
+}
+
+.hk-qv-thumbs {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.hk-qv-thumb {
+  width: 56px;
+  height: 70px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity var(--duration-color) var(--ease-color),
+              border-color var(--duration-color) var(--ease-color);
+}
+
+.hk-qv-thumb.active {
+  opacity: 1;
+  border: 2px solid var(--color-primary);
+}
+
+.hk-qv-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hk-qv-info {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.hk-qv-price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 10px 0;
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.hk-qv-price {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ==========================================================================
+   6. SMART FIT FINDER / GỢI Ý CHỌN SIZE THEO CHIỀU CAO & CÂN NẶNG
+   ========================================================================== */
+.hk-fit-finder-card {
+  margin-top: 10px;
+  padding: 14px 16px;
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.hk-fit-finder-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.83rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  text-align: left;
+}
+
+.hk-fit-finder-badge {
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  background-color: var(--color-primary);
+  color: var(--color-surface);
+}
+
+.hk-fit-finder-body {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-border);
+  display: none;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.hk-fit-finder-card.is-expanded .hk-fit-finder-body {
+  display: flex;
+}
+
+.hk-fit-sliders-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.hk-fit-field label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.hk-fit-field input[type="range"] {
+  width: 100%;
+  accent-color: var(--color-primary);
+  cursor: pointer;
+}
+
+.hk-fit-pref-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.hk-fit-pref-btn {
+  padding: 7px 6px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface);
+  text-align: center;
+  transition: background-color var(--duration-color) var(--ease-color),
+              color var(--duration-color) var(--ease-color),
+              border-color var(--duration-color) var(--ease-color);
+}
+
+.hk-fit-pref-btn.active {
+  background-color: var(--color-primary);
+  color: var(--color-surface);
+  border-color: var(--color-primary);
+}
+
+.hk-fit-result-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  flex-wrap: wrap;
+}
+
+.hk-fit-size-highlight {
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--color-accent);
+}
+
+/* ==========================================================================
+   7. CATALOG QUICK CATEGORY PILLS & ACTIVE FILTER CHIPS (products.html)
+   ========================================================================== */
+.hk-catalog-pills {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  margin-bottom: var(--space-md);
+  scrollbar-width: none;
+}
+
+.hk-catalog-pills::-webkit-scrollbar {
+  display: none;
+}
+
+.hk-cat-pill {
+  padding: 8px 16px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  font-size: 0.82rem;
+  font-weight: 700;
+  white-space: nowrap;
+  transform: scale(1);
+  transition: background-color var(--duration-color) var(--ease-color),
+              color var(--duration-color) var(--ease-color),
+              border-color var(--duration-color) var(--ease-color),
+              transform var(--spring-press);
+}
+
+.hk-cat-pill:active {
+  transform: scale(var(--scale-press));
+}
+
+.hk-cat-pill.active {
+  background-color: var(--color-primary);
+  color: var(--color-surface);
+  border-color: var(--color-primary);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .hk-cat-pill:hover:not(.active) {
+    border-color: var(--color-primary);
+  }
+}
+
+.hk-active-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: var(--space-md);
+}
+
+.hk-active-chips:empty {
+  display: none;
+}
+
+.hk-filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  background-color: var(--color-surface-subtle);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  color: var(--color-primary);
+}
+
+.hk-filter-chip button {
+  font-weight: 800;
+  font-size: 0.95rem;
+  line-height: 1;
+  color: var(--color-muted);
+}
+
+.hk-filter-chip button:hover {
+  color: var(--color-danger);
+}
+
+/* ==========================================================================
+   8. PRODUCT DETAIL WISHLIST BTN & STICKY BOTTOM BUY BAR
+   ========================================================================== */
+.detail-wishlist-btn {
+  width: 52px;
+  flex: 0 0 52px !important;
+  padding: 0 !important;
+  border: 1px solid var(--color-border-dark);
+  background-color: var(--color-surface);
+  color: var(--color-primary);
+}
+
+.detail-wishlist-btn.is-active {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+  background-color: var(--color-accent-soft);
+}
+
+.detail-wishlist-btn.is-active svg {
+  fill: var(--color-accent);
+  stroke: var(--color-accent);
+}
+
+.hk-sticky-buy-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 940;
+  background-color: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-top: 1px solid var(--color-border);
+  box-shadow: 0 -8px 24px rgba(17, 17, 17, 0.08);
+  padding: 10px 0;
+  transform: translateY(105%);
+  transition: transform var(--duration-drawer) var(--ease-out);
+}
+
+.hk-sticky-buy-bar.is-visible {
+  transform: translateY(0);
+}
+
+.hk-sticky-buy-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.hk-sticky-product-summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.hk-sticky-thumb {
+  width: 42px;
+  height: 54px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.hk-sticky-title {
+  font-size: 0.9rem;
+  font-weight: 800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hk-sticky-meta {
+  font-size: 0.78rem;
+  color: var(--color-muted);
+}
+
+.hk-sticky-cta-group {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+}
+
+.hk-sticky-price {
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Recently Viewed Section */
+.hk-recently-viewed-section {
+  margin-top: var(--space-3xl);
+  margin-bottom: var(--space-3xl);
+  padding-top: var(--space-xl);
+  border-top: 1px solid var(--color-border);
+}
+
+/* Responsive cho Quick View & Sticky Bar */
+@media (max-width: 768px) {
+  .hk-qv-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+  .hk-qv-main-img-wrap {
+    max-height: 340px;
+  }
+  .hk-sticky-thumb {
+    display: none;
+  }
+  .hk-sticky-price {
+    font-size: 1rem;
+  }
+  .hk-sticky-cta-group {
+    gap: 10px;
+  }
+  .hk-fit-sliders-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Reduced Motion Overrides cho các tính năng mới */
+@media (prefers-reduced-motion: reduce) {
+  .hk-sheet-panel,
+  .hk-side-sheet.sheet-active .hk-sheet-panel,
+  .hk-side-sheet.sheet-leaving .hk-sheet-panel {
+    transform: none;
+  }
+  .hk-sheet-panel {
+    opacity: 0;
+  }
+  .hk-side-sheet.sheet-active .hk-sheet-panel {
+    opacity: 1;
+  }
+  .hk-side-sheet.sheet-leaving .hk-sheet-panel {
+    opacity: 0;
+  }
+  .card-wishlist-btn.heart-pop svg {
+    animation: none;
+  }
+  .hk-sticky-buy-bar {
+    transition: none;
+  }
+}

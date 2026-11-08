@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 260" width="260" height="260" role="img" aria-label="Mã QR Ví MoMo mẫu">
+  <rect width="260" height="260" rx="12" fill="#FFFFFF"/>
+  <rect x="8" y="8" width="244" height="244" rx="8" fill="none" stroke="#F3D1E4" stroke-width="2"/>
+
+  <!-- Góc định vị QR Trái-Trên -->
+  <rect x="22" y="22" width="56" height="56" rx="6" fill="none" stroke="#A50064" stroke-width="8"/>
+  <rect x="36" y="36" width="28" height="28" rx="4" fill="#A50064"/>
+
+  <!-- Góc định vị QR Phải-Trên -->
+  <rect x="182" y="22" width="56" height="56" rx="6" fill="none" stroke="#A50064" stroke-width="8"/>
+  <rect x="196" y="36" width="28" height="28" rx="4" fill="#A50064"/>
+
+  <!-- Góc định vị QR Trái-Dưới -->
+  <rect x="22" y="182" width="56" height="56" rx="6" fill="none" stroke="#A50064" stroke-width="8"/>
+  <rect x="36" y="196" width="28" height="28" rx="4" fill="#D82D8B"/>
+
+  <!-- Hạt dữ liệu QR mô phỏng -->
+  <g fill="#222222">
+    <rect x="94" y="22" width="18" height="10" rx="2"/>
+    <rect x="122" y="22" width="10" height="18" rx="2"/>
+    <rect x="142" y="22" width="24" height="10" rx="2"/>
+
+    <rect x="94" y="44" width="10" height="16" rx="2"/>
+    <rect x="114" y="48" width="22" height="10" rx="2"/>
+    <rect x="146" y="42" width="10" height="20" rx="2"/>
+    <rect x="162" y="48" width="10" height="10" rx="2"/>
+
+    <rect x="94" y="68" width="24" height="10" rx="2"/>
+    <rect x="128" y="66" width="12" height="12" rx="2"/>
+    <rect x="150" y="68" width="20" height="10" rx="2"/>
+
+    <rect x="22" y="94" width="12" height="20" rx="2"/>
+    <rect x="44" y="94" width="22" height="10" rx="2"/>
+    <rect x="72" y="98" width="10" height="16" rx="2"/>
+    <rect x="22" y="124" width="24" height="10" rx="2"/>
+    <rect x="56" y="120" width="10" height="22" rx="2"/>
+    <rect x="22" y="146" width="14" height="20" rx="2"/>
+    <rect x="46" y="152" width="28" height="10" rx="2"/>
+
+    <rect x="180" y="94" width="22" height="10" rx="2"/>
+    <rect x="212" y="94" width="10" height="20" rx="2"/>
+    <rect x="228" y="94" width="10" height="12" rx="2"/>
+    <rect x="180" y="114" width="10" height="20" rx="2"/>
+    <rect x="200" y="122" width="24" height="10" rx="2"/>
+    <rect x="184" y="144" width="20" height="10" rx="2"/>
+    <rect x="214" y="140" width="10" height="24" rx="2"/>
+    <rect x="230" y="148" width="10" height="16" rx="2"/>
+
+    <rect x="94" y="178" width="22" height="10" rx="2"/>
+    <rect x="126" y="178" width="10" height="18" rx="2"/>
+    <rect x="146" y="178" width="20" height="10" rx="2"/>
+    <rect x="94" y="198" width="12" height="22" rx="2"/>
+    <rect x="116" y="204" width="24" height="10" rx="2"/>
+    <rect x="150" y="198" width="10" height="20" rx="2"/>
+    <rect x="94" y="228" width="30" height="10" rx="2"/>
+    <rect x="134" y="226" width="32" height="12" rx="2"/>
+
+    <rect x="178" y="178" width="14" height="16" rx="2"/>
+    <rect x="202" y="178" width="24" height="10" rx="2"/>
+    <rect x="178" y="204" width="22" height="10" rx="2"/>
+    <rect x="210" y="198" width="10" height="20" rx="2"/>
+    <rect x="228" y="194" width="10" height="24" rx="2"/>
+    <rect x="178" y="226" width="26" height="12" rx="2"/>
+    <rect x="214" y="228" width="24" height="10" rx="2"/>
+  </g>
+
+  <!-- Nhãn trung tâm MoMo -->
+  <rect x="88" y="96" width="84" height="68" rx="12" fill="#A50064" stroke="#FFFFFF" stroke-width="3"/>
+  <text x="130" y="128" text-anchor="middle" font-family="Montserrat, Arial, sans-serif" font-size="18" font-weight="900" fill="#FFFFFF">momo</text>
+  <text x="130" y="148" text-anchor="middle" font-family="Montserrat, Arial, sans-serif" font-size="9.5" font-weight="700" fill="#FCE7F3">QUÉT MÃ QR</text>
+</svg>

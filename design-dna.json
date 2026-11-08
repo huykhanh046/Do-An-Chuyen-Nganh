@@ -1,0 +1,408 @@
+{
+  "meta": {
+    "name": "HK Store — Accessible Streetwear Editorial DNA",
+    "description": "Three-dimensional Design DNA profile for HK Store: high-contrast urban streetwear editorial e-commerce system engineered for WCAG AA accessibility, fast product discovery, tactile spring micro-interactions, and lightweight frosted-glass & dual-image visual effects.",
+    "source_references": [
+      "HK Store Storefront Reference (media_1794044497592_b02a4bc3.jpg)",
+      "Contemporary Streetwear Editorial E-Commerce Systems (Represent, Fear of God Essentials, Musinsa Standard)"
+    ],
+    "created_at": "2026-11-07T21:00:00+07:00"
+  },
+  "design_system": {
+    "color": {
+      "palette_type": "split-complementary",
+      "primary": {
+        "hex": "#111111",
+        "role": "Primary brand ink, dominant CTA buttons, active states, editorial headlines, and tabular prices"
+      },
+      "secondary": {
+        "hex": "#242422",
+        "role": "Hover states on dark actions, deep charcoal editorial sections (Lookbook & Footer), and protective image scrims"
+      },
+      "accent": {
+        "hex": "#C83E2B",
+        "role": "Streetwear vermilion accent for sale/discount badges, low-stock urgency cues, and active wishlist hearts"
+      },
+      "neutral": {
+        "scale": [
+          "#FFFFFF",
+          "#F6F5F0",
+          "#ECEBE4",
+          "#DEDCD3",
+          "#8C8B84",
+          "#575752",
+          "#242422",
+          "#111111"
+        ],
+        "usage": "Warm alabaster (#F6F5F0) page canvas reduces eye strain while pure crisp white (#FFFFFF) elevates product cards, drawers, and inputs; #575752 muted charcoal guarantees >= 6.8:1 WCAG AA contrast for secondary copy."
+      },
+      "semantic": {
+        "success": "#1E6F3D",
+        "warning": "#B85600",
+        "error": "#C62828",
+        "info": "#026AA7"
+      },
+      "surface": {
+        "background": "#F6F5F0",
+        "card": "#FFFFFF",
+        "elevated": "rgba(255, 255, 255, 0.92)"
+      },
+      "contrast_strategy": "high contrast",
+      "measurement": {
+        "k": 8,
+        "sampling": {
+          "method": "deterministic_stratified",
+          "max_pixels": 160000,
+          "sampled_pixels": 160000
+        }
+      },
+      "measured_palette": [
+        { "hex": "#f9f6f6", "coverage": 0.4196, "role": "background" },
+        { "hex": "#111212", "coverage": 0.3043, "role": "text" },
+        { "hex": "#212221", "coverage": 0.0983, "role": "unassigned" },
+        { "hex": "#353e3f", "coverage": 0.0853, "role": "unassigned" },
+        { "hex": "#485457", "coverage": 0.0449, "role": "unassigned" },
+        { "hex": "#c7c6c7", "coverage": 0.0344, "role": "unassigned" },
+        { "hex": "#828384", "coverage": 0.0128, "role": "unassigned" },
+        { "hex": "#3b79bf", "coverage": 0.0003, "role": "unassigned" }
+      ]
+    },
+    "typography": {
+      "type_scale": {
+        "display": {
+          "size": "clamp(2.75rem, 5vw, 4.25rem)",
+          "weight": "800",
+          "line_height": "1.04",
+          "tracking": "-0.035em"
+        },
+        "heading_1": {
+          "size": "clamp(1.85rem, 3vw, 2.35rem)",
+          "weight": "800",
+          "line_height": "1.15",
+          "tracking": "-0.025em"
+        },
+        "heading_2": {
+          "size": "clamp(1.45rem, 2.2vw, 1.85rem)",
+          "weight": "800",
+          "line_height": "1.2",
+          "tracking": "-0.02em"
+        },
+        "heading_3": {
+          "size": "1.15rem",
+          "weight": "700",
+          "line_height": "1.3",
+          "tracking": "-0.01em"
+        },
+        "body": {
+          "size": "0.95rem",
+          "weight": "400",
+          "line_height": "1.6",
+          "tracking": "0em"
+        },
+        "body_small": {
+          "size": "0.85rem",
+          "weight": "500",
+          "line_height": "1.5",
+          "tracking": "0em"
+        },
+        "caption": {
+          "size": "0.75rem",
+          "weight": "600",
+          "line_height": "1.4",
+          "tracking": "0.02em"
+        },
+        "overline": {
+          "size": "0.75rem",
+          "weight": "700",
+          "line_height": "1.3",
+          "tracking": "0.1em"
+        }
+      },
+      "font_families": {
+        "heading": "'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+        "body": "'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+        "mono": "'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+      },
+      "font_style_notes": "Unified geometric sans-serif system ('Montserrat' weights 400–900 with full Vietnamese diacritics) across all display headlines, UI body copy, SKU labels, and tabular numerals (tnum) on prices and counters."
+    },
+    "spacing": {
+      "base_unit": "8px",
+      "scale": [4, 8, 12, 16, 24, 32, 48, 72],
+      "content_density": "comfortable",
+      "section_rhythm": "Alternating spacious 72px editorial sections on warm alabaster canvas punctuated by full-bleed obsidian dark bands (Hero, Lookbook, Footer) and crisp 24px product grid gutters."
+    },
+    "layout": {
+      "grid_system": "CSS Grid 12-column conceptual layout with dedicated 4-column storefront showcase grids, 280px sticky catalog filter rail + 3-column fluid product grid, and 55/45 split product detail gallery.",
+      "max_content_width": "1280px",
+      "columns": 12,
+      "gutter": "24px",
+      "breakpoints": {
+        "sm": "576px",
+        "md": "768px",
+        "lg": "992px",
+        "xl": "1280px"
+      },
+      "alignment_tendency": "strict grid"
+    },
+    "shape": {
+      "border_radius": {
+        "small": "4px",
+        "medium": "8px",
+        "large": "12px",
+        "pill": "999px"
+      },
+      "border_usage": "subtle 1px",
+      "divider_style": "Crisp 1px solid #DEDCD3 structural hairlines paired with 2px solid #111111 editorial section anchors."
+    },
+    "elevation": {
+      "shadow_style": "soft diffused",
+      "levels": {
+        "low": "0 2px 6px rgba(17, 17, 17, 0.04)",
+        "medium": "0 10px 24px -4px rgba(17, 17, 17, 0.09), 0 2px 6px rgba(17, 17, 17, 0.04)",
+        "high": "0 24px 48px -12px rgba(17, 17, 17, 0.22), 0 4px 12px rgba(17, 17, 17, 0.08)"
+      },
+      "depth_cues": "overlapping layers"
+    },
+    "iconography": {
+      "style": "Crisp geometric monoline stroke icons",
+      "stroke_weight": "1.8px to 2px",
+      "size_scale": [16, 18, 20, 22, 28],
+      "preferred_set": "Lucide / Custom authored inline SVG (zero emoji substitutes)"
+    },
+    "motion": {
+      "easing": "Animate UI physics springs via CSS linear() paired with exponential ease-out cubic-bezier(0.23, 1, 0.32, 1)",
+      "duration_scale": {
+        "micro": "150ms",
+        "normal": "285ms",
+        "macro": "510ms"
+      },
+      "entrance_pattern": "Viewport-staggered 16px upward spring entrance with 4px surface blur clearing to crisp rest state, respecting prefers-reduced-motion.",
+      "exit_pattern": "Fast 160ms–200ms in-place scale/opacity dismissal on cubic-bezier(0.33, 0.17, 0.67, 0.5) with immediate inert focus handoff.",
+      "philosophy": "minimal functional"
+    },
+    "components": {
+      "button_style": "High-contrast solid #111111 primary buttons and crisp 1px #111111 outlined secondary buttons, 4px radius, uppercase 0.05em tracking, tactile 0.97 press scale.",
+      "input_style": "44px accessible touch-target height, #FFFFFF background, 1px #DEDCD3 border transitioning to #111111 with soft 3px halo focus ring and WCAG-compliant placeholder contrast.",
+      "card_style": "3:4 fashion portrait ratio, dual-image hover crossfade, top-left semantic badges, top-right floating wishlist heart button, slide-up Quick View action bar, color swatch dots, in-stock size preview, and tabular counter price.",
+      "navigation_pattern": "Sticky frosted-glass header with gliding highlight bar, instant live-search autocomplete dropdown, wishlist drawer trigger, and slide-over mini-cart drawer.",
+      "modal_style": "3D perspective spring-dialog entrance over blurred dark scrim with keyboard focus trap, used for Quick View, Smart Fit Finder, and Policy sheets.",
+      "list_style": "Structured editorial rows with thumbnail, clear hierarchy, live stock indicators, and accessible quantity steppers.",
+      "component_notes": "All interactive Fashion E-Commerce enhancements are modularized behind HK_FEATURE_FLAGS so individual features can be toggled on/off cleanly."
+    }
+  },
+  "design_style": {
+    "aesthetic": {
+      "mood": [
+        "confident",
+        "editorial",
+        "accessible",
+        "urban",
+        "tactile"
+      ],
+      "visual_metaphor": "Curated streetwear flagship showroom & lookbook magazine",
+      "era_influence": "2025–2026 Neo-Editorial Functionalism",
+      "genre": "Accessible Urban Streetwear E-Commerce",
+      "personality_traits": [
+        "decisive",
+        "approachable",
+        "structured",
+        "style-conscious"
+      ],
+      "adjectives": [
+        "crisp",
+        "scannable",
+        "high-contrast",
+        "modern",
+        "effortless"
+      ]
+    },
+    "visual_language": {
+      "complexity": "moderate",
+      "ornamentation": "subtle accents",
+      "whitespace_usage": "Generous warm-alabaster breathing room around 3:4 portrait garment photography so silhouettes and fabric textures command attention.",
+      "visual_weight_distribution": "Anchored top sticky navigation and strong full-bleed dark editorial bands balanced by airy light-mode product grids.",
+      "focal_strategy": "progressive reveal",
+      "contrast_level": "High contrast (#111111 ink on #F6F5F0 / #FFFFFF surfaces, >= 7:1 primary & >= 4.5:1 secondary)",
+      "texture_usage": "Subtle radial editorial lighting in dark sections and frosted translucent glass overlays on sticky bars and quick-view controls."
+    },
+    "composition": {
+      "hierarchy_method": "typographic hierarchy",
+      "balance_type": "asymmetric",
+      "flow_direction": "Z-pattern hero entry transitioning into rhythmic 4-column/3-column scannable vertical catalog rows.",
+      "grouping_strategy": "Tight internal card clusters (swatch + title + size availability + price) separated by 24px gutters and 2px section header rules.",
+      "negative_space_role": "Separates dense size/color variant metadata so first-time shoppers never feel overwhelmed."
+    },
+    "imagery": {
+      "photo_treatment": "3:4 portrait studio and street-style photography on neutral concrete/warm gray backdrops with protective bottom gradient scrims whenever overlaid with white typography.",
+      "illustration_style": "Minimal geometric monoline SVG icons; zero cartoon illustrations.",
+      "graphic_elements": "Color swatch circles with crisp inner hairlines, discount percentage pills, and progress bars for free-shipping thresholds.",
+      "pattern_usage": "Restrained subtle architectural grid/vignette lighting on hero & lookbook banners.",
+      "image_shape": "Crisp 4px softly rounded rectangles maintaining strict 3:4 garment aspect ratios."
+    },
+    "interaction_feel": {
+      "feedback_style": "Immediate physical press scale (0.97 buttons, 0.985 cards), spring badge pops, and non-intrusive stacked toast confirmations.",
+      "hover_behavior": "Fine-pointer gated: secondary angle photo crossfade, Quick View bar reveal, subtle -3px card lift, and gliding nav highlight.",
+      "transition_personality": "snappy",
+      "loading_style": "Smooth opacity + 2px blur image swap and requestAnimationFrame tabular price roll-up.",
+      "microinteraction_density": "Focused on high-value shopping moments: heart toggle pop, mini-cart free-shipping meter glide, live search preview, and instant size recommendation."
+    },
+    "brand_voice_in_ui": {
+      "tone": "Direct, helpful, style-savvy Vietnamese streetwear consultant",
+      "formality": "Modern conversational-professional (politeness without stiffness)",
+      "cta_style": "direct imperative",
+      "empty_state_approach": "Clear explanation paired with an immediate recovery action button (e.g., 'Khám phá sản phẩm', 'Xóa bộ lọc').",
+      "error_tone": "Calm, specific about stock or input constraints, and constructive."
+    }
+  },
+  "visual_effects": {
+    "overview": {
+      "effect_intensity": "subtle-accent",
+      "performance_tier": "lightweight",
+      "fallback_strategy": "reduce to CSS",
+      "primary_technology": "CSS only"
+    },
+    "background_effects": {
+      "type": "mesh-gradient",
+      "description": "Subtle dark radial spotlight and protective multi-stop editorial vignette over Hero and Lookbook backgrounds to guarantee headline legibility.",
+      "technology": "CSS layered linear-gradient and radial-gradient",
+      "params": {
+        "color_palette": ["#111111", "#1F1F1D", "#C83E2B"],
+        "speed": "static",
+        "density": "low",
+        "opacity": "0.88",
+        "blend_mode": "normal"
+      }
+    },
+    "particle_systems": {
+      "enabled": false,
+      "type": "floating-dots",
+      "description": "Disabled intentionally to preserve clean editorial focus on garment photography and maintain 60fps mobile battery efficiency.",
+      "technology": "none",
+      "params": {
+        "count": 0,
+        "shape": "circle",
+        "size_range": "0px",
+        "movement_pattern": "none",
+        "color_behavior": "none",
+        "interaction": "none",
+        "spawn_area": "none"
+      }
+    },
+    "3d_elements": {
+      "enabled": false,
+      "type": "product-viewer",
+      "description": "Heavy WebGL 3D disabled; 3D spatial depth is achieved lightweightly via CSS perspective(500px) rotateX modal entrances.",
+      "technology": "CSS 3D Transforms",
+      "params": {
+        "renderer": "CSS compositor",
+        "lighting": "none",
+        "camera": "perspective(500px)",
+        "materials": "flat surface",
+        "geometry": "planar modal card",
+        "post_processing": ["none"],
+        "interaction_model": "modal open/close trigger"
+      }
+    },
+    "shader_effects": {
+      "enabled": false,
+      "type": "noise-distortion",
+      "description": "Custom GLSL shaders disabled to keep zero-dependency file:// compatibility and instant load times.",
+      "technology": "none",
+      "params": {
+        "uniforms": "none",
+        "vertex_manipulation": "none",
+        "fragment_output": "none",
+        "noise_type": "simplex",
+        "distortion": "0"
+      }
+    },
+    "scroll_effects": {
+      "parallax": {
+        "enabled": false,
+        "layers": "1",
+        "depth_range": "0px",
+        "speed_curve": "linear"
+      },
+      "scroll_triggered_animations": {
+        "enabled": true,
+        "trigger_points": "IntersectionObserver threshold 0.08 with -30px bottom rootMargin plus rAF top scroll-progress bar",
+        "animation_type": "fade-up",
+        "scrub_behavior": "One-shot viewport batch stagger (65ms step, 260ms cap) for cards/sections; continuous rAF scaleX(0..1) for reading progress bar"
+      },
+      "scroll_morphing": {
+        "enabled": true,
+        "description": "Sticky navbar transitions into compact elevated frosted-glass surface when window.scrollY > 24px, accompanied by a floating Back-to-Top pill after 420px."
+      }
+    },
+    "text_effects": {
+      "type": "none",
+      "description": "Display headlines remain immediately visible for LCP; prices animate with requestAnimationFrame tabular number roll-up (NumberCounter).",
+      "technology": "Vanilla JS requestAnimationFrame + Intl.NumberFormat",
+      "params": {
+        "split_strategy": "by-word",
+        "animation_per_unit": "tabular-nums numeric interpolation",
+        "stagger": "0ms",
+        "effect_style": "quartic ease-out counter without overshoot"
+      }
+    },
+    "cursor_effects": {
+      "enabled": true,
+      "type": "spotlight",
+      "description": "Spring-driven gliding highlight pill behind desktop navigation links following pointer and keyboard focus.",
+      "params": {
+        "shape": "rounded-rectangle",
+        "size": "matches hovered nav item bounding box",
+        "blend_mode": "normal",
+        "trail": "300ms linear() spring interpolation",
+        "interaction_zone": ".nav-menu"
+      }
+    },
+    "image_effects": {
+      "type": "reveal-clip",
+      "description": "Dual-image angle crossfade + subtle 1.04x zoom on product card hover, paired with 2px blur crossfade when switching detail gallery thumbnails.",
+      "technology": "CSS opacity & transform transitions gated by @media (hover: hover) and (pointer: fine)",
+      "params": {
+        "filter_pipeline": "blur(2px) -> blur(0px) on gallery swap",
+        "hover_transform": "scale(1.04) with secondary image opacity 0 -> 1",
+        "reveal_animation": "spring-entrance fade + blur clear",
+        "distortion_type": "wave"
+      }
+    },
+    "glassmorphism_neumorphism": {
+      "enabled": true,
+      "style": "frosted-layers",
+      "params": {
+        "blur_radius": "14px",
+        "transparency": "0.88",
+        "border_treatment": "1px solid rgba(17, 17, 17, 0.08)",
+        "shadow_type": "0 8px 24px rgba(17, 17, 17, 0.06)",
+        "light_source_angle": "90deg top-down"
+      }
+    },
+    "canvas_drawings": {
+      "enabled": false,
+      "type": "none",
+      "description": "Disabled; all progress meters and dividers use crisp GPU-composited CSS transforms.",
+      "technology": "none",
+      "params": {
+        "draw_method": "none",
+        "animation_loop": "none",
+        "color_scheme": "none",
+        "responsiveness": "none",
+        "interaction": "none"
+      }
+    },
+    "svg_animations": {
+      "enabled": true,
+      "type": "decorative-loop",
+      "description": "Tactile spring pop animation on SVG Wishlist heart icon fill/stroke toggle and Cart/Wishlist counter badges.",
+      "params": {
+        "animation_method": "CSS keyframes & spring-press transform",
+        "path_morphing": "heart outline to solid #C83E2B fill",
+        "stroke_animation": "crisp 2px stroke transition",
+        "filter_effects": "none"
+      }
+    },
+    "composite_notes": "Effects are strictly budgeted to CSS compositor properties (transform, opacity) and targeted backdrop-filter on sticky/overlay chrome. On devices with prefers-reduced-motion: reduce or hardwareConcurrency <= 2, scroll-linked motion and image zoom gracefully degrade to instant accessible state changes while preserving full visual contrast."
+  }
+}

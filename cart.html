@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Giỏ hàng của bạn | HK Store</title>
+  <meta name="description" content="Xem và quản lý các sản phẩm thời trang trong giỏ hàng HK Store của bạn." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="assets/css/base.css" />
+  <link rel="stylesheet" href="assets/css/components.css" />
+  <link rel="stylesheet" href="assets/css/pages.css" />
+  <link rel="stylesheet" href="assets/css/fashion-features.css" />
+</head>
+<body>
+  <div id="hk-header"></div>
+
+  <main class="container">
+    <nav class="breadcrumb" aria-label="Đường dẫn trang">
+      <a href="index.html">Trang chủ</a>
+      <span class="breadcrumb-separator">/</span>
+      <span class="text-primary font-bold">Giỏ hàng</span>
+    </nav>
+
+    <h1 class="section-title" style="margin-bottom: var(--space-sm);">GIỎ HÀNG CỦA BẠN</h1>
+
+    <div class="checkout-steps" aria-label="Tiến trình mua hàng">
+      <div class="checkout-step is-active"><span class="checkout-step-num">1</span><span>Giỏ hàng</span></div>
+      <span class="checkout-step-sep">&rarr;</span>
+      <div class="checkout-step"><span class="checkout-step-num">2</span><span>Đặt hàng &amp; Thanh toán</span></div>
+      <span class="checkout-step-sep">&rarr;</span>
+      <div class="checkout-step"><span class="checkout-step-num">3</span><span>Hoàn tất</span></div>
+    </div>
+
+    <!-- Trạng thái giỏ hàng trống -->
+    <div id="cart-empty-state" class="empty-state" style="display: none;">
+      <svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/>
+      </svg>
+      <h2>Giỏ hàng của bạn đang trống</h2>
+      <p class="text-muted" style="margin-top: 8px;">Hãy lướt xem các bộ sưu tập streetwear mới nhất để chọn cho mình outfit ưng ý nhất.</p>
+      <a href="products.html" class="btn btn-primary" style="margin-top: 24px;">Khám phá sản phẩm ngay</a>
+    </div>
+
+    <!-- Nội dung Giỏ hàng khi có sản phẩm -->
+    <div id="cart-content-layout" class="cart-layout">
+      <!-- Cột Trái: Bảng danh sách sản phẩm -->
+      <div>
+        <div class="cart-table-wrap">
+          <table class="cart-table">
+            <thead>
+              <tr>
+                <th>Sản phẩm</th>
+                <th>Đơn giá</th>
+                <th>Số lượng</th>
+                <th>Thành tiền</th>
+                <th>Xóa</th>
+              </tr>
+            </thead>
+            <tbody id="cart-items-body"></tbody>
+          </table>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: var(--space-md); flex-wrap: wrap; gap: var(--space-sm);">
+          <a href="products.html" class="btn btn-secondary btn-sm">&larr; Tiếp tục mua sắm</a>
+          <button type="button" class="btn btn-secondary btn-sm" id="btn-clear-cart">Xóa toàn bộ giỏ hàng</button>
+        </div>
+      </div>
+
+      <!-- Cột Phải: Tóm tắt chi phí & Đặt hàng -->
+      <div>
+        <div class="cart-summary-card">
+          <h2 class="summary-title">TÓM TẮT ĐƠN HÀNG</h2>
+
+          <div class="free-shipping-progress" id="free-shipping-note">
+            Đang tính toán ưu đãi vận chuyển...
+          </div>
+
+          <div class="summary-row">
+            <span class="text-muted">Tạm tính:</span>
+            <span class="font-bold" id="cart-subtotal">0₫</span>
+          </div>
+
+          <div class="summary-row">
+            <span class="text-muted">Phí vận chuyển:</span>
+            <span class="font-bold" id="cart-shipping">0₫</span>
+          </div>
+
+          <div class="summary-row total-row">
+            <span>TỔNG CỘNG:</span>
+            <span id="cart-total">0₫</span>
+          </div>
+
+          <a href="checkout.html" class="btn btn-primary btn-block btn-lg" style="margin-top: var(--space-sm);">
+            TIẾN HÀNH ĐẶT HÀNG
+          </a>
+
+          <div style="font-size: 0.78rem; color: var(--color-muted); line-height: 1.5; margin-top: var(--space-xs);">
+            * Bạn sẽ được kiểm tra lại thông tin nhận hàng và chọn phương thức thanh toán ở bước tiếp theo.
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="hk-footer"></div>
+
+  <script src="assets/js/seed.js"></script>
+  <script src="assets/js/storage.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/products.js"></script>
+  <script src="assets/js/cart.js"></script>
+  <script src="assets/js/orders.js"></script>
+  <script src="assets/js/fashion-features.js"></script>
+  <script src="assets/js/ui.js"></script>
+  <script src="assets/js/pages/cart-page.js"></script>
+</body>
+</html>

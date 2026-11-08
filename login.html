@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Đăng nhập tài khoản | HK Store</title>
+  <meta name="description" content="Đăng nhập tài khoản HK Store để quản lý đơn hàng thời trang và thanh toán nhanh chóng." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="assets/css/base.css" />
+  <link rel="stylesheet" href="assets/css/components.css" />
+  <link rel="stylesheet" href="assets/css/pages.css" />
+  <link rel="stylesheet" href="assets/css/fashion-features.css" />
+</head>
+<body>
+  <div id="hk-header"></div>
+
+  <main class="container">
+    <div class="auth-wrapper">
+      <div class="auth-header">
+        <h1 class="auth-title">ĐĂNG NHẬP</h1>
+        <p class="text-muted">Chào mừng bạn quay trở lại với HK Store</p>
+      </div>
+
+      <!-- Thông báo ngữ cảnh khi chuyển hướng từ Thanh toán / Tài khoản -->
+      <div id="login-context-banner" class="auth-context-banner hidden"></div>
+
+      <!-- Hộp tài khoản demo có thể bấm điền tự động bằng chuột hoặc phím Tab -->
+      <div class="demo-credentials-box">
+        <h2 style="display: inline-flex; align-items: center; gap: 6px;">
+          <svg style="width: 15px; height: 15px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          Tài khoản dùng thử (nhấn để điền nhanh)
+        </h2>
+        <div style="margin-top: 6px;">
+          <button type="button" class="demo-account-pill js-quick-account" data-email="admin@hkstore.vn" data-pass="admin1234">
+            Quản trị viên (Admin)
+          </button>
+          <button type="button" class="demo-account-pill js-quick-account" data-email="khach1@hkstore.vn" data-pass="khach1234">
+            Khách hàng 1 (Đã có đơn)
+          </button>
+          <button type="button" class="demo-account-pill js-quick-account" data-email="khach2@hkstore.vn" data-pass="khach1234">
+            Khách hàng 2 (Mới)
+          </button>
+        </div>
+        <small class="text-muted" style="display: block; margin-top: 8px;">
+          * Mật khẩu demo: <code>admin1234</code> hoặc <code>khach1234</code>
+        </small>
+      </div>
+
+      <form id="login-form" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="login-email">Địa chỉ Email <span class="required">*</span></label>
+          <input type="email" id="login-email" class="form-control" autocomplete="email" required placeholder="name@example.com" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="login-password">Mật khẩu <span class="required">*</span></label>
+          <input type="password" id="login-password" class="form-control" autocomplete="current-password" required placeholder="Nhập mật khẩu" />
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top: var(--space-lg);">
+          ĐĂNG NHẬP
+        </button>
+      </form>
+
+      <div style="text-align: center; margin-top: var(--space-xl); font-size: 0.9rem;">
+        <span class="text-muted">Chưa có tài khoản?</span>
+        <a href="register.html" id="login-register-link" class="font-bold text-primary" style="text-decoration: underline; margin-left: 4px;">
+          Đăng ký ngay
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <div id="hk-footer"></div>
+
+  <script src="assets/js/seed.js"></script>
+  <script src="assets/js/storage.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/products.js"></script>
+  <script src="assets/js/cart.js"></script>
+  <script src="assets/js/orders.js"></script>
+  <script src="assets/js/fashion-features.js"></script>
+  <script src="assets/js/ui.js"></script>
+  <script src="assets/js/pages/login-page.js"></script>
+</body>
+</html>

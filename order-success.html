@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Đặt hàng thành công | HK Store</title>
+  <meta name="description" content="Cảm ơn bạn đã mua sắm tại HK Store. Đơn hàng của bạn đã được ghi nhận." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="assets/css/base.css" />
+  <link rel="stylesheet" href="assets/css/components.css" />
+  <link rel="stylesheet" href="assets/css/pages.css" />
+  <link rel="stylesheet" href="assets/css/fashion-features.css" />
+</head>
+<body>
+  <div id="hk-header"></div>
+
+  <main class="container" style="max-width: 680px; padding-top: var(--space-lg); padding-bottom: var(--space-3xl);">
+    <div class="checkout-steps" aria-label="Tiến trình mua hàng" style="justify-content: center; margin-bottom: var(--space-lg);">
+      <div class="checkout-step is-done"><span class="checkout-step-num">&#10003;</span><span>Giỏ hàng</span></div>
+      <span class="checkout-step-sep">&rarr;</span>
+      <div class="checkout-step is-done"><span class="checkout-step-num">&#10003;</span><span>Đặt hàng</span></div>
+      <span class="checkout-step-sep">&rarr;</span>
+      <div class="checkout-step is-active"><span class="checkout-step-num">3</span><span>Hoàn tất</span></div>
+    </div>
+
+    <div class="checkout-section" id="order-success-card" style="text-align: center; padding: var(--space-2xl);">
+      <div style="width: 64px; height: 64px; background-color: #E8F5E9; color: #2E7D32; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: var(--space-md);">
+        <svg style="width: 36px; height: 36px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      </div>
+
+      <h1 style="font-size: 1.8rem; font-weight: 900; margin-bottom: 8px;">ĐẶT HÀNG THÀNH CÔNG!</h1>
+      <p class="text-muted" style="margin-bottom: var(--space-xl);">
+        Cảm ơn bạn đã lựa chọn HK Store. Đơn hàng của bạn đã được tiếp nhận và nhân viên sẽ liên hệ để xác nhận sớm nhất.
+      </p>
+
+      <!-- Bảng thông tin chi tiết nhanh -->
+      <div style="background-color: var(--color-bg); padding: var(--space-lg); border-radius: 4px; text-align: left; margin-bottom: var(--space-xl);">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px solid var(--color-border); padding-bottom: 8px; gap: 8px; flex-wrap: wrap;">
+          <span class="text-muted">Mã đơn hàng:</span>
+          <strong class="tabular-nums" id="success-order-code">Đang tải...</strong>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; margin-bottom: 10px; gap: 8px; flex-wrap: wrap;">
+          <span class="text-muted">Thời gian đặt:</span>
+          <span class="tabular-nums" id="success-order-date"></span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; margin-bottom: 10px; gap: 8px; flex-wrap: wrap;">
+          <span class="text-muted">Phương thức &amp; Trạng thái:</span>
+          <span id="success-order-payment"></span>
+        </div>
+
+        <div id="success-bank-transfer-box" class="hidden" style="margin-top: 12px; margin-bottom: 8px;"></div>
+
+        <div style="margin-top: 12px; border-top: 1px solid var(--color-border); padding-top: 10px;">
+          <span class="text-muted" style="display: block; margin-bottom: 4px;">Thông tin nhận hàng:</span>
+          <div id="success-order-customer" style="font-size: 0.9rem;"></div>
+        </div>
+
+        <div style="margin-top: 16px; border-top: 1px solid var(--color-border); padding-top: 10px;">
+          <span class="text-muted" style="display: block; margin-bottom: 8px; font-weight: 700;">Sản phẩm đã đặt:</span>
+          <div id="success-order-items"></div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; margin-top: 16px; border-top: 2px solid var(--color-border-dark); padding-top: 12px; font-size: 1.15rem; font-weight: 900;">
+          <span>TỔNG TIỀN:</span>
+          <span class="tabular-nums" id="success-order-total">0₫</span>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: var(--space-md); justify-content: center; flex-wrap: wrap;">
+        <a href="#" id="success-detail-link" class="btn btn-secondary">Xem chi tiết đơn hàng</a>
+        <a href="products.html" class="btn btn-primary">Tiếp tục mua sắm</a>
+      </div>
+    </div>
+  </main>
+
+  <div id="hk-footer"></div>
+
+  <script src="assets/js/seed.js"></script>
+  <script src="assets/js/storage.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/products.js"></script>
+  <script src="assets/js/cart.js"></script>
+  <script src="assets/js/orders.js"></script>
+  <script src="assets/js/fashion-features.js"></script>
+  <script src="assets/js/ui.js"></script>
+  <script src="assets/js/pages/order-success-page.js"></script>
+</body>
+</html>

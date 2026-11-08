@@ -1,0 +1,1177 @@
+/**
+ * HK STORE - STREETWEAR MINIMALIST
+ * CSS Components: Header, Navbar, Drawer, Product Card, Toast, Modal, Footer
+ */
+
+/* 1. TOPBAR & NAVBAR */
+.topbar {
+  background-color: var(--color-primary);
+  color: var(--color-surface);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.topbar-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.topbar-links {
+  display: flex;
+  gap: var(--space-md);
+  align-items: center;
+}
+
+.topbar-links a:hover {
+  text-decoration: underline;
+}
+
+.topbar-admin-badge {
+  background-color: #FFFFFF;
+  color: #111111;
+  padding: 2px 6px;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.navbar {
+  background-color: var(--color-surface-elevated);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(17, 17, 17, 0.08);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  transition: background-color var(--duration-color) var(--ease-color),
+              box-shadow var(--duration-color) var(--ease-color),
+              border-color var(--duration-color) var(--ease-color);
+}
+
+.navbar.navbar-scrolled {
+  background-color: rgba(255, 255, 255, 0.95);
+  box-shadow: var(--shadow-sm);
+  border-bottom-color: var(--color-border);
+}
+
+.navbar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 72px;
+  gap: var(--space-md);
+}
+
+.brand-logo {
+  font-family: var(--font-heading);
+  font-size: 1.55rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: var(--color-primary);
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.nav-menu {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: center;
+  position: relative;
+  isolation: isolate;
+}
+
+/* Animate UI Gliding Highlight Surface (recipes/indicator.md) */
+.nav-highlight {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  background-color: var(--color-surface-subtle);
+  border-radius: var(--radius-sm);
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity var(--duration-color) var(--ease-color);
+}
+
+.nav-link {
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-primary);
+  position: relative;
+  z-index: 2;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  transition: color var(--duration-color) var(--ease-color);
+}
+
+.nav-link:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.nav-link:hover, .nav-link.active {
+  color: var(--color-primary);
+}
+
+.nav-link.active::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 10px;
+  right: 10px;
+  height: 2px;
+  background-color: var(--color-primary);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.header-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  min-width: 44px;
+  min-height: 44px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  color: var(--color-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  position: relative;
+  transform: scale(1);
+  transition: background-color var(--duration-color) var(--ease-color),
+              color var(--duration-color) var(--ease-color),
+              transform var(--spring-press);
+}
+
+.header-action-btn:active {
+  transform: scale(var(--scale-press));
+}
+
+.header-action-btn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .header-action-btn:hover {
+    background-color: var(--color-surface-subtle);
+  }
+}
+
+.header-action-btn .icon {
+  width: 22px;
+  height: 22px;
+}
+
+/* Search Box */
+.search-box {
+  width: 236px;
+  position: relative;
+}
+
+.search-form {
+  display: flex;
+  align-items: center;
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  padding: 0 4px 0 8px;
+  overflow: hidden;
+  transition: border-color var(--duration-color) var(--ease-color),
+              background-color var(--duration-color) var(--ease-color),
+              box-shadow var(--duration-color) var(--ease-color);
+}
+
+.search-form:focus-within {
+  background-color: var(--color-surface);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(17, 17, 17, 0.08);
+}
+
+.search-input {
+  border: none;
+  background: transparent;
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  width: 100%;
+}
+
+.search-input:focus {
+  outline: none;
+}
+
+.search-btn {
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-muted);
+  transform: scale(1);
+  transition: color var(--duration-color) var(--ease-color),
+              transform var(--spring-press);
+}
+
+.search-btn:active {
+  transform: scale(var(--scale-press));
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .search-btn:hover {
+    color: var(--color-primary);
+  }
+}
+
+.search-btn .icon {
+  width: 18px;
+  height: 18px;
+}
+
+/* User Dropdown - Animate UI Anchored Menu (recipes/menu.md: scale.menu 0.9, 220ms ease.soft) */
+.user-dropdown {
+  position: relative;
+}
+
+.dropdown-content {
+  display: block;
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  min-width: 210px;
+  box-shadow: var(--shadow-md);
+  border-radius: var(--radius-sm);
+  z-index: 120;
+  transform-origin: top right;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: scale(var(--scale-menu));
+  transition: opacity var(--duration-menu) var(--ease-soft),
+              transform var(--duration-menu) var(--ease-soft),
+              visibility 0ms linear var(--duration-menu);
+}
+
+.user-dropdown:focus-within .dropdown-content,
+.user-dropdown.dropdown-open .dropdown-content {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: scale(1);
+  transition: opacity var(--duration-menu) var(--ease-soft),
+              transform var(--duration-menu) var(--ease-soft),
+              visibility 0ms linear 0ms;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .user-dropdown:hover .dropdown-content {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: scale(1);
+    transition: opacity var(--duration-menu) var(--ease-soft),
+                transform var(--duration-menu) var(--ease-soft),
+                visibility 0ms linear 0ms;
+  }
+}
+
+.dropdown-header {
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dropdown-header small {
+  color: var(--color-muted);
+  word-break: break-all;
+}
+
+.dropdown-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 10px var(--space-md);
+  font-size: 0.85rem;
+  color: var(--color-primary);
+  border: none;
+  background: none;
+  transition: background-color var(--duration-color) var(--ease-color),
+              color var(--duration-color) var(--ease-color);
+}
+
+.dropdown-item:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+  background-color: var(--color-surface-subtle);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .dropdown-item:hover {
+    background-color: var(--color-surface-subtle);
+  }
+}
+
+/* Cart Badge - Animate UI Counting Badge Pop */
+.cart-btn {
+  position: relative;
+}
+
+.cart-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background-color: var(--color-primary);
+  color: var(--color-surface);
+  font-size: 0.7rem;
+  font-weight: 800;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+@keyframes auiBadgePop {
+  0% { transform: scale(var(--scale-popover)); }
+  55% { transform: scale(1.14); }
+  100% { transform: scale(1); }
+}
+
+.cart-badge.badge-pop {
+  animation: auiBadgePop 360ms var(--ease-drawer);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cart-badge.badge-pop {
+    animation: none;
+  }
+}
+
+/* Mobile Toggle Hamburger */
+.mobile-toggle-btn {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 44px;
+  height: 44px;
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  transform: scale(1);
+  transition: background-color var(--duration-color) var(--ease-color),
+              transform var(--spring-press);
+}
+
+.mobile-toggle-btn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.mobile-toggle-btn:active {
+  transform: scale(var(--scale-press));
+}
+
+.hamburger-bar {
+  width: 100%;
+  height: 2px;
+  background-color: var(--color-primary);
+  transition: transform var(--duration-swap) var(--ease-out),
+              opacity var(--duration-swap) var(--ease-out);
+}
+
+/* Mobile Drawer - Animate UI Edge Drawer (recipes/sheet.md: 400ms ease.drawer in, 160ms ease.in out) */
+.mobile-drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: none;
+}
+
+.mobile-drawer.drawer-open {
+  display: block;
+}
+
+.drawer-overlay {
+  position: absolute;
+  inset: 0;
+  background-color: transparent;
+  backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px);
+  transition: background-color var(--duration-overlay) var(--ease-soft),
+              backdrop-filter var(--duration-overlay) var(--ease-soft),
+              -webkit-backdrop-filter var(--duration-overlay) var(--ease-soft);
+}
+
+.mobile-drawer.drawer-active .drawer-overlay {
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(var(--blur-surface));
+  -webkit-backdrop-filter: blur(var(--blur-surface));
+}
+
+.drawer-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 82%;
+  max-width: 320px;
+  background-color: var(--color-surface);
+  /* Bleed -24px bên trái che khoảng hở ~1% overshoot của ease.drawer (recipes/sheet.md) */
+  box-shadow: -24px 0 0 0 var(--color-surface);
+  padding: var(--space-lg);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  transform: var(--drawer-transform-from);
+  transition: transform var(--duration-drawer) var(--ease-drawer),
+              box-shadow var(--duration-drawer) var(--ease-soft),
+              opacity var(--duration-overlay) var(--ease-soft);
+}
+
+.mobile-drawer.drawer-active .drawer-content {
+  transform: translateX(0%);
+  box-shadow: -24px 0 0 0 var(--color-surface), var(--shadow-lg);
+}
+
+.mobile-drawer.drawer-leaving .drawer-content {
+  transform: var(--drawer-transform-from);
+  box-shadow: -24px 0 0 0 var(--color-surface);
+  transition: transform var(--duration-drawer-out) var(--ease-drawer-out),
+              box-shadow var(--duration-drawer-out) var(--ease-drawer-out),
+              opacity var(--duration-dismiss) var(--ease-away);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .drawer-content {
+    opacity: 0;
+  }
+  .mobile-drawer.drawer-active .drawer-content {
+    opacity: 1;
+  }
+  .mobile-drawer.drawer-leaving .drawer-content {
+    opacity: 0;
+  }
+}
+
+.drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: var(--space-sm);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.drawer-title {
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  font-size: 1.1rem;
+}
+
+.drawer-close-btn {
+  min-width: 44px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  line-height: 1;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  transform: scale(1);
+  transition: color var(--duration-color) var(--ease-color),
+              background-color var(--duration-color) var(--ease-color),
+              transform var(--spring-press);
+}
+
+.drawer-close-btn:active {
+  transform: scale(var(--scale-press));
+}
+
+.drawer-nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.drawer-nav .nav-link {
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.drawer-divider {
+  margin: var(--space-sm) 0;
+  border: 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.drawer-logout-btn {
+  color: var(--color-danger);
+  text-align: left;
+}
+
+/* 2. PRODUCT CARDS (Tỉ lệ 3:4 thời trang Editorial - Design DNA + Animate UI recipes/card.md) */
+.product-card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transform: scale(1);
+  translate: 0 0;
+  transition: translate var(--spring-highlight),
+              transform var(--spring-press),
+              border-color var(--duration-color) var(--ease-color),
+              box-shadow var(--duration-color) var(--ease-color);
+  overflow: hidden;
+}
+
+/* Animate UI Rule B4: Card press 0.985 (scale.choice); không scale khi hover */
+.product-card:active {
+  transform: scale(var(--scale-choice));
+}
+
+.card-image-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  background-color: #EAE9E2;
+  overflow: hidden;
+}
+
+.card-image-link {
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1);
+  transition: transform var(--spring-highlight),
+              opacity var(--duration-reveal) var(--ease-out);
+}
+
+.card-image-secondary {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transform: scale(1.02);
+  pointer-events: none;
+  transition: opacity var(--duration-reveal) var(--ease-out),
+              transform var(--spring-highlight);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .product-card:hover {
+    border-color: rgba(17, 17, 17, 0.45);
+    box-shadow: var(--shadow-md);
+    translate: 0 var(--card-hover-y);
+  }
+
+  .product-card:hover .card-image {
+    transform: scale(var(--card-img-zoom));
+  }
+
+  .product-card.has-second-image:hover .card-image-secondary {
+    opacity: 1;
+    transform: scale(var(--card-img-zoom));
+  }
+}
+
+.card-badges-stack {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  pointer-events: none;
+}
+
+.card-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 3;
+}
+
+.card-badges-stack .card-badge {
+  position: static;
+}
+
+.card-body {
+  padding: 14px var(--space-md) var(--space-md);
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  gap: 6px;
+}
+
+.card-meta-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.card-category {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  letter-spacing: 0.06em;
+  font-weight: 700;
+}
+
+.card-title {
+  font-family: var(--font-family);
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  color: var(--color-primary);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 2.8em;
+}
+
+.card-title a:hover {
+  text-decoration: underline;
+}
+
+.card-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--color-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.card-rating .star {
+  color: #D98200;
+}
+
+.card-price-row {
+  margin-top: auto;
+  padding-top: 4px;
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.card-price {
+  font-family: var(--font-heading);
+  font-size: 1.08rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+  display: inline-block;
+  min-width: 60px;
+}
+
+.card-price.is-sale {
+  color: var(--color-accent);
+}
+
+.card-price-original {
+  font-size: 0.82rem;
+  color: var(--color-muted);
+  text-decoration: line-through;
+  font-variant-numeric: tabular-nums;
+}
+
+.card-action {
+  margin-top: 6px;
+}
+
+/* 3. TOAST CONTAINER & ITEMS (recipes/toast.md: spring.toast in, transition.dismiss out in-place) */
+.toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  max-width: 380px;
+  width: calc(100% - 48px);
+  pointer-events: none;
+}
+
+.toast {
+  pointer-events: auto;
+  background-color: var(--color-primary);
+  color: var(--color-surface);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  box-shadow: var(--shadow-lg);
+  font-size: 0.9rem;
+  font-weight: 500;
+  transform-origin: bottom center;
+  opacity: 0;
+  filter: blur(var(--blur-surface));
+  transform: translateY(var(--toast-translate-from)) scale(var(--scale-toast));
+  transition: opacity var(--spring-toast),
+              transform var(--spring-toast),
+              filter var(--spring-toast);
+}
+
+.toast.toast-show {
+  opacity: 1;
+  filter: blur(0px);
+  transform: translateY(0%) scale(1);
+}
+
+.toast.toast-settled {
+  transform: none;
+  filter: none;
+}
+
+/* Animate UI Toast Dismiss: thu nhỏ tại chỗ vào blur.surface trên transition.dismiss */
+.toast.toast-leaving {
+  opacity: 0;
+  filter: blur(var(--blur-surface));
+  transform: translateY(0%) scale(var(--scale-toast));
+  transition: opacity var(--duration-dismiss) var(--ease-away),
+              transform var(--duration-dismiss) var(--ease-away),
+              filter var(--duration-dismiss) var(--ease-away);
+  pointer-events: none;
+}
+
+.toast-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.toast-message {
+  flex-grow: 1;
+  line-height: 1.4;
+}
+
+.toast-close {
+  background: none;
+  border: none;
+  color: var(--color-surface);
+  font-size: 1.2rem;
+  opacity: 0.7;
+  padding: 0 4px;
+  line-height: 1;
+  transform: scale(1);
+  transition: opacity var(--duration-color) var(--ease-color),
+              transform var(--spring-press);
+}
+
+.toast-close:active {
+  transform: scale(var(--scale-press));
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .toast-close:hover {
+    opacity: 1;
+  }
+}
+
+.toast-success { background-color: #1B5E20; }
+.toast-error { background-color: #B71C1C; }
+.toast-info { background-color: #111111; }
+
+/* 4. ACCESSIBLE MODALS (recipes/modal.md: 3D tip spring.dialog in, transition.dismiss out, backdrop color/blur fade) */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1500;
+  background-color: transparent;
+  backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-md);
+  transition: background-color var(--duration-overlay) var(--ease-soft),
+              backdrop-filter var(--duration-overlay) var(--ease-soft),
+              -webkit-backdrop-filter var(--duration-overlay) var(--ease-soft);
+}
+
+.modal-overlay.modal-active {
+  background-color: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(var(--blur-surface));
+  -webkit-backdrop-filter: blur(var(--blur-surface));
+}
+
+.modal-overlay.modal-leaving {
+  background-color: transparent;
+  backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px);
+}
+
+.modal-box {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-sm);
+  max-width: 580px;
+  width: 100%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-lg);
+  opacity: 0;
+  filter: blur(var(--blur-surface));
+  transform: var(--dialog-transform-from);
+  transition: opacity var(--duration-dialog) var(--ease-soft),
+              transform var(--spring-dialog),
+              filter var(--spring-dialog);
+}
+
+.modal-overlay.modal-active .modal-box {
+  opacity: 1;
+  filter: blur(0px);
+  transform: var(--dialog-transform-rest);
+}
+
+/* Gỡ transform & filter khi đã ổn định để không khóa vị trí phần tử fixed bên trong (recipes/modal.md) */
+.modal-overlay.modal-settled .modal-box {
+  transform: none;
+  filter: none;
+}
+
+.modal-overlay.modal-leaving .modal-box {
+  opacity: 0;
+  filter: blur(var(--blur-surface));
+  transform: var(--dialog-transform-from);
+  transition: opacity var(--duration-dismiss) var(--ease-away),
+              transform var(--duration-dismiss) var(--ease-away),
+              filter var(--duration-dismiss) var(--ease-away);
+}
+
+.modal-header {
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.modal-close {
+  min-width: 44px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--color-muted);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  transform: scale(1);
+  transition: color var(--duration-color) var(--ease-color),
+              background-color var(--duration-color) var(--ease-color),
+              transform var(--spring-press);
+}
+
+.modal-close:active {
+  transform: scale(var(--scale-press));
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .modal-close:hover {
+    color: var(--color-primary);
+  }
+}
+
+.modal-body {
+  padding: var(--space-lg);
+  overflow-y: auto;
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.modal-footer {
+  padding: var(--space-md) var(--space-lg);
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+  background-color: var(--color-bg);
+}
+
+/* Bảng Size Guide trong modal */
+.table-size-guide {
+  width: 100%;
+  border-collapse: collapse;
+  margin: var(--space-md) 0;
+  font-size: 0.88rem;
+}
+
+.table-size-guide th, .table-size-guide td {
+  border: 1px solid var(--color-border);
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.table-size-guide th {
+  background-color: var(--color-bg);
+  font-weight: 700;
+}
+
+/* 5. FOOTER */
+.site-footer {
+  background-color: #0D0D0D;
+  color: #CCCCCC;
+  margin-top: var(--space-3xl);
+  border-top: 2px solid var(--color-primary);
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1.2fr 1.2fr;
+  gap: var(--space-2xl);
+  padding-top: var(--space-3xl);
+  padding-bottom: var(--space-3xl);
+}
+
+.footer-brand {
+  color: #FFFFFF;
+  font-size: 1.5rem;
+  letter-spacing: 0.1em;
+  margin-bottom: var(--space-md);
+}
+
+.footer-desc {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin-bottom: var(--space-md);
+  color: #999999;
+}
+
+.footer-demo-note {
+  font-size: 0.78rem;
+  color: #777777;
+}
+
+.footer-title {
+  color: #FFFFFF;
+  font-size: 0.9rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-md);
+}
+
+.footer-links {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.footer-links a {
+  font-size: 0.85rem;
+  color: #AAAAAA;
+}
+
+.footer-links a:hover {
+  color: #FFFFFF;
+  text-decoration: underline;
+}
+
+.footer-contact-item {
+  font-size: 0.85rem;
+  margin-bottom: var(--space-xs);
+  color: #AAAAAA;
+}
+
+.footer-contact-item strong {
+  color: #FFFFFF;
+}
+
+.footer-badges {
+  display: flex;
+  gap: var(--space-xs);
+  margin-top: var(--space-md);
+}
+
+.badge-tag {
+  border: 1px solid #444444;
+  color: #BBBBBB;
+  padding: 2px 8px;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.footer-bottom {
+  border-top: 1px solid #222222;
+  padding: var(--space-md) 0;
+  font-size: 0.78rem;
+  color: #666666;
+}
+
+.footer-bottom-inner {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+/* Breadcrumb */
+.breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  align-items: center;
+  font-size: 0.85rem;
+  color: var(--color-muted);
+  padding: var(--space-md) 0;
+}
+
+.breadcrumb a:hover {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+
+.breadcrumb-separator {
+  color: var(--color-border);
+}
+
+/* Pagination - Animate UI Press & Selection */
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-xs);
+  margin-top: var(--space-2xl);
+}
+
+.page-btn {
+  min-width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  font-weight: 700;
+  font-size: 0.9rem;
+  border-radius: var(--radius-sm);
+  transform: scale(1);
+  transition: background-color var(--duration-color) var(--ease-color),
+              border-color var(--duration-color) var(--ease-color),
+              color var(--duration-color) var(--ease-color),
+              transform var(--spring-press);
+}
+
+.page-btn:active:not(:disabled) {
+  transform: scale(var(--scale-press));
+}
+
+.page-btn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .page-btn:hover:not(:disabled) {
+    border-color: var(--color-primary);
+  }
+}
+
+.page-btn.active {
+  background-color: var(--color-primary);
+  color: var(--color-surface);
+  border-color: var(--color-primary);
+}
+
+.page-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Responsive Components */
+@media (max-width: 1240px) {
+  .navbar-inner {
+    gap: 10px;
+  }
+  .nav-menu {
+    gap: 2px;
+  }
+  .nav-link {
+    font-size: 0.81rem;
+    padding: 6px 7px;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+  .nav-link.active::after {
+    left: 7px;
+    right: 7px;
+  }
+  .search-box {
+    width: 192px;
+  }
+  .header-actions {
+    gap: 6px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .mobile-toggle-btn {
+    display: inline-flex;
+  }
+  .navbar-inner {
+    height: 64px;
+  }
+}
+
+@media (max-width: 992px) {
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-xl);
+  }
+}
+
+@media (max-width: 768px) {
+  .footer-grid {
+    grid-template-columns: 1fr;
+  }
+  .navbar-inner {
+    height: 60px;
+  }
+}

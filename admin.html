@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quản trị Hệ thống | HK Store</title>
+  <meta name="description" content="Trang quản trị sản phẩm, tồn kho và đơn hàng thương mại điện tử HK Store." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="assets/css/base.css" />
+  <link rel="stylesheet" href="assets/css/components.css" />
+  <link rel="stylesheet" href="assets/css/admin.css" />
+</head>
+<body class="admin-body">
+  <div class="admin-layout">
+    <!-- 1. SIDEBAR QUẢN TRỊ -->
+    <aside class="admin-sidebar">
+      <div class="admin-brand">
+        <div class="admin-brand-logo">HK STORE</div>
+        <span class="admin-badge-role">ADMIN CONTROL PANEL</span>
+      </div>
+
+      <nav class="admin-nav" aria-label="Điều hướng quản trị">
+        <button type="button" class="admin-nav-item active js-admin-nav-item" data-tab="overview">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          <span>Tổng quan</span>
+        </button>
+
+        <button type="button" class="admin-nav-item js-admin-nav-item" data-tab="products">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <span>Sản phẩm &amp; Tồn kho</span>
+        </button>
+
+        <button type="button" class="admin-nav-item js-admin-nav-item" data-tab="orders">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          <span>Quản lý Đơn hàng</span>
+        </button>
+      </nav>
+
+      <div class="admin-sidebar-footer">
+        <a href="index.html" class="btn btn-secondary btn-sm btn-block" style="color: #fff; border-color: #444;">
+          &larr; Về trang bán hàng
+        </a>
+        <button type="button" class="btn btn-danger btn-sm btn-block" id="btn-admin-logout">
+          Đăng xuất
+        </button>
+      </div>
+    </aside>
+
+    <!-- 2. NỘI DUNG CHÍNH (MAIN AREA) -->
+    <main class="admin-main">
+      <!-- Topbar Header -->
+      <header class="admin-topbar">
+        <h1 class="admin-page-title" id="admin-header-title">TỔNG QUAN HỆ THỐNG</h1>
+        <div style="display: flex; gap: 12px; align-items: center;">
+          <span style="font-size: 0.85rem; font-weight: 600;">Xin chào, <strong>Quản trị viên</strong></span>
+          <span class="badge badge-admin">Super Admin</span>
+        </div>
+      </header>
+
+      <div class="admin-content-area">
+        <!-- TAB 1: TỔNG QUAN (DASHBOARD STATS) -->
+        <section id="admin-pane-overview" class="js-admin-tab-content">
+          <!-- 4 Khối thống kê chỉ số cốt lõi -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <span class="stat-label">SẢN PHẨM ĐANG BÁN</span>
+              <div class="stat-value" id="stat-products">0</div>
+              <span class="stat-subtext">Đang hiển thị trên catalog</span>
+            </div>
+
+            <div class="stat-card">
+              <span class="stat-label">TỔNG ĐƠN HÀNG</span>
+              <div class="stat-value" id="stat-orders">0</div>
+              <span class="stat-subtext">Đã phát sinh trên hệ thống</span>
+            </div>
+
+            <div class="stat-card">
+              <span class="stat-label">ĐƠN CHỜ XÁC NHẬN</span>
+              <div class="stat-value text-danger" id="stat-pending">0</div>
+              <span class="stat-subtext">Cần Admin kiểm tra &amp; duyệt</span>
+            </div>
+
+            <div class="stat-card">
+              <span class="stat-label">DOANH THU THỰC TẾ</span>
+              <div class="stat-value text-success" id="stat-revenue">0₫</div>
+              <span class="stat-subtext">Từ đơn Đã giao &amp; Đã thanh toán</span>
+            </div>
+          </div>
+
+          <!-- Bảng 1: Cảnh báo Hết hàng (0 sản phẩm) -->
+          <div class="admin-card">
+            <div class="admin-card-header">
+              <h2 class="admin-card-title text-danger">
+                <svg style="width: 18px; height: 18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                Biến thể hết hàng (Tồn kho = 0)
+              </h2>
+            </div>
+            <div class="table-responsive">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Tên sản phẩm</th>
+                    <th>SKU</th>
+                    <th>Size</th>
+                    <th>Màu sắc</th>
+                    <th>Trạng thái</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-out-of-stock"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Bảng 2: Cảnh báo Sắp hết hàng (1 đến 5 đơn vị) -->
+          <div class="admin-card">
+            <div class="admin-card-header">
+              <h2 class="admin-card-title">
+                <svg style="width: 18px; height: 18px; color: var(--color-warning);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 17 13.5 8.5 8.5 13.5 2 7"/><polyline points="16 17 22 17 22 11"/></svg>
+                Biến thể sắp hết hàng (Tồn kho 1 – 5)
+              </h2>
+            </div>
+            <div class="table-responsive">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Tên sản phẩm</th>
+                    <th>SKU</th>
+                    <th>Size</th>
+                    <th>Màu sắc</th>
+                    <th>Tồn kho còn lại</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-low-stock"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 2: QUẢN LÝ SẢN PHẨM & TỒN KHO -->
+        <section id="admin-pane-products" class="js-admin-tab-content" style="display: none;">
+          <div class="admin-card">
+            <div class="admin-card-header">
+              <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                <input type="text" id="admin-prod-search" class="form-control" placeholder="Tìm theo tên hoặc SKU..." style="width: 240px; padding: 8px 12px;" />
+                <select id="admin-prod-cat-filter" class="form-control" style="width: 180px; padding: 8px 12px;">
+                  <option value="all">Tất cả danh mục</option>
+                  <option value="ao-thun">Áo thun</option>
+                  <option value="hoodie-sweater">Hoodie & Sweater</option>
+                  <option value="quan">Quần</option>
+                  <option value="ao-khoac">Áo khoác</option>
+                  <option value="phu-kien">Phụ kiện</option>
+                </select>
+              </div>
+
+              <button type="button" class="btn btn-primary btn-sm" id="btn-add-product">
+                + Thêm sản phẩm mới
+              </button>
+            </div>
+
+            <div class="table-responsive">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Sản phẩm</th>
+                    <th>Danh mục</th>
+                    <th>Giá bán</th>
+                    <th>Biến thể</th>
+                    <th>Tổng tồn</th>
+                    <th>Trạng thái</th>
+                    <th>Thao tác</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-products-list"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 3: QUẢN LÝ ĐƠN HÀNG -->
+        <section id="admin-pane-orders" class="js-admin-tab-content" style="display: none;">
+          <div class="admin-card">
+            <div class="admin-card-header">
+              <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                <input type="text" id="admin-order-search" class="form-control" placeholder="Tìm mã đơn, tên, SĐT khách..." style="width: 260px; padding: 8px 12px;" />
+                <select id="admin-order-status-filter" class="form-control" style="width: 170px; padding: 8px 12px;">
+                  <option value="all">Tất cả trạng thái</option>
+                  <option value="pending">Chờ xác nhận</option>
+                  <option value="confirmed">Đã xác nhận</option>
+                  <option value="shipping">Đang giao</option>
+                  <option value="delivered">Đã giao</option>
+                  <option value="cancelled">Đã hủy</option>
+                </select>
+                <select id="admin-order-payment-filter" class="form-control" style="width: 180px; padding: 8px 12px;">
+                  <option value="all">Tất cả thanh toán</option>
+                  <option value="pending">Chờ thanh toán</option>
+                  <option value="paid">Đã thanh toán</option>
+                  <option value="refund_pending">Chờ hoàn tiền</option>
+                  <option value="refunded">Đã hoàn tiền</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Mã đơn</th>
+                    <th>Khách hàng</th>
+                    <th>Thời gian</th>
+                    <th>Tổng tiền</th>
+                    <th>Trạng thái đơn</th>
+                    <th>Thanh toán</th>
+                    <th>Thao tác</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-orders-list"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <!-- Scripts -->
+  <script src="assets/js/seed.js"></script>
+  <script src="assets/js/storage.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/products.js"></script>
+  <script src="assets/js/cart.js"></script>
+  <script src="assets/js/orders.js"></script>
+  <script src="assets/js/ui.js"></script>
+  <script src="assets/js/pages/admin-page.js"></script>
+</body>
+</html>

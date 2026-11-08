@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tất cả sản phẩm Streetwear | HK Store</title>
+  <meta name="description" content="Khám phá bộ sưu tập thời trang đường phố HK Store: Áo thun oversize, Hoodie, Quần cargo, Áo khoác bomber và Phụ kiện streetwear cao cấp." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="assets/css/base.css" />
+  <link rel="stylesheet" href="assets/css/components.css" />
+  <link rel="stylesheet" href="assets/css/pages.css" />
+  <link rel="stylesheet" href="assets/css/fashion-features.css" />
+</head>
+<body>
+  <div id="hk-header"></div>
+
+  <main class="container">
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb" aria-label="Đường dẫn trang">
+      <a href="index.html">Trang chủ</a>
+      <span class="breadcrumb-separator">/</span>
+      <span class="text-primary font-bold" id="catalog-breadcrumb-current">Tất cả sản phẩm</span>
+    </nav>
+
+    <div class="catalog-page-header">
+      <h1 class="section-title" id="catalog-page-title">TẤT CẢ SẢN PHẨM</h1>
+    </div>
+
+    <!-- Toolbar Mobile/Tablet (<= 992px) để mở Filter Drawer -->
+    <div class="catalog-drawer-only" style="margin-bottom: var(--space-md);">
+      <button type="button" class="btn btn-secondary btn-block" id="js-toggle-filter-drawer" aria-controls="catalog-sidebar" aria-expanded="false">
+        <svg style="width:18px;height:18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+        Bộ lọc &amp; Tìm kiếm
+      </button>
+    </div>
+
+    <div class="catalog-drawer-backdrop" id="js-filter-drawer-backdrop" aria-hidden="true"></div>
+
+    <div class="catalog-layout">
+      <!-- Cột Trái: BỘ LỌC TÌM KIẾM (Sidebar & Mobile/Tablet Drawer) -->
+      <aside class="filter-sidebar" id="catalog-sidebar" aria-label="Bộ lọc sản phẩm">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-md);">
+          <h2 class="filter-title" style="margin-bottom: 0; font-size: 1rem;">Bộ lọc tìm kiếm</h2>
+          <button type="button" class="catalog-drawer-only btn btn-secondary btn-sm" id="js-close-filter-drawer" aria-label="Đóng bộ lọc">&times; Đóng</button>
+        </div>
+
+        <!-- 1. Tìm kiếm từ khóa -->
+        <div class="filter-group">
+          <label class="filter-title" for="catalog-search-input">Từ khóa</label>
+          <input type="text" id="catalog-search-input" class="form-control js-catalog-search" placeholder="Nhập tên, chất liệu..." />
+        </div>
+
+        <!-- 2. Danh mục (chỉ hiện trong Drawer <=992px để không lặp với thanh chọn nhanh trên Desktop) -->
+        <div class="filter-group catalog-drawer-only">
+          <h3 class="filter-title">Danh mục</h3>
+          <div class="filter-options">
+            <label class="filter-checkbox-label">
+              <input type="radio" name="filter-cat" value="all" checked />
+              <span>Tất cả danh mục</span>
+            </label>
+            <label class="filter-checkbox-label">
+              <input type="radio" name="filter-cat" value="ao-thun" />
+              <span>Áo thun</span>
+            </label>
+            <label class="filter-checkbox-label">
+              <input type="radio" name="filter-cat" value="hoodie-sweater" />
+              <span>Hoodie &amp; Sweater</span>
+            </label>
+            <label class="filter-checkbox-label">
+              <input type="radio" name="filter-cat" value="quan" />
+              <span>Quần Cargo &amp; Denim</span>
+            </label>
+            <label class="filter-checkbox-label">
+              <input type="radio" name="filter-cat" value="ao-khoac" />
+              <span>Áo khoác</span>
+            </label>
+            <label class="filter-checkbox-label">
+              <input type="radio" name="filter-cat" value="phu-kien" />
+              <span>Phụ kiện</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- 3. Khoảng giá -->
+        <div class="filter-group">
+          <h3 class="filter-title">Khoảng giá (₫)</h3>
+          <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px;">
+            <input type="number" id="price-min" class="form-control" placeholder="Từ" min="0" step="50000" style="padding: 8px 10px;" aria-label="Giá tối thiểu" />
+            <span>-</span>
+            <input type="number" id="price-max" class="form-control" placeholder="Đến" min="0" step="50000" style="padding: 8px 10px;" aria-label="Giá tối đa" />
+          </div>
+          <button type="button" class="btn btn-secondary btn-sm btn-block" id="btn-apply-price">Áp dụng giá</button>
+        </div>
+
+        <!-- 4. Kích cỡ (Size) -->
+        <div class="filter-group">
+          <h3 class="filter-title">Kích cỡ (Size)</h3>
+          <div class="filter-size-grid">
+            <label class="size-pill-checkbox">
+              <input type="checkbox" name="filter-size" value="S" />
+              <span>S</span>
+            </label>
+            <label class="size-pill-checkbox">
+              <input type="checkbox" name="filter-size" value="M" />
+              <span>M</span>
+            </label>
+            <label class="size-pill-checkbox">
+              <input type="checkbox" name="filter-size" value="L" />
+              <span>L</span>
+            </label>
+            <label class="size-pill-checkbox">
+              <input type="checkbox" name="filter-size" value="XL" />
+              <span>XL</span>
+            </label>
+            <label class="size-pill-checkbox">
+              <input type="checkbox" name="filter-size" value="One size" />
+              <span>One size</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- 5. Màu sắc (Thu gọn thông minh) -->
+        <div class="filter-group">
+          <details class="filter-disclosure" open>
+            <summary>Màu sắc</summary>
+            <div class="filter-color-grid">
+              <label class="color-dot-checkbox">
+                <input type="checkbox" name="filter-color" value="Đen Than" />
+                <span><span class="color-swatch-circle" style="background:#111;"></span>Đen</span>
+              </label>
+              <label class="color-dot-checkbox">
+                <input type="checkbox" name="filter-color" value="Trắng Ngà" />
+                <span><span class="color-swatch-circle" style="background:#F5F5F0;"></span>Trắng</span>
+              </label>
+              <label class="color-dot-checkbox">
+                <input type="checkbox" name="filter-color" value="Xám Xi Măng" />
+                <span><span class="color-swatch-circle" style="background:#8A8A8A;"></span>Xám</span>
+              </label>
+              <label class="color-dot-checkbox">
+                <input type="checkbox" name="filter-color" value="Kem Cát" />
+                <span><span class="color-swatch-circle" style="background:#D8CBB5;"></span>Kem</span>
+              </label>
+              <label class="color-dot-checkbox">
+                <input type="checkbox" name="filter-color" value="Xanh Rêu" />
+                <span><span class="color-swatch-circle" style="background:#3E4F3D;"></span>Rêu</span>
+              </label>
+              <label class="color-dot-checkbox">
+                <input type="checkbox" name="filter-color" value="Nâu Đất" />
+                <span><span class="color-swatch-circle" style="background:#5C4033;"></span>Nâu</span>
+              </label>
+              <label class="color-dot-checkbox">
+                <input type="checkbox" name="filter-color" value="Xanh Indigo" />
+                <span><span class="color-swatch-circle" style="background:#2A4B7C;"></span>Indigo</span>
+              </label>
+            </div>
+          </details>
+        </div>
+
+        <!-- 6. Đánh giá tối thiểu -->
+        <div class="filter-group">
+          <details class="filter-disclosure">
+            <summary>Đánh giá tối thiểu</summary>
+            <select id="filter-rating" class="form-control" aria-label="Đánh giá tối thiểu">
+              <option value="0">Tất cả đánh giá</option>
+              <option value="4">Từ 4 sao trở lên (★ 4.0+)</option>
+              <option value="4.5">Từ 4.5 sao trở lên (★ 4.5+)</option>
+              <option value="4.9">Tuyệt đối (★ 4.9+)</option>
+            </select>
+          </details>
+        </div>
+
+        <!-- 7. Tình trạng còn hàng -->
+        <div class="filter-group">
+          <label class="filter-checkbox-label">
+            <input type="checkbox" id="filter-in-stock" />
+            <span class="font-bold">Chỉ hiển thị sản phẩm còn hàng</span>
+          </label>
+        </div>
+
+        <!-- Nút Xóa bộ lọc -->
+        <button type="button" class="btn btn-secondary btn-block js-reset-filters" style="margin-top: var(--space-md);">
+          Xóa toàn bộ bộ lọc
+        </button>
+      </aside>
+
+      <!-- Cột Phải: DANH SÁCH SẢN PHẨM & PHÂN TRANG -->
+      <section>
+        <!-- Thanh chọn nhanh Danh mục (Quick Category Pills) -->
+        <div class="hk-catalog-pills" id="js-catalog-quick-pills" role="group" aria-label="Chọn nhanh danh mục">
+          <button type="button" class="hk-cat-pill active" data-cat="all" aria-pressed="true">Tất cả</button>
+          <button type="button" class="hk-cat-pill" data-cat="ao-thun" aria-pressed="false">Áo thun</button>
+          <button type="button" class="hk-cat-pill" data-cat="hoodie-sweater" aria-pressed="false">Hoodie &amp; Sweater</button>
+          <button type="button" class="hk-cat-pill" data-cat="quan" aria-pressed="false">Quần Cargo &amp; Denim</button>
+          <button type="button" class="hk-cat-pill" data-cat="ao-khoac" aria-pressed="false">Áo khoác</button>
+          <button type="button" class="hk-cat-pill" data-cat="phu-kien" aria-pressed="false">Phụ kiện</button>
+        </div>
+
+        <!-- Các nhãn bộ lọc đang áp dụng (Active Filter Chips) -->
+        <div class="hk-active-chips" id="js-active-filter-chips"></div>
+
+        <!-- Toolbar kết quả & Sắp xếp -->
+        <div class="catalog-toolbar">
+          <span class="results-count" id="results-count-text">Đang tải sản phẩm...</span>
+
+          <div class="toolbar-controls">
+            <label for="catalog-sort" style="font-size: 0.85rem; font-weight: 700;">Sắp xếp:</label>
+            <select id="catalog-sort" class="sort-select">
+              <option value="newest">Mới nhất</option>
+              <option value="price-asc">Giá: Thấp đến Cao</option>
+              <option value="price-desc">Giá: Cao đến Thấp</option>
+              <option value="rating-desc">Đánh giá cao nhất</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Lưới sản phẩm -->
+        <div class="products-grid" id="catalog-products-grid">
+          <!-- Render động từ products-page.js -->
+        </div>
+
+        <!-- Phân trang -->
+        <div class="pagination" id="catalog-pagination"></div>
+      </section>
+    </div>
+
+    <!-- Kệ Sản phẩm vừa xem gần đây -->
+    <section class="hk-recently-viewed-section" id="hk-recently-viewed-catalog" style="display: none;"></section>
+  </main>
+
+  <div id="hk-footer"></div>
+
+  <script src="assets/js/seed.js"></script>
+  <script src="assets/js/storage.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/products.js"></script>
+  <script src="assets/js/cart.js"></script>
+  <script src="assets/js/orders.js"></script>
+  <script src="assets/js/fashion-features.js"></script>
+  <script src="assets/js/ui.js"></script>
+  <script src="assets/js/pages/products-page.js"></script>
+</body>
+</html>

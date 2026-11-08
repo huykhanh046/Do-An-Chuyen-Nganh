@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800" width="600" height="800">
+  <rect width="100%" height="100%" fill="#EAEAE5"/>
+  <rect x="40" y="40" width="520" height="720" fill="none" stroke="#D0D0C8" stroke-width="2" stroke-dasharray="8 8"/>
+  <g fill="#111111" text-anchor="middle" font-family="'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif">
+    <text x="300" y="380" font-size="32" font-weight="800" letter-spacing="4">HK STORE</text>
+    <text x="300" y="420" font-size="14" font-weight="600" fill="#8A8A8A" letter-spacing="2">STREETWEAR MINIMAL</text>
+    <path d="M270 460h60v2h-60z" fill="#111111"/>
+    <text x="300" y="500" font-size="12" fill="#8A8A8A">Ảnh sản phẩm đang cập nhật</text>
+  </g>
+</svg>

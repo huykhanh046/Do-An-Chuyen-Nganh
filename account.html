@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tài khoản của tôi | HK Store</title>
+  <meta name="description" content="Quản lý thông tin cá nhân và theo dõi lịch sử đơn hàng của bạn tại HK Store." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="assets/css/base.css" />
+  <link rel="stylesheet" href="assets/css/components.css" />
+  <link rel="stylesheet" href="assets/css/pages.css" />
+  <link rel="stylesheet" href="assets/css/fashion-features.css" />
+</head>
+<body>
+  <div id="hk-header"></div>
+
+  <main class="container">
+    <nav class="breadcrumb" aria-label="Đường dẫn trang">
+      <a href="index.html">Trang chủ</a>
+      <span class="breadcrumb-separator">/</span>
+      <span class="text-primary font-bold">Tài khoản</span>
+    </nav>
+
+    <h1 class="section-title" style="margin-bottom: var(--space-lg);">TÀI KHOẢN CỦA TÔI</h1>
+
+    <div class="account-layout">
+      <!-- Cột Trái: Tab điều hướng -->
+      <aside class="account-tabs">
+        <button type="button" class="account-tab-btn js-account-tab-btn active" data-tab="orders" style="display: flex; align-items: center; gap: 10px;">
+          <svg style="width: 18px; height: 18px; flex-shrink: 0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+          <span>Đơn hàng của tôi</span>
+        </button>
+        <button type="button" class="account-tab-btn js-account-tab-btn" data-tab="profile" style="display: flex; align-items: center; gap: 10px;">
+          <svg style="width: 18px; height: 18px; flex-shrink: 0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span>Thông tin cá nhân</span>
+        </button>
+      </aside>
+
+      <!-- Cột Phải: Nội dung từng Tab -->
+      <div>
+        <!-- TAB 1: Lịch sử Đơn hàng -->
+        <div id="tab-pane-orders" class="js-account-tab-pane active">
+          <h2 style="font-size: 1.2rem; font-weight: 800; text-transform: uppercase; margin-bottom: var(--space-md); padding-bottom: 8px; border-bottom: 1px solid var(--color-border);">
+            LỊCH SỬ ĐƠN HÀNG
+          </h2>
+          <div class="orders-list" id="orders-history-container">
+            <!-- Render động từ account-page.js -->
+          </div>
+        </div>
+
+        <!-- TAB 2: Thông tin cá nhân -->
+        <div id="tab-pane-profile" class="js-account-tab-pane" style="display: none;">
+          <h2 style="font-size: 1.2rem; font-weight: 800; text-transform: uppercase; margin-bottom: var(--space-md); padding-bottom: 8px; border-bottom: 1px solid var(--color-border);">
+            THÔNG TIN CÁ NHÂN
+          </h2>
+
+          <div class="checkout-section">
+            <div style="margin-bottom: var(--space-md);">
+              <span class="text-muted" style="font-size: 0.85rem;">Vai trò tài khoản:</span>
+              <div id="profile-role-badge" class="badge badge-admin" style="margin-top: 4px;"></div>
+            </div>
+
+            <form id="profile-form" novalidate>
+              <div class="form-group">
+                <label class="form-label" for="profile-name">Họ và tên <span class="required">*</span></label>
+                <input type="text" id="profile-name" class="form-control" autocomplete="name" required />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="profile-email">Email đăng nhập (Không thể thay đổi)</label>
+                <input type="email" id="profile-email" class="form-control" readonly style="background-color: var(--color-bg);" />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="profile-phone">Số điện thoại</label>
+                <input type="tel" id="profile-phone" class="form-control" autocomplete="tel" inputmode="tel" placeholder="0901 234 567" />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="profile-address">Địa chỉ giao hàng mặc định</label>
+                <textarea id="profile-address" class="form-control" rows="3" autocomplete="street-address"></textarea>
+              </div>
+
+              <button type="submit" class="btn btn-primary" style="margin-top: var(--space-sm);">
+                Lưu thay đổi
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="hk-footer"></div>
+
+  <script src="assets/js/seed.js"></script>
+  <script src="assets/js/storage.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/products.js"></script>
+  <script src="assets/js/cart.js"></script>
+  <script src="assets/js/orders.js"></script>
+  <script src="assets/js/fashion-features.js"></script>
+  <script src="assets/js/ui.js"></script>
+  <script src="assets/js/pages/account-page.js"></script>
+</body>
+</html>

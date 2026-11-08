@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chi tiết đơn hàng | HK Store</title>
+  <meta name="description" content="Xem chi tiết đơn hàng, thông tin vận chuyển và các sản phẩm đã mua tại HK Store." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="assets/css/base.css" />
+  <link rel="stylesheet" href="assets/css/components.css" />
+  <link rel="stylesheet" href="assets/css/pages.css" />
+  <link rel="stylesheet" href="assets/css/fashion-features.css" />
+</head>
+<body>
+  <div id="hk-header"></div>
+
+  <main class="container">
+    <nav class="breadcrumb" aria-label="Đường dẫn trang">
+      <a href="index.html">Trang chủ</a>
+      <span class="breadcrumb-separator">/</span>
+      <a href="account.html">Đơn hàng của tôi</a>
+      <span class="breadcrumb-separator">/</span>
+      <span class="text-primary font-bold">Chi tiết đơn</span>
+    </nav>
+
+    <div class="checkout-section" id="order-detail-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); padding-bottom: var(--space-md); margin-bottom: var(--space-lg); flex-wrap: wrap; gap: var(--space-sm);">
+        <div>
+          <h1 style="font-size: 1.5rem; font-weight: 900; margin-bottom: 4px;">
+            ĐƠN HÀNG <span id="order-id">...</span>
+          </h1>
+          <span class="text-muted" style="font-size: 0.85rem;">Đặt ngày: <span id="order-date"></span></span>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <span id="order-status-badge" class="badge"></span>
+          <span id="order-payment-badge" class="badge"></span>
+        </div>
+      </div>
+
+      <!-- Khối thông tin giao hàng & thanh toán -->
+      <div class="info-grid-2col" style="margin-bottom: var(--space-xl);">
+        <div>
+          <h2 style="font-size: 0.98rem; font-weight: 800; letter-spacing: 0; margin-bottom: 8px;">Địa chỉ nhận hàng</h2>
+          <div id="order-recipient-info" style="font-size: 0.9rem; line-height: 1.6;"></div>
+        </div>
+
+        <div>
+          <h2 style="font-size: 0.98rem; font-weight: 800; letter-spacing: 0; margin-bottom: 8px;">Phương thức thanh toán</h2>
+          <p id="order-payment-method" style="font-size: 0.9rem; line-height: 1.6;"></p>
+          <div id="order-bank-transfer-box" class="hidden" style="margin-top: 10px;"></div>
+        </div>
+      </div>
+
+      <!-- Bảng danh sách sản phẩm đã đặt (Snapshot) -->
+      <h2 style="font-size: 0.98rem; font-weight: 800; letter-spacing: 0; margin-bottom: 8px;">Danh sách sản phẩm</h2>
+      <div class="cart-table-wrap" style="margin-bottom: var(--space-lg);">
+        <table class="cart-table">
+          <thead>
+            <tr>
+              <th>Sản phẩm</th>
+              <th>Đơn giá</th>
+              <th class="text-center">Số lượng</th>
+              <th class="text-right">Thành tiền</th>
+            </tr>
+          </thead>
+          <tbody id="order-items-tbody"></tbody>
+        </table>
+      </div>
+
+      <!-- Tổng kết tài chính -->
+      <div style="max-width: 360px; margin-left: auto; display: flex; flex-direction: column; gap: 8px; margin-bottom: var(--space-xl);">
+        <div class="summary-row">
+          <span class="text-muted">Tạm tính:</span>
+          <span class="font-bold tabular-nums" id="order-subtotal">0₫</span>
+        </div>
+        <div class="summary-row">
+          <span class="text-muted">Phí vận chuyển:</span>
+          <span class="font-bold tabular-nums" id="order-shipping">0₫</span>
+        </div>
+        <div class="summary-row total-row">
+          <span>TỔNG CỘNG:</span>
+          <span class="tabular-nums" id="order-total">0₫</span>
+        </div>
+      </div>
+
+      <!-- Thao tác Hủy đơn & Quay lại -->
+      <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--color-border); padding-top: var(--space-md); flex-wrap: wrap; gap: var(--space-sm);">
+        <a href="account.html" class="btn btn-secondary btn-sm">&larr; Quay lại danh sách đơn hàng</a>
+        <div id="order-cancel-wrap"></div>
+      </div>
+    </div>
+  </main>
+
+  <div id="hk-footer"></div>
+
+  <script src="assets/js/seed.js"></script>
+  <script src="assets/js/storage.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/products.js"></script>
+  <script src="assets/js/cart.js"></script>
+  <script src="assets/js/orders.js"></script>
+  <script src="assets/js/fashion-features.js"></script>
+  <script src="assets/js/ui.js"></script>
+  <script src="assets/js/pages/order-detail-page.js"></script>
+</body>
+</html>

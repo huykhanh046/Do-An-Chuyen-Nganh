@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Đăng ký tài khoản | HK Store</title>
+  <meta name="description" content="Tạo tài khoản HK Store để trải nghiệm mua sắm thời trang streetwear tối giản và nhận ưu đãi độc quyền." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="assets/css/base.css" />
+  <link rel="stylesheet" href="assets/css/components.css" />
+  <link rel="stylesheet" href="assets/css/pages.css" />
+  <link rel="stylesheet" href="assets/css/fashion-features.css" />
+</head>
+<body>
+  <div id="hk-header"></div>
+
+  <main class="container">
+    <div class="auth-wrapper" style="max-width: 540px;">
+      <div class="auth-header">
+        <h1 class="auth-title">ĐĂNG KÝ THÀNH VIÊN</h1>
+        <p class="text-muted">Gia nhập cộng đồng Streetwear HK Store</p>
+      </div>
+
+      <form id="register-form" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="reg-name">Họ và tên <span class="required">*</span></label>
+          <input type="text" id="reg-name" class="form-control" autocomplete="name" required placeholder="Nguyễn Văn A" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reg-email">Địa chỉ Email <span class="required">*</span></label>
+          <input type="email" id="reg-email" class="form-control" autocomplete="email" required placeholder="name@example.com" />
+        </div>
+
+        <div class="form-row-2col">
+          <div class="form-group">
+            <label class="form-label" for="reg-password">Mật khẩu <span class="required">*</span></label>
+            <input type="password" id="reg-password" class="form-control" autocomplete="new-password" minlength="8" required placeholder="Tối thiểu 8 ký tự" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="reg-confirm-password">Xác nhận mật khẩu <span class="required">*</span></label>
+            <input type="password" id="reg-confirm-password" class="form-control" autocomplete="new-password" minlength="8" required placeholder="Nhập lại mật khẩu" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reg-phone">Số điện thoại</label>
+          <input type="tel" id="reg-phone" class="form-control" autocomplete="tel" inputmode="tel" placeholder="0901 234 567" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reg-address">Địa chỉ nhận hàng mặc định</label>
+          <textarea id="reg-address" class="form-control" rows="2" autocomplete="street-address" placeholder="Số nhà, tên đường, phường/xã, quận/huyện..."></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top: var(--space-lg);">
+          TẠO TÀI KHOẢN
+        </button>
+      </form>
+
+      <div style="text-align: center; margin-top: var(--space-xl); font-size: 0.9rem;">
+        <span class="text-muted">Đã có tài khoản?</span>
+        <a href="login.html" id="register-login-link" class="font-bold text-primary" style="text-decoration: underline; margin-left: 4px;">
+          Đăng nhập ngay
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <div id="hk-footer"></div>
+
+  <script src="assets/js/seed.js"></script>
+  <script src="assets/js/storage.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/products.js"></script>
+  <script src="assets/js/cart.js"></script>
+  <script src="assets/js/orders.js"></script>
+  <script src="assets/js/fashion-features.js"></script>
+  <script src="assets/js/ui.js"></script>
+  <script src="assets/js/pages/register-page.js"></script>
+</body>
+</html>

@@ -1,0 +1,611 @@
+/**
+ * HK STORE - STREETWEAR MINIMALIST
+ * CSS Cơ sở: Design Tokens, Biến CSS, Typography, Reset, Nút & Utilities
+ */
+
+:root {
+  /* Bảng màu chủ đạo theo hồ sơ Design DNA (HK Store — Accessible Streetwear Editorial) */
+  --color-primary: #111111;        /* Đen Obsidian chủ đạo (Contrast > 17:1) */
+  --color-primary-hover: #242422;
+  --color-accent: #C83E2B;         /* Đỏ gạch Streetwear cho Sale, Yêu thích & Điểm nhấn */
+  --color-accent-soft: #FDF2F0;
+  --color-bg: #F6F5F0;             /* Trắng ngà Alabaster dịu mắt */
+  --color-surface: #FFFFFF;        /* Trắng tinh khiết cho thẻ sản phẩm, ngăn kéo, ô nhập */
+  --color-surface-elevated: rgba(255, 255, 255, 0.88);
+  --color-surface-subtle: #ECEBE4;
+  --color-text: #111111;           /* Văn bản chính tương phản cực cao */
+  --color-muted: #575752;          /* Xám than bổ trợ đạt chuẩn WCAG AA (>= 6.8:1 trên #F6F5F0) */
+  --color-placeholder: #6E6D68;    /* Placeholder đạt chuẩn WCAG AA (>= 4.6:1 trên #FFFFFF) */
+  --color-border: #DEDCD3;         /* Đường viền mảnh cấu trúc */
+  --color-border-dark: #111111;
+  --color-danger: #C62828;         /* Đỏ cảnh báo/xóa */
+  --color-success: #1E6F3D;        /* Xanh thành công */
+  --color-warning: #B85600;        /* Cam chú ý đạt chuẩn đọc trên nền sáng */
+  --color-info: #026AA7;
+
+  /* Typography Design DNA: Đồng bộ 100% phông chữ Montserrat trên toàn hệ thống */
+  --font-heading: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-family: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  /* Spacing (Hệ quy chiếu 8px) */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 72px;
+
+  /* Shape & Radius: Bo góc sắc sảo hiện đại */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-pill: 999px;
+
+  /* Transitions cơ bản */
+  --transition-fast: 200ms cubic-bezier(0.25, 0.1, 0.25, 1);
+  --transition-normal: 250ms cubic-bezier(0.23, 1, 0.32, 1);
+
+  /* Animate UI Standard Motion Tokens (Path C: Plain CSS & Vanilla JS) */
+  /* 1. Tween Curves (tokens.md) */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);         /* Enter, exit, reveal, swap */
+  --ease-soft: cubic-bezier(0.215, 0.61, 0.355, 1);   /* Modals, menus, dropdowns, overlays, disclosures */
+  --ease-drawer: cubic-bezier(0.22, 1, 0.36, 1);      /* Drawer slide-in smooth exponential deceleration */
+  --ease-drawer-out: cubic-bezier(0.4, 0, 1, 1);      /* Drawer exit speeding off edge */
+  --ease-away: cubic-bezier(0.33, 0.17, 0.67, 0.5);   /* Dismissed modals/toasts speeding away */
+  --ease-color: cubic-bezier(0.25, 0.1, 0.25, 1);     /* Highlight, color & shadow transitions */
+  --ease-enter: cubic-bezier(0.25, 0.1, 0.35, 1);     /* Tab panel fading in */
+  --ease-leave: cubic-bezier(0, 0, 0.58, 1);          /* Tab panel fading out */
+  --ease-resize: cubic-bezier(0.4, 0, 0.1, 1);        /* Layout height resize */
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);     /* On-screen morphs */
+
+  /* 2. Exact Mathematical Springs via CSS linear() (tokens.md: stiffness/damping mass=1) */
+  --spring-press: 285ms linear(0, 0.0482, 0.1654, 0.3169, 0.4773, 0.6289, 0.7612, 0.869, 0.951, 1.009, 1.046, 1.0659, 1.073, 1.0711, 1.0634, 1.0527, 1.041, 1.0296, 1.0196, 1.0112, 1);
+  --spring-dialog: 730ms linear(0, 0.0742, 0.2234, 0.3834, 0.5271, 0.6458, 0.7391, 0.8102, 0.8632, 0.9022, 0.9304, 0.9507, 0.9652, 0.9755, 0.9828, 0.988, 0.9916, 0.9941, 0.9959, 0.9971, 1);
+  --spring-toast: 510ms linear(0, 0.0739, 0.2382, 0.4295, 0.6097, 0.7598, 0.8734, 0.952, 1.0011, 1.0275, 1.0382, 1.0388, 1.034, 1.0268, 1.0193, 1.0126, 1.0073, 1.0035, 1.0009, 0.9994, 1);
+  --spring-pop: 435ms linear(0, 0.0763, 0.2446, 0.4385, 0.6192, 0.7681, 0.8793, 0.9552, 1.0017, 1.0263, 1.0357, 1.0358, 1.0309, 1.024, 1.017, 1.011, 1.0062, 1.0028, 1.0006, 0.9994, 1);
+  --spring-highlight: 300ms linear(0, 0.0461, 0.1513, 0.2802, 0.4113, 0.5325, 0.6383, 0.7266, 0.798, 0.8541, 0.8972, 0.9294, 0.953, 0.9699, 0.9817, 0.9897, 0.995, 0.9983, 1.0002, 1.0013, 1);
+  --spring-selection: 490ms linear(0, 0.0705, 0.2211, 0.3911, 0.5492, 0.6816, 0.7851, 0.8617, 0.9158, 0.9524, 0.9759, 0.9902, 0.9983, 1.0024, 1.004, 1.0043, 1.0039, 1.0032, 1.0025, 1.0018, 1);
+  --spring-entrance: 595ms linear(0, 0.0723, 0.2341, 0.424, 0.6045, 0.756, 0.8717, 0.9524, 1.0031, 1.0307, 1.0419, 1.0425, 1.0373, 1.0295, 1.0213, 1.014, 1.0081, 1.0038, 1.001, 0.9992, 1);
+  --spring-check-pop: 600ms linear(0, 0.1732, 0.513, 0.8289, 1.0355, 1.1251, 1.1301, 1.0923, 1.0454, 1.0085, 0.9879, 0.9817, 0.9843, 0.9904, 0.9963, 1.0004, 1.0022, 1.0024, 1.0018, 1.0009, 1);
+
+  /* 3. Animate UI Scales */
+  --scale-press: 0.97;                                /* Buttons, toggles, pills */
+  --scale-choice: 0.985;                              /* Product cards, list rows */
+  --scale-menu: 0.9;                                  /* Dropdown menus, selects */
+  --scale-popover: 0.8;                               /* Popovers */
+  --scale-dialog: 0.8;                                /* Dialog initial scale with 3D perspective */
+  --scale-toast: 0.96;                                /* Toasts rising from edge */
+  --scale-icon: 0.5;                                  /* Swapping icons */
+
+  /* 4. Animate UI Blurs */
+  --blur-surface: 4px;                                /* Dialogs, toasts, cards reveal */
+  --blur-icon: 2px;                                   /* Icon / text swap, text reveal */
+  --blur-disclosure: 2px;                             /* Collapsible/accordion blur */
+  --blur-panel: 5px;                                  /* Tab panel swap blur */
+
+  /* 5. Animate UI Shifts & Spatial Transforms (neutralized under reduced-motion) */
+  --dialog-transform-from: perspective(500px) rotateX(-20deg) scale(var(--scale-dialog));
+  --dialog-transform-rest: perspective(500px) rotateX(0deg) scale(1);
+  --drawer-transform-from: translateX(-100%);
+  --toast-translate-from: 100%;
+  --shift-tabs: 12px;
+  --shift-reveal: 16px;
+  --card-hover-y: -3px;
+  --card-img-zoom: 1.05;
+
+  /* 6. Animate UI Tween Durations */
+  --duration-press: 120ms;
+  --duration-menu: 220ms;
+  --duration-overlay: 400ms;
+  --duration-dialog: 400ms;
+  --duration-dismiss: 200ms;
+  --duration-drawer: 400ms;
+  --duration-drawer-out: 160ms;
+  --duration-reveal: 300ms;
+  --duration-panel-out: 150ms;
+  --duration-panel-in: 300ms;
+  --duration-swap: 150ms;
+  --duration-color: 200ms;
+
+  /* Elevation Levels (Design DNA: soft diffused with offset) */
+  --shadow-sm: 0 2px 6px rgba(17, 17, 17, 0.04);
+  --shadow-md: 0 10px 24px -4px rgba(17, 17, 17, 0.09), 0 2px 6px rgba(17, 17, 17, 0.04);
+  --shadow-lg: 0 24px 48px -12px rgba(17, 17, 17, 0.22), 0 4px 12px rgba(17, 17, 17, 0.08);
+
+  /* Container */
+  --container-max: 1280px;
+}
+
+/* Fallback cho các trình duyệt cũ chưa hỗ trợ linear() spring */
+@supports not (transition-timing-function: linear(0, 1)) {
+  :root {
+    --spring-press: 120ms cubic-bezier(0.23, 1, 0.32, 1);
+    --spring-dialog: 420ms cubic-bezier(0.215, 0.61, 0.355, 1);
+    --spring-toast: 320ms cubic-bezier(0.22, 1, 0.36, 1);
+    --spring-pop: 260ms cubic-bezier(0.22, 1, 0.36, 1);
+    --spring-highlight: 180ms cubic-bezier(0.23, 1, 0.32, 1);
+    --spring-selection: 280ms cubic-bezier(0.23, 1, 0.32, 1);
+    --spring-entrance: 360ms cubic-bezier(0.23, 1, 0.32, 1);
+    --spring-check-pop: 320ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}
+
+/* Reset chuẩn */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  caret-color: var(--color-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Browser Surfaces Theming (Craft Floor & Design DNA) */
+::selection {
+  background-color: var(--color-primary);
+  color: var(--color-surface);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--color-placeholder);
+  opacity: 1;
+}
+
+::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #BDBBB2;
+  border-radius: var(--radius-pill);
+  border: 2px solid var(--color-bg);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #8C8B84;
+}
+
+main {
+  flex: 1 0 auto;
+}
+
+img, svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  text-underline-offset: 3px;
+  transition: color var(--transition-fast);
+}
+
+button, input, select, textarea, code, kbd, samp, pre {
+  font-family: var(--font-family);
+  font-size: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+
+ul, ol {
+  list-style: none;
+}
+
+/* Container chuẩn */
+.container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--space-lg);
+  padding-right: var(--space-lg);
+}
+
+@media (max-width: 576px) {
+  .container {
+    padding-left: var(--space-md);
+    padding-right: var(--space-md);
+  }
+}
+
+/* Typography Helpers */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  line-height: 1.18;
+  letter-spacing: -0.025em;
+  color: var(--color-primary);
+  text-wrap: balance;
+}
+
+.text-muted { color: var(--color-muted); }
+.text-danger { color: var(--color-danger); }
+.text-success { color: var(--color-success); }
+.text-warning { color: var(--color-warning); }
+.text-accent { color: var(--color-accent); }
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.font-bold { font-weight: 700; }
+.text-uppercase { text-transform: uppercase; letter-spacing: 0.05em; }
+code, .tabular-nums {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+/* Buttons Hệ thống HK Store - Tuân thủ Animate UI Standard (recipes/press.md) */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: 12px 24px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  transition: background-color var(--duration-color) var(--ease-color),
+              border-color var(--duration-color) var(--ease-color),
+              color var(--duration-color) var(--ease-color),
+              opacity var(--duration-color) var(--ease-color),
+              box-shadow var(--duration-color) var(--ease-color),
+              transform var(--spring-press);
+  white-space: nowrap;
+  user-select: none;
+  cursor: pointer;
+  transform: scale(1);
+}
+
+/* Animate UI Rule B4: Press feedback 0.97 trên spring.press, không bao giờ scale khi hover */
+.btn:active:not(:disabled) {
+  transform: scale(var(--scale-press));
+}
+
+/* Animate UI Rule A17: Focus ring hiển thị tức thì không delay */
+.btn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Nút chính tương phản mạnh Đen - Trắng */
+.btn-primary {
+  background-color: var(--color-primary);
+  color: var(--color-surface);
+  border-color: var(--color-primary);
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: var(--color-primary);
+  border-color: var(--color-border-dark);
+}
+
+.btn-danger {
+  background-color: var(--color-danger);
+  color: #FFFFFF;
+}
+
+/* Animate UI Rule A3: Chỉ kích hoạt hiệu ứng hover trên con trỏ chuột thực (fine pointer) */
+@media (hover: hover) and (pointer: fine) {
+  .btn-primary:hover {
+    background-color: var(--color-primary-hover);
+    border-color: var(--color-primary-hover);
+  }
+
+  .btn-secondary:hover {
+    background-color: var(--color-primary);
+    color: var(--color-surface);
+  }
+
+  .btn-danger:hover {
+    opacity: 0.9;
+  }
+}
+
+.btn-sm {
+  padding: 6px 14px;
+  font-size: 0.8rem;
+}
+
+.btn-lg {
+  padding: 16px 32px;
+  font-size: 1.05rem;
+}
+
+.btn-block {
+  display: flex;
+  width: 100%;
+}
+
+.btn:disabled, .btn[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Form Controls */
+.form-group {
+  margin-bottom: var(--space-md);
+}
+
+.form-label {
+  display: block;
+  font-size: 0.86rem;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0;
+  margin-bottom: 6px;
+  color: var(--color-primary);
+}
+
+.form-label .required {
+  color: var(--color-danger);
+  margin-left: 2px;
+}
+
+.form-control {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 0.95rem;
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  transition: border-color var(--duration-color) var(--ease-color),
+              background-color var(--duration-color) var(--ease-color),
+              box-shadow var(--duration-color) var(--ease-color);
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(17, 17, 17, 0.08);
+}
+
+.form-control[aria-invalid="true"],
+.form-control.is-invalid {
+  border-color: var(--color-danger);
+  background-color: #FFFBFB;
+}
+
+.form-control[aria-invalid="true"]:focus,
+.form-control.is-invalid:focus {
+  border-color: var(--color-danger);
+  box-shadow: 0 0 0 2px rgba(198, 40, 40, 0.14);
+}
+
+.field-error-msg {
+  display: block;
+  margin-top: 5px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--color-danger);
+  line-height: 1.4;
+}
+
+textarea.form-control {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* Badges & Tags */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: var(--radius-sm);
+}
+
+.badge-new {
+  background-color: var(--color-primary);
+  color: var(--color-surface);
+}
+
+.badge-hot {
+  background-color: var(--color-accent);
+  color: #FFFFFF;
+}
+
+.badge-sale {
+  background-color: var(--color-accent);
+  color: #FFFFFF;
+}
+
+.badge-out {
+  background-color: #3D3D3A;
+  color: #FFFFFF;
+}
+
+.badge-admin {
+  background-color: #111111;
+  color: #FFFFFF;
+  border: 1px solid #FFFFFF;
+}
+
+/* Trạng thái đơn hàng Badges */
+.badge-status-pending { background-color: #FFF3E0; color: #E65100; border: 1px solid #FFE0B2; }
+.badge-status-confirmed { background-color: #E1F5FE; color: #0277BD; border: 1px solid #B3E5FC; }
+.badge-status-shipping { background-color: #E8F5E9; color: #2E7D32; border: 1px solid #C8E6C9; }
+.badge-status-delivered { background-color: #111111; color: #FFFFFF; }
+.badge-status-cancelled { background-color: #FFEBEE; color: #C62828; border: 1px solid #FFCDD2; }
+
+/* Trạng thái thanh toán Badges */
+.badge-payment-pending { background-color: #FFF8E1; color: #F57F17; }
+.badge-payment-paid { background-color: #E8F5E9; color: #1B5E20; }
+.badge-payment-refund_pending { background-color: #EDE7F6; color: #512DA8; }
+.badge-payment-refunded { background-color: #ECEFF1; color: #455A64; }
+
+/* Utilities */
+.hidden { display: none !important; }
+
+.form-row-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.info-grid-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-xl);
+}
+
+@media (max-width: 1024px) {
+  .nav-desktop-only { display: none !important; }
+}
+
+@media (min-width: 1025px) {
+  .nav-mobile-only { display: none !important; }
+}
+
+@media (min-width: 993px) {
+  .catalog-drawer-only { display: none !important; }
+}
+
+@media (max-width: 992px) {
+  .catalog-desktop-only { display: none !important; }
+}
+
+@media (max-width: 768px) {
+  .desktop-only { display: none !important; }
+}
+
+@media (min-width: 769px) {
+  .mobile-only { display: none !important; }
+}
+
+@media (max-width: 640px) {
+  .form-row-2col,
+  .info-grid-2col {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+}
+
+/* Animate UI Page & Scroll Reveal (recipes/page.md) */
+.aui-ready .aui-reveal:not(.aui-revealed) {
+  opacity: 0;
+  transform: translateY(var(--shift-reveal));
+  filter: blur(var(--blur-surface));
+}
+
+.aui-ready .aui-reveal--text:not(.aui-revealed) {
+  filter: blur(var(--blur-icon));
+}
+
+.aui-reveal.aui-revealed {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0px);
+  transition: opacity var(--duration-reveal) var(--ease-out) var(--aui-delay, 0ms),
+              transform var(--spring-entrance) var(--aui-delay, 0ms),
+              filter var(--duration-reveal) var(--ease-out) var(--aui-delay, 0ms);
+}
+
+.aui-reveal.aui-settled {
+  transform: none;
+  filter: none;
+  transition: none;
+}
+
+/* Animate UI Tab Panel Swap (recipes/indicator.md: panelOut -> panelIn) */
+@keyframes auiPanelIn {
+  from {
+    opacity: 0;
+    filter: blur(var(--blur-panel));
+    transform: translateX(var(--panel-shift, var(--shift-tabs)));
+  }
+  to {
+    opacity: 1;
+    filter: blur(0px);
+    transform: translateX(0);
+  }
+}
+
+@keyframes auiPanelOut {
+  from {
+    opacity: 1;
+    filter: blur(0px);
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    filter: blur(var(--blur-panel));
+    transform: translateX(calc(-1 * var(--panel-shift, var(--shift-tabs))));
+  }
+}
+
+.aui-panel-entering {
+  animation: auiPanelIn var(--duration-panel-in) var(--ease-enter);
+}
+
+.aui-panel-leaving {
+  animation: auiPanelOut var(--duration-panel-out) var(--ease-leave) forwards;
+  pointer-events: none;
+}
+
+/* Animate UI Quality Rule A1: Hỗ trợ giảm chuyển động (prefers-reduced-motion)
+ * Giữ nguyên hiệu ứng mờ (opacity, filter, color); triệt tiêu hoàn toàn chuyển dịch, phóng thu & xoay */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --scale-press: 1;
+    --scale-choice: 1;
+    --scale-menu: 1;
+    --scale-popover: 1;
+    --scale-dialog: 1;
+    --scale-toast: 1;
+    --scale-icon: 1;
+    --dialog-transform-from: none;
+    --dialog-transform-rest: none;
+    --drawer-transform-from: translateX(0%);
+    --toast-translate-from: 0%;
+    --shift-tabs: 0px;
+    --shift-reveal: 0px;
+    --card-hover-y: 0px;
+    --card-img-zoom: 1;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+
+  *, *::before, *::after {
+    animation-iteration-count: 1 !important;
+  }
+}

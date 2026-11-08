@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Thanh toán & Đặt hàng | HK Store</title>
+  <meta name="description" content="Hoàn tất đơn hàng thời trang Streetwear tại HK Store. Hỗ trợ giao hàng COD, chuyển khoản và thanh toán trực tuyến mô phỏng." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="assets/css/base.css" />
+  <link rel="stylesheet" href="assets/css/components.css" />
+  <link rel="stylesheet" href="assets/css/pages.css" />
+  <link rel="stylesheet" href="assets/css/fashion-features.css" />
+</head>
+<body>
+  <div id="hk-header"></div>
+
+  <main class="container">
+    <nav class="breadcrumb" aria-label="Đường dẫn trang">
+      <a href="index.html">Trang chủ</a>
+      <span class="breadcrumb-separator">/</span>
+      <a href="cart.html">Giỏ hàng</a>
+      <span class="breadcrumb-separator">/</span>
+      <span class="text-primary font-bold">Thanh toán</span>
+    </nav>
+
+    <h1 class="section-title" style="margin-bottom: var(--space-sm);">ĐẶT HÀNG &amp; THANH TOÁN</h1>
+
+    <div class="checkout-steps" aria-label="Tiến trình mua hàng">
+      <a href="cart.html" class="checkout-step is-done"><span class="checkout-step-num">&#10003;</span><span>Giỏ hàng</span></a>
+      <span class="checkout-step-sep">&rarr;</span>
+      <div class="checkout-step is-active"><span class="checkout-step-num">2</span><span>Đặt hàng &amp; Thanh toán</span></div>
+      <span class="checkout-step-sep">&rarr;</span>
+      <div class="checkout-step"><span class="checkout-step-num">3</span><span>Hoàn tất</span></div>
+    </div>
+
+    <div class="checkout-reassurance-bar">
+      <div class="checkout-reassurance-item">
+        <svg style="width:16px;height:16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span>Đồng kiểm ngoại quan khi nhận hàng (COD)</span>
+      </div>
+      <div class="checkout-reassurance-item">
+        <svg style="width:16px;height:16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+        <span>Đổi size miễn phí trong 15 ngày</span>
+      </div>
+      <span style="font-size: 0.78rem;">Môi trường Demo — Không yêu cầu thẻ ngân hàng thật</span>
+    </div>
+
+    <form id="checkout-form" novalidate>
+      <div class="checkout-layout">
+        <!-- Cột Trái: Thông tin giao hàng & Phương thức thanh toán -->
+        <div>
+          <!-- Khối 1: Thông tin giao hàng -->
+          <div class="checkout-section">
+            <h2 class="checkout-section-title">1. Địa chỉ nhận hàng</h2>
+            <div class="form-row-2col">
+              <div class="form-group">
+                <label class="form-label" for="checkout-name">Họ và tên người nhận <span class="required">*</span></label>
+                <input type="text" id="checkout-name" class="form-control" autocomplete="name" required placeholder="Nguyễn Văn A" />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="checkout-phone">Số điện thoại di động <span class="required">*</span></label>
+                <input type="tel" id="checkout-phone" class="form-control" autocomplete="tel" inputmode="tel" required placeholder="0901 234 567" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="checkout-email">Email xác nhận đơn hàng <span class="required">*</span></label>
+              <input type="email" id="checkout-email" class="form-control" autocomplete="email" required placeholder="email@example.com" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="checkout-address">Địa chỉ nhận hàng chi tiết <span class="required">*</span></label>
+              <textarea id="checkout-address" class="form-control" rows="2" autocomplete="street-address" required placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành phố"></textarea>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label" for="checkout-note">Ghi chú giao hàng (Tùy chọn)</label>
+              <input type="text" id="checkout-note" class="form-control" placeholder="Giao giờ hành chính, gọi trước khi giao..." />
+            </div>
+          </div>
+
+          <!-- Khối 2: Phương thức thanh toán -->
+          <div class="checkout-section">
+            <h2 class="checkout-section-title">2. Phương thức thanh toán</h2>
+
+            <div class="payment-options-grid">
+              <!-- Lựa chọn 1: COD -->
+              <label class="payment-option-card active" data-method="cod">
+                <input type="radio" name="payment_method" value="cod" checked style="margin-top: 4px;" />
+                <div class="payment-option-info">
+                  <h3>Thanh toán khi nhận hàng (COD)</h3>
+                  <p>Nhận hàng, kiểm tra ngoại quan và thanh toán tiền mặt cho nhân viên giao hàng.</p>
+                </div>
+              </label>
+
+              <!-- Lựa chọn 2: Chuyển khoản ngân hàng -->
+              <label class="payment-option-card" data-method="banking">
+                <input type="radio" name="payment_method" value="banking" style="margin-top: 4px;" />
+                <div class="payment-option-info">
+                  <h3>Chuyển khoản Ngân hàng</h3>
+                  <p>Chuyển khoản tới tài khoản HK Store. Thông tin STK &amp; nội dung chuyển khoản sẽ hiển thị ngay sau khi xác nhận đơn.</p>
+                </div>
+              </label>
+
+              <!-- Hộp hướng dẫn chuyển khoản (Ẩn/Hiện) -->
+              <div id="banking-demo-info" class="bank-transfer-box" style="display: none; margin-top: -6px; margin-bottom: 4px;">
+                <strong>Tài khoản nhận chuyển khoản HK Store:</strong>
+                <div class="bank-transfer-row">
+                  <span>Ngân hàng: <strong>Vietcombank — CN TP DA NANG</strong></span>
+                </div>
+                <div class="bank-transfer-row">
+                  <span>Số tài khoản: <strong class="tabular-nums">686868686868</strong></span>
+                  <button type="button" class="copy-chip-btn js-copy-text" data-copy="686868686868">Sao chép STK</button>
+                </div>
+                <div class="bank-transfer-row">
+                  <span>Chủ tài khoản: <strong>CONG TY TNHH HK STORE VIET NAM</strong></span>
+                </div>
+                <small class="text-muted">* Mã đơn hàng dùng làm nội dung chuyển khoản sẽ được cấp tự động ở bước Hoàn tất.</small>
+              </div>
+
+              <!-- Lựa chọn 3: Cổng thanh toán VNPAY / Ví MoMo (Quét mã QR làm mới trong 60s) -->
+              <label class="payment-option-card" data-method="gateway">
+                <input type="radio" name="payment_method" value="gateway" style="margin-top: 4px;" />
+                <div class="payment-option-info" style="flex: 1;">
+                  <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;">
+                    <h3>Cổng thanh toán VNPAY / Ví MoMo (Quét mã QR)</h3>
+                    <div class="gateway-brand-badges" aria-hidden="true">
+                      <span class="gateway-brand-pill is-vnpay">VNPAY-QR</span>
+                      <span class="gateway-brand-pill is-momo">MoMo</span>
+                    </div>
+                  </div>
+                  <p>Quét mã QR thanh toán trực tuyến qua ứng dụng Ngân hàng (VNPAY) hoặc Ví MoMo. Mã QR tự động làm mới bảo mật sau mỗi 60 giây.</p>
+                </div>
+              </label>
+
+              <!-- Hộp chọn cổng VNPAY / MoMo (Hiện khi chọn phương thức thứ 3) -->
+              <!-- CHỈNH SỬA ĐƯỜNG DẪN ẢNH MÃ QR TẠI data-qr-vnpay VÀ data-qr-momo BÊN DƯỚI (hỗ trợ .png, .jpg, .webp, .svg) -->
+              <div
+                id="gateway-provider-box"
+                class="gateway-provider-box"
+                style="display: none; margin-top: -6px;"
+                data-qr-vnpay="assets/images/VNPAY.jpg"
+                data-qr-momo="assets/images/MOMO.jpg"
+              >
+                <span class="gateway-provider-label">Chọn cổng quét mã QR thanh toán:</span>
+                <div class="gateway-provider-grid" role="radiogroup" aria-label="Chọn cổng thanh toán QR">
+                  <label class="gateway-provider-card active" data-provider="vnpay">
+                    <input type="radio" name="gateway_provider" value="vnpay" checked />
+                    <span class="gateway-brand-pill is-vnpay">VNPAY</span>
+                    <div class="gateway-provider-meta">
+                      <strong>Cổng VNPAY-QR</strong>
+                      <small>Quét bằng 40+ App Ngân hàng</small>
+                    </div>
+                  </label>
+
+                  <label class="gateway-provider-card" data-provider="momo">
+                    <input type="radio" name="gateway_provider" value="momo" />
+                    <span class="gateway-brand-pill is-momo">MoMo</span>
+                    <div class="gateway-provider-meta">
+                      <strong>Ví điện tử MoMo</strong>
+                      <small>Quét mã nhanh trên App MoMo</small>
+                    </div>
+                  </label>
+                </div>
+                <small class="text-muted">* Nhấn <strong>Hoàn tất đặt hàng</strong> để mở mã QR thanh toán (mã tự động làm mới mỗi 60 giây).</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cột Phải: Xem lại Đơn hàng & Nút Xác nhận -->
+        <div>
+          <div class="checkout-section" style="position: sticky; top: 90px;">
+            <h2 class="checkout-section-title">Đơn hàng của bạn</h2>
+
+            <!-- Danh sách các món hàng -->
+            <div id="checkout-items-list" style="max-height: 240px; overflow-y: auto; margin-bottom: 16px;"></div>
+
+            <!-- Tóm tắt chi phí -->
+            <div style="border-top: 1px solid var(--color-border); padding-top: 12px; display: flex; flex-direction: column; gap: 8px;">
+              <div class="summary-row">
+                <span class="text-muted">Tạm tính:</span>
+                <span class="font-bold" id="checkout-subtotal">0₫</span>
+              </div>
+              <div class="summary-row">
+                <span class="text-muted">Phí vận chuyển:</span>
+                <span class="font-bold" id="checkout-shipping">0₫</span>
+              </div>
+              <div class="summary-row total-row">
+                <span>TỔNG CỘNG:</span>
+                <span id="checkout-total">0₫</span>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block btn-lg" id="btn-submit-order" style="margin-top: var(--space-lg);">
+              HOÀN TẤT ĐẶT HÀNG
+            </button>
+
+            <div style="margin-top: 12px; text-align: center;">
+              <a href="cart.html" style="font-size: 0.85rem; color: var(--color-muted); text-decoration: underline;">
+                &larr; Chỉnh sửa giỏ hàng
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </main>
+
+  <div id="hk-footer"></div>
+
+  <script src="assets/js/seed.js"></script>
+  <script src="assets/js/storage.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/products.js"></script>
+  <script src="assets/js/cart.js"></script>
+  <script src="assets/js/orders.js"></script>
+  <script src="assets/js/fashion-features.js"></script>
+  <script src="assets/js/ui.js"></script>
+  <script src="assets/js/pages/checkout-page.js"></script>
+</body>
+</html>

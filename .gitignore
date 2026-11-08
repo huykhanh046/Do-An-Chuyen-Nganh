@@ -1,0 +1,8 @@
+# Hệ thống & công cụ kiểm thử cục bộ
+.impeccable/
+.DS_Store
+Thumbs.db
+Desktop.ini
+.vscode/
+.idea/
+node_modules/
