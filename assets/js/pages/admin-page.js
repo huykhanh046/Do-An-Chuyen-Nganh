@@ -296,7 +296,7 @@ window.HK_SEED_DATA = {
         document.body.removeChild(a);
         URL.revokeObjectURL(downloadUrl);
 
-        UI.showToast("Đã tải file seed.js! Hãy lưu đè vào assets/js/seed.js để cập nhật vĩnh viễn vào source code.", "success");
+        UI.showToast("Đã lưu sản phẩm", "success");
       };
     }
 
@@ -552,7 +552,7 @@ window.HK_SEED_DATA = {
 
     const res = Products.saveProduct(productPayload);
     if (res.success) {
-      UI.showToast(existingId ? "Đã cập nhật sản phẩm!" : "Đã thêm sản phẩm mới!", "success");
+      UI.showToast("Đã lưu sản phẩm", "success");
       modal.close();
       renderProductsTab();
     } else {
