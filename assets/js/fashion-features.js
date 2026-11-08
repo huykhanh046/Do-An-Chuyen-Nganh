@@ -338,7 +338,7 @@ window.HKStore = window.HKStore || {};
           (item) => `
           <div class="hk-sheet-item">
             <a href="product.html?id=${item.productId}">
-              <img src="${item.image}" alt="${Storage.escapeHTML(item.name)}" class="hk-sheet-item-img" onerror="this.src='assets/images/placeholder.svg'" />
+              <img src="${item.image}" alt="${Storage.escapeHTML(item.name)}" class="hk-sheet-item-img" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='assets/images/placeholder.svg'" />
             </a>
             <div class="hk-sheet-item-info">
               <a href="product.html?id=${item.productId}" class="hk-sheet-item-name">${Storage.escapeHTML(item.name)}</a>
@@ -405,7 +405,7 @@ window.HKStore = window.HKStore || {};
           return `
             <div class="hk-sheet-item">
               <a href="product.html?id=${p.id}">
-                <img src="${img}" alt="${Storage.escapeHTML(p.name)}" class="hk-sheet-item-img" onerror="this.src='assets/images/placeholder.svg'" />
+                <img src="${img}" alt="${Storage.escapeHTML(p.name)}" class="hk-sheet-item-img" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='assets/images/placeholder.svg'" />
               </a>
               <div class="hk-sheet-item-info">
                 <a href="product.html?id=${p.id}" class="hk-sheet-item-name">${Storage.escapeHTML(p.name)}</a>
@@ -488,7 +488,7 @@ window.HKStore = window.HKStore || {};
                 .map(
                   (img, i) => `
                 <button type="button" class="hk-qv-thumb ${i === 0 ? "active" : ""} js-qv-thumb" data-img="${img}" aria-label="Ảnh ${i + 1}">
-                  <img src="${img}" alt="" onerror="this.src='assets/images/placeholder.svg'" />
+                  <img src="${img}" alt="" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='assets/images/placeholder.svg'" />
                 </button>`
                 )
                 .join("")}
@@ -501,7 +501,7 @@ window.HKStore = window.HKStore || {};
         <div class="hk-qv-grid">
           <div>
             <div class="hk-qv-main-img-wrap">
-              <img src="${images[0]}" alt="${Storage.escapeHTML(product.name)}" class="hk-qv-main-img" id="js-qv-main-img" onerror="this.src='assets/images/placeholder.svg'" />
+              <img src="${images[0]}" alt="${Storage.escapeHTML(product.name)}" class="hk-qv-main-img" id="js-qv-main-img" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='assets/images/placeholder.svg'" />
             </div>
             ${thumbsHtml}
           </div>
@@ -750,7 +750,7 @@ window.HKStore = window.HKStore || {};
                 const img = (p.images && p.images[0]) || "assets/images/placeholder.svg";
                 return `
                   <a href="product.html?id=${p.id}" class="live-search-item">
-                    <img src="${img}" alt="" class="live-search-thumb" onerror="this.src='assets/images/placeholder.svg'" />
+                    <img src="${img}" alt="" class="live-search-thumb" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='assets/images/placeholder.svg'" />
                     <div class="live-search-meta">
                       <div class="live-search-title">${Storage.escapeHTML(p.name)}</div>
                       <div class="live-search-sub">${Storage.escapeHTML(p.categoryName || "")}</div>
@@ -1106,7 +1106,7 @@ window.HKStore = window.HKStore || {};
       bar.innerHTML = `
         <div class="container hk-sticky-buy-inner">
           <div class="hk-sticky-product-summary">
-            <img src="${img}" alt="" class="hk-sticky-thumb" onerror="this.src='assets/images/placeholder.svg'" />
+            <img src="${img}" alt="" class="hk-sticky-thumb" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='assets/images/placeholder.svg'" />
             <div style="min-width: 0;">
               <div class="hk-sticky-title">${Storage.escapeHTML(product.name)}</div>
               <div class="hk-sticky-meta" id="js-sticky-variant-label">Đang chọn biến thể...</div>

@@ -150,7 +150,7 @@
         .map(
           (img, idx) => `
         <button type="button" class="thumb-item ${idx === 0 ? "active" : ""}" data-img="${img}" aria-label="Xem ảnh ${idx + 1}" aria-pressed="${idx === 0 ? "true" : "false"}">
-          <img src="${img}" alt="${Storage.escapeHTML(p.name)} - Ảnh ${idx + 1}" onerror="this.src='assets/images/placeholder.svg'" />
+          <img src="${img}" alt="${Storage.escapeHTML(p.name)} - Ảnh ${idx + 1}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='assets/images/placeholder.svg'" />
         </button>`
         )
         .join("");
@@ -171,7 +171,7 @@
         if (!mainImg) return;
         UI.showModal({
           title: p.name,
-          content: `<img src="${mainImg.src}" alt="${Storage.escapeHTML(p.name)}" class="hk-lightbox-img" onerror="this.src='assets/images/placeholder.svg'" />`,
+          content: `<img src="${mainImg.src}" alt="${Storage.escapeHTML(p.name)}" class="hk-lightbox-img" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='assets/images/placeholder.svg'" />`,
           showFooter: false,
           extraClass: "hk-lightbox-modal"
         });

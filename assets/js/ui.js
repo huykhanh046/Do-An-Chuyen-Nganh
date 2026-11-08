@@ -791,10 +791,10 @@ window.HKStore = window.HKStore || {};
         <article class="product-card ${secondImage ? "has-second-image" : ""}" data-product-card-id="${product.id}">
           <div class="card-image-wrap">
             <a href="product.html?id=${product.id}" class="card-image-link">
-              <img src="${defaultImage}" alt="${Storage.escapeHTML(product.name)}" class="card-image" loading="lazy" onerror="this.src='assets/images/placeholder.svg'" />
+              <img src="${defaultImage}" alt="${Storage.escapeHTML(product.name)}" class="card-image" loading="lazy" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='assets/images/placeholder.svg';" />
               ${
                 secondImage
-                  ? `<img src="${secondImage}" alt="" aria-hidden="true" class="card-image-secondary" loading="lazy" onerror="this.style.display='none'" />`
+                  ? `<img src="${secondImage}" alt="" aria-hidden="true" class="card-image-secondary" loading="lazy" referrerpolicy="no-referrer" onerror="this.onerror=null;this.style.display='none';" />`
                   : ""
               }
             </a>
