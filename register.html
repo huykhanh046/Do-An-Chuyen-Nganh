@@ -3,8 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Đăng ký tài khoản | HK Store</title>
-  <meta name="description" content="Tạo tài khoản HK Store để trải nghiệm mua sắm thời trang streetwear tối giản và nhận ưu đãi độc quyền." />
+  <title>Đăng ký tài khoản & Xác thực OTP | HK Store</title>
+  <meta name="description" content="Tạo tài khoản HK Store để trải nghiệm mua sắm thời trang streetwear tối giản, xác thực OTP bảo mật cao qua Gmail." />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -20,53 +23,153 @@
 
   <main class="container">
     <div class="auth-wrapper" style="max-width: 540px;">
+      <!-- Tiêu đề Header -->
       <div class="auth-header">
-        <h1 class="auth-title">ĐĂNG KÝ THÀNH VIÊN</h1>
-        <p class="text-muted">Gia nhập cộng đồng Streetwear HK Store</p>
+        <h1 class="auth-title" id="auth-main-title">ĐĂNG KÝ THÀNH VIÊN</h1>
+        <p class="text-muted" id="auth-main-desc">Gia nhập cộng đồng Streetwear HK Store</p>
       </div>
 
-      <form id="register-form" novalidate>
-        <div class="form-group">
-          <label class="form-label" for="reg-name">Họ và tên <span class="required">*</span></label>
-          <input type="text" id="reg-name" class="form-control" autocomplete="name" required placeholder="Nguyễn Văn A" />
+      <!-- Stepper 2 bước -->
+      <div class="auth-stepper" id="reg-stepper" role="navigation" aria-label="Tiến trình đăng ký">
+        <div class="stepper-step active" id="step-ind-1">
+          <span class="step-num">1</span>
+          <span class="step-label">Thông tin</span>
         </div>
-
-        <div class="form-group">
-          <label class="form-label" for="reg-email">Địa chỉ Email <span class="required">*</span></label>
-          <input type="email" id="reg-email" class="form-control" autocomplete="email" required placeholder="name@example.com" />
+        <div class="stepper-line" id="stepper-line"></div>
+        <div class="stepper-step" id="step-ind-2">
+          <span class="step-num">2</span>
+          <span class="step-label">Xác thực OTP</span>
         </div>
+      </div>
 
-        <div class="form-row-2col">
+      <!-- ==========================================
+           BƯỚC 1: NHẬP THÔNG TIN TÀI KHOẢN
+           ========================================== -->
+      <div id="reg-step-1" class="auth-step-pane">
+        <form id="register-form" novalidate>
           <div class="form-group">
-            <label class="form-label" for="reg-password">Mật khẩu <span class="required">*</span></label>
-            <input type="password" id="reg-password" class="form-control" autocomplete="new-password" minlength="8" required placeholder="Tối thiểu 8 ký tự" />
+            <label class="form-label" for="reg-name">Họ và tên <span class="required">*</span></label>
+            <input type="text" id="reg-name" class="form-control" autocomplete="name" required placeholder="Nguyễn Văn A" />
           </div>
+
           <div class="form-group">
-            <label class="form-label" for="reg-confirm-password">Xác nhận mật khẩu <span class="required">*</span></label>
-            <input type="password" id="reg-confirm-password" class="form-control" autocomplete="new-password" minlength="8" required placeholder="Nhập lại mật khẩu" />
+            <label class="form-label" for="reg-email">Địa chỉ Email (Gmail) <span class="required">*</span></label>
+            <input type="email" id="reg-email" class="form-control" autocomplete="email" required placeholder="name@example.com" />
+            <small class="form-hint" style="color: var(--color-text-muted); font-size: 0.8rem; margin-top: 4px; display: block;">
+              Mã OTP bảo mật sẽ được gửi đến email này để kích hoạt tài khoản.
+            </small>
           </div>
+
+          <div class="form-row-2col">
+            <div class="form-group">
+              <label class="form-label" for="reg-password">Mật khẩu <span class="required">*</span></label>
+              <input type="password" id="reg-password" class="form-control" autocomplete="new-password" minlength="8" required placeholder="Tối thiểu 8 ký tự" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="reg-confirm-password">Xác nhận mật khẩu <span class="required">*</span></label>
+              <input type="password" id="reg-confirm-password" class="form-control" autocomplete="new-password" minlength="8" required placeholder="Nhập lại mật khẩu" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="reg-phone">Số điện thoại</label>
+            <input type="tel" id="reg-phone" class="form-control" autocomplete="tel" inputmode="tel" placeholder="0901 234 567" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="reg-address">Địa chỉ nhận hàng mặc định</label>
+            <textarea id="reg-address" class="form-control" rows="2" autocomplete="street-address" placeholder="Số nhà, tên đường, phường/xã, quận/huyện..."></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block btn-lg" id="btn-submit-step1" style="margin-top: var(--space-lg);">
+            TIẾP TỤC XÁC THỰC OTP →
+          </button>
+        </form>
+
+        <div style="text-align: center; margin-top: var(--space-xl); font-size: 0.9rem;">
+          <span class="text-muted">Đã có tài khoản?</span>
+          <a href="login.html" id="register-login-link" class="font-bold text-primary" style="text-decoration: underline; margin-left: 4px;">
+            Đăng nhập ngay
+          </a>
+        </div>
+      </div>
+
+      <!-- ==========================================
+           BƯỚC 2: XÁC THỰC MÃ OTP QUA GMAIL
+           ========================================== -->
+      <div id="reg-step-2" class="auth-step-pane" style="display: none;">
+        <div class="otp-card-header">
+          <div class="otp-icon-wrap" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect width="20" height="16" x="2" y="4" rx="2"/>
+              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+            </svg>
+          </div>
+          <h2 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 4px; text-transform: uppercase;">
+            Xác thực hộp thư Gmail
+          </h2>
+          <p class="text-muted" style="font-size: 0.85rem; margin: 0;">
+            Hệ thống đã gửi mã OTP xác nhận gồm 6 chữ số đến email của bạn.
+          </p>
         </div>
 
-        <div class="form-group">
-          <label class="form-label" for="reg-phone">Số điện thoại</label>
-          <input type="tel" id="reg-phone" class="form-control" autocomplete="tel" inputmode="tel" placeholder="0901 234 567" />
+        <!-- Hộp hiển thị Email nhận mã -->
+        <div class="otp-target-box">
+          <div>
+            <span style="font-size: 0.78rem; color: var(--color-text-muted); display: block;">Mã gửi đến email:</span>
+            <span class="otp-email-text" id="otp-display-email">name@example.com</span>
+          </div>
+          <button type="button" class="btn-link-edit" id="btn-edit-email" title="Quay lại đổi email">
+            Đổi email
+          </button>
         </div>
 
-        <div class="form-group">
-          <label class="form-label" for="reg-address">Địa chỉ nhận hàng mặc định</label>
-          <textarea id="reg-address" class="form-control" rows="2" autocomplete="street-address" placeholder="Số nhà, tên đường, phường/xã, quận/huyện..."></textarea>
+        <!-- Banner thông báo mã OTP Demo & Hỗ trợ chấm Đồ án chuyên ngành -->
+        <div class="demo-otp-banner" id="demo-otp-banner">
+          <div>
+            <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 2px;">
+              <span style="font-weight: 800; font-size: 0.82rem;">⚡ MÃ OTP XÁC THỰC:</span>
+              <span class="otp-code-highlight" id="demo-otp-code">------</span>
+            </div>
+            <div style="font-size: 0.76rem; opacity: 0.95;">
+              Hệ thống đã phát mã OTP. Nhấn nút bên cạnh để điền nhanh khi thử nghiệm.
+            </div>
+          </div>
+          <button type="button" class="btn-autofill-otp" id="btn-autofill-otp">Điền mã</button>
         </div>
 
-        <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top: var(--space-lg);">
-          TẠO TÀI KHOẢN
+        <!-- 6 ô nhập mã OTP -->
+        <div class="form-group" style="margin-bottom: 12px;">
+          <label class="form-label" style="text-align: center; display: block; margin-bottom: 8px;">
+            Nhập mã xác thực 6 chữ số <span class="required">*</span>
+          </label>
+          <div class="otp-inputs-grid" id="otp-inputs-container">
+            <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code" data-index="0" aria-label="Chữ số OTP 1" />
+            <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]*" data-index="1" aria-label="Chữ số OTP 2" />
+            <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]*" data-index="2" aria-label="Chữ số OTP 3" />
+            <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]*" data-index="3" aria-label="Chữ số OTP 4" />
+            <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]*" data-index="4" aria-label="Chữ số OTP 5" />
+            <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]*" data-index="5" aria-label="Chữ số OTP 6" />
+          </div>
+          <div id="otp-error-msg" class="field-error-message" style="display: none; text-align: center; margin-top: 8px;"></div>
+        </div>
+
+        <!-- Bộ đếm thời gian & Gửi lại mã -->
+        <div class="otp-timer-wrap">
+          <span id="otp-timer-desc">
+            Hiệu lực mã: <strong class="otp-timer-highlight" id="otp-timer-display">02:00</strong>
+          </span>
+          <button type="button" class="btn-resend-otp" id="btn-resend-otp" disabled>Gửi lại mã OTP</button>
+        </div>
+
+        <!-- Nút xác nhận & Nút quay lại -->
+        <button type="button" class="btn btn-primary btn-block btn-lg" id="btn-verify-otp">
+          XÁC NHẬN &amp; HOÀN TẤT ĐĂNG KÝ
         </button>
-      </form>
 
-      <div style="text-align: center; margin-top: var(--space-xl); font-size: 0.9rem;">
-        <span class="text-muted">Đã có tài khoản?</span>
-        <a href="login.html" id="register-login-link" class="font-bold text-primary" style="text-decoration: underline; margin-left: 4px;">
-          Đăng nhập ngay
-        </a>
+        <button type="button" class="btn btn-secondary btn-block" id="btn-back-step1" style="margin-top: 10px;">
+          ← Quay lại chỉnh sửa thông tin
+        </button>
       </div>
     </div>
   </main>
@@ -75,6 +178,7 @@
 
   <script src="assets/js/seed.js"></script>
   <script src="assets/js/storage.js"></script>
+  <script src="assets/js/email-service.js"></script>
   <script src="assets/js/auth.js"></script>
   <script src="assets/js/products.js"></script>
   <script src="assets/js/cart.js"></script>

@@ -118,6 +118,26 @@ window.HKStore = window.HKStore || {};
     }
   }
 
+  // Quản lý rate limit OTP & Đăng ký
+  const RATE_LIMIT_OTP_KEY = "hkstore_v1_rate_limit_otp";
+  const PENDING_OTP_KEY = "hkstore_v1_pending_otp";
+  const OTP_EXPIRY_MS = 2 * 60 * 1000; // 2 phút
+  const MAX_OTP_ATTEMPTS = 5;
+
+  function checkOtpRateLimit(email) {
+    const data = Storage.get(RATE_LIMIT_OTP_KEY, {});
+    const now = Date.now();
+    const entry = data[email] || [];
+    const recent = entry.filter((ts) => now - ts < 10 * 60 * 1000);
+    if (recent.length >= 5) {
+      return false;
+    }
+    recent.push(now);
+    data[email] = recent;
+    Storage.set(RATE_LIMIT_OTP_KEY, data);
+    return true;
+  }
+
   // Quản lý rate limit đăng ký
   function checkRegistrationRateLimit() {
     const data = Storage.get(RATE_LIMIT_REG_KEY, []);
@@ -267,6 +287,187 @@ window.HKStore = window.HKStore || {};
       }
 
       return { success: true, user: sessionData };
+    },
+
+    // Kiểm tra tính hợp lệ của dữ liệu trước khi gửi mã xác thực OTP
+    validateRegistrationInfo: function ({ fullName, email, password, confirmPassword, phone, address }) {
+      if (!checkRegistrationRateLimit()) {
+        return {
+          success: false,
+          status: 429,
+          message: "Hệ thống đang ghi nhận quá nhiều lượt đăng ký. Vui lòng thử lại sau 10 phút."
+        };
+      }
+
+      if (!fullName || fullName.trim().length < 2) {
+        return { success: false, field: "name", message: "Vui lòng nhập họ và tên (tối thiểu 2 ký tự)." };
+      }
+
+      if (!email || !password) {
+        return { success: false, field: !email ? "email" : "password", message: "Vui lòng nhập đầy đủ email và mật khẩu." };
+      }
+
+      const normalizedEmail = email.trim().toLowerCase();
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(normalizedEmail)) {
+        return { success: false, field: "email", message: "Định dạng email chưa hợp lệ (ví dụ: name@gmail.com)." };
+      }
+
+      if (password.length < 8) {
+        return { success: false, field: "password", message: "Mật khẩu phải có tối thiểu 8 ký tự." };
+      }
+
+      if (confirmPassword !== undefined && password !== confirmPassword) {
+        return { success: false, field: "confirmPassword", message: "Mật khẩu xác nhận không khớp." };
+      }
+
+      const cleanedPhone = Auth.normalizePhone(phone);
+      if (cleanedPhone && !Auth.isValidPhone(cleanedPhone)) {
+        return { success: false, field: "phone", message: "Số điện thoại chưa hợp lệ (gồm 10 chữ số, bắt đầu bằng 0 hoặc +84)." };
+      }
+
+      const users = Storage.get(Storage.KEYS.USERS, []);
+      const exists = users.some((u) => u.email.trim().toLowerCase() === normalizedEmail);
+
+      if (exists) {
+        return { success: false, field: "email", message: "Email này đã được đăng ký. Vui lòng đăng nhập hoặc dùng email khác." };
+      }
+
+      return { success: true };
+    },
+
+    // Tạo mã xác thực OTP 6 chữ số gửi về Gmail
+    generateOTP: function (email) {
+      const normalizedEmail = email.trim().toLowerCase();
+      if (!checkOtpRateLimit(normalizedEmail)) {
+        return {
+          success: false,
+          status: 429,
+          message: "Bạn đã yêu cầu gửi mã OTP quá nhiều lần. Vui lòng đợi 10 phút rồi thử lại."
+        };
+      }
+
+      const code = String(Math.floor(100000 + Math.random() * 900000));
+      const otpPayload = {
+        email: normalizedEmail,
+        code: code,
+        expiresAt: Date.now() + OTP_EXPIRY_MS,
+        attempts: 0
+      };
+
+      try {
+        sessionStorage.setItem(PENDING_OTP_KEY, JSON.stringify(otpPayload));
+      } catch (e) {
+        Storage.set(PENDING_OTP_KEY, otpPayload);
+      }
+
+      return {
+        success: true,
+        otp: code,
+        expiresInSeconds: Math.floor(OTP_EXPIRY_MS / 1000)
+      };
+    },
+
+    // Lấy thông tin mã OTP đang chờ xác thực
+    getPendingOTP: function (email) {
+      try {
+        const raw = sessionStorage.getItem(PENDING_OTP_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (!email || parsed.email === email.trim().toLowerCase()) {
+            return parsed;
+          }
+        }
+      } catch (e) {}
+      const fallback = Storage.get(PENDING_OTP_KEY, null);
+      if (fallback && (!email || fallback.email === email.trim().toLowerCase())) {
+        return fallback;
+      }
+      return null;
+    },
+
+    // Xác thực mã OTP người dùng nhập
+    verifyOTP: function (email, inputCode) {
+      const normalizedEmail = email.trim().toLowerCase();
+      const pending = Auth.getPendingOTP(normalizedEmail);
+
+      if (!pending || pending.email !== normalizedEmail) {
+        return {
+          success: false,
+          message: "Không tìm thấy yêu cầu xác thực OTP. Vui lòng nhấn gửi lại mã mới."
+        };
+      }
+
+      if (Date.now() > pending.expiresAt) {
+        return {
+          success: false,
+          expired: true,
+          message: "Mã OTP đã hết hiệu lực (quá 2 phút). Vui lòng nhấn 'Gửi lại mã OTP'."
+        };
+      }
+
+      if (pending.attempts >= MAX_OTP_ATTEMPTS) {
+        return {
+          success: false,
+          maxAttempts: true,
+          message: "Bạn đã nhập sai mã OTP quá 5 lần. Vui lòng nhấn 'Gửi lại mã OTP' mới."
+        };
+      }
+
+      const cleanCode = String(inputCode || "").trim();
+      if (cleanCode !== pending.code) {
+        pending.attempts = (pending.attempts || 0) + 1;
+        try {
+          sessionStorage.setItem(PENDING_OTP_KEY, JSON.stringify(pending));
+        } catch (e) {
+          Storage.set(PENDING_OTP_KEY, pending);
+        }
+        const remaining = MAX_OTP_ATTEMPTS - pending.attempts;
+        return {
+          success: false,
+          message: "Mã OTP không chính xác. Bạn còn " + remaining + " lần thử."
+        };
+      }
+
+      // Xóa OTP sau khi xác thực thành công
+      try {
+        sessionStorage.removeItem(PENDING_OTP_KEY);
+      } catch (e) {}
+      Storage.remove(PENDING_OTP_KEY);
+
+      return { success: true };
+    },
+
+    // Hoàn tất tạo tài khoản sau khi đã xác thực OTP thành công
+    registerVerifiedUser: function ({ fullName, email, password, phone, address }) {
+      const validateRes = Auth.validateRegistrationInfo({ fullName, email, password, phone, address });
+      if (!validateRes.success) {
+        return validateRes;
+      }
+
+      const normalizedEmail = email.trim().toLowerCase();
+      const cleanedPhone = Auth.normalizePhone(phone);
+      const users = Storage.get(Storage.KEYS.USERS, []);
+
+      const salt = generateSalt();
+      const newUser = {
+        id: Storage.generateId("USER"),
+        fullName: fullName.trim(),
+        email: normalizedEmail,
+        passwordHash: salt + "$" + hashPassword(password, salt),
+        phone: cleanedPhone,
+        address: address ? address.trim() : "",
+        role: "customer",
+        isEmailVerified: true,
+        emailVerifiedAt: new Date().toISOString(),
+        createdAt: new Date().toISOString()
+      };
+
+      users.push(newUser);
+      Storage.set(Storage.KEYS.USERS, users);
+
+      // Đăng nhập luôn sau khi đăng ký (tự động merge giỏ hàng khách vào tài khoản mới)
+      return Auth.login(normalizedEmail, password);
     },
 
     // Đăng ký tài khoản mới (Mật khẩu được băm có Salt + Rate limiting chống spam)
