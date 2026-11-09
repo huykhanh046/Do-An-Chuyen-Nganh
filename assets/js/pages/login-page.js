@@ -42,7 +42,6 @@
     }
 
     setupLoginForm(safeReturnUrl);
-    setupQuickFillButtons();
   }
 
   function setupLoginForm(returnUrl) {
@@ -94,29 +93,6 @@
         UI.setFieldError(passEl, res.message);
         UI.showToast(res.message, "error");
       }
-    });
-  }
-
-  // Nút bấm 1-click điền nhanh tài khoản Demo
-  function setupQuickFillButtons() {
-    const emailInput = document.getElementById("login-email");
-    const passwordInput = document.getElementById("login-password");
-
-    const pills = document.querySelectorAll(".js-quick-account");
-    pills.forEach((pill) => {
-      pill.addEventListener("click", () => {
-        const email = pill.getAttribute("data-email");
-        const pass = pill.getAttribute("data-pass");
-        if (emailInput) {
-          emailInput.value = email;
-          UI.clearFieldError(emailInput);
-        }
-        if (passwordInput) {
-          passwordInput.value = pass;
-          UI.clearFieldError(passwordInput);
-        }
-        UI.showToast(`Đã điền thông tin tài khoản: ${email}`, "info");
-      });
     });
   }
 
