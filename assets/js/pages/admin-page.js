@@ -11,7 +11,7 @@
   const Orders = HKStore.Orders;
   const UI = HKStore.UI;
 
-  const TAB_ORDER = ["overview", "products", "orders"];
+  const TAB_ORDER = ["overview", "products", "orders", "users"];
   let currentTab = ""; // 'overview' | 'products' | 'orders'
 
   function initAdminPage() {
@@ -64,12 +64,14 @@
       if (tabKey === "overview") titleEl.textContent = "TỔNG QUAN HỆ THỐNG";
       if (tabKey === "products") titleEl.textContent = "QUẢN LÝ SẢN PHẨM & TỒN KHO";
       if (tabKey === "orders") titleEl.textContent = "QUẢN LÝ ĐƠN HÀNG";
+      if (tabKey === "users") titleEl.textContent = "DỮ LIỆU NGƯỜI DÙNG & TIẾP CẬN";
     }
 
     const renderTabData = () => {
       if (tabKey === "overview") renderOverviewTab();
       if (tabKey === "products") renderProductsTab();
       if (tabKey === "orders") renderOrdersTab();
+      if (tabKey === "users") renderUsersTab();
     };
 
     const allPanes = document.querySelectorAll(".js-admin-tab-content");
@@ -990,6 +992,376 @@ window.HK_SEED_DATA = {
         UI.showToast(res.message, "success");
         renderOrdersTab();
         renderOverviewTab();
+      });
+    }
+  }
+
+  // 5. TAB DỮ LIỆU NGƯỜI DÙNG & TIẾP CẬN (USERS & REACH)
+  function renderUsersTab() {
+    const users = Auth.getAllUsers ? Auth.getAllUsers() : Storage.get(Storage.KEYS.USERS, []);
+    const allOrders = Orders.getAll();
+
+    const tbody = document.getElementById("tbody-users-list");
+    const searchInput = document.getElementById("admin-user-search");
+    const roleFilter = document.getElementById("admin-user-role-filter");
+    const exportCsvBtn = document.getElementById("btn-export-users-csv");
+
+    // Tính toán thống kê đơn hàng theo từng userId
+    const ordersByUser = {};
+    allOrders.forEach((ord) => {
+      const uid = ord.userId;
+      if (!uid) return;
+      if (!ordersByUser[uid]) {
+        ordersByUser[uid] = { count: 0, validSpent: 0, orders: [] };
+      }
+      ordersByUser[uid].count += 1;
+      if (ord.orderStatus !== "cancelled") {
+        ordersByUser[uid].validSpent += Number(ord.total) || 0;
+      }
+      ordersByUser[uid].orders.push(ord);
+    });
+
+    // Cập nhật 4 thẻ thống kê tiếp cận người dùng
+    const totalUsers = users.length;
+    const customerUsers = users.filter((u) => u.role !== "admin");
+    const verifiedUsers = users.filter((u) => u.isEmailVerified || u.role === "admin").length;
+    const buyersCount = customerUsers.filter((u) => ordersByUser[u.id] && ordersByUser[u.id].count > 0).length;
+    const conversionRate =
+      customerUsers.length > 0 ? Math.round((buyersCount / customerUsers.length) * 100) : 0;
+
+    const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+    const recentUsers = users.filter((u) => {
+      if (!u.createdAt) return false;
+      const ts = new Date(u.createdAt).getTime();
+      return !isNaN(ts) && ts >= sevenDaysAgo;
+    }).length;
+
+    const statTotalEl = document.getElementById("stat-users-total");
+    const statVerifiedEl = document.getElementById("stat-users-verified");
+    const statBuyersEl = document.getElementById("stat-users-buyers");
+    const statConversionEl = document.getElementById("stat-users-conversion");
+    const statRecentEl = document.getElementById("stat-users-recent");
+
+    if (statTotalEl) statTotalEl.textContent = totalUsers;
+    if (statVerifiedEl) statVerifiedEl.textContent = verifiedUsers;
+    if (statBuyersEl) statBuyersEl.textContent = buyersCount;
+    if (statConversionEl) statConversionEl.textContent = `Tỷ lệ mua hàng: ${conversionRate}% khách đăng ký`;
+    if (statRecentEl) statRecentEl.textContent = recentUsers;
+
+    function filterAndRenderUsers() {
+      const q = searchInput ? Storage.normalizeText(searchInput.value) : "";
+      const filterVal = roleFilter ? roleFilter.value : "all";
+
+      let filtered = users.slice();
+
+      if (q) {
+        filtered = filtered.filter(
+          (u) =>
+            Storage.normalizeText(u.id || "").includes(q) ||
+            Storage.normalizeText(u.fullName || "").includes(q) ||
+            Storage.normalizeText(u.email || "").includes(q) ||
+            Storage.normalizeText(u.phone || "").includes(q) ||
+            Storage.normalizeText(u.address || "").includes(q)
+        );
+      }
+
+      if (filterVal === "customer") {
+        filtered = filtered.filter((u) => u.role !== "admin");
+      } else if (filterVal === "admin") {
+        filtered = filtered.filter((u) => u.role === "admin");
+      } else if (filterVal === "verified") {
+        filtered = filtered.filter((u) => u.isEmailVerified);
+      } else if (filterVal === "buyers") {
+        filtered = filtered.filter((u) => ordersByUser[u.id] && ordersByUser[u.id].count > 0);
+      }
+
+      if (!tbody) return;
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted">Không tìm thấy người dùng nào phù hợp.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered
+        .map((u) => {
+          const uStats = ordersByUser[u.id] || { count: 0, validSpent: 0 };
+          const isAdmin = u.role === "admin";
+          const createdStr = u.createdAt ? Storage.formatDate(u.createdAt) : "Tài khoản khởi tạo";
+          const lastLoginStr = u.lastLoginAt
+            ? Storage.formatDate(u.lastLoginAt)
+            : u.createdAt
+            ? Storage.formatDate(u.createdAt)
+            : "—";
+
+          return `
+            <tr>
+              <td>
+                <strong>${Storage.escapeHTML(u.fullName || "Chưa đặt tên")}</strong>
+                <div><small class="text-muted">ID: <code>${Storage.escapeHTML(u.id)}</code></small></div>
+              </td>
+              <td>
+                <div style="font-weight: 600;">${Storage.escapeHTML(u.email)}</div>
+                <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-top: 2px;">
+                  ${
+                    u.isEmailVerified
+                      ? `<span style="font-size: 0.68rem; background: #EEF7F0; color: #1B6E32; padding: 1px 6px; border-radius: 2px; font-weight: 700;">✓ Đã xác thực Gmail</span>`
+                      : ""
+                  }
+                  <small class="text-muted">${u.phone ? `SĐT: ${Storage.escapeHTML(u.phone)}` : "Chưa cập nhật SĐT"}</small>
+                </div>
+              </td>
+              <td><small>${createdStr}</small></td>
+              <td>
+                <small>${lastLoginStr}</small>
+                ${
+                  u.loginCount
+                    ? `<div><small class="text-muted">${u.loginCount} lần đăng nhập</small></div>`
+                    : ""
+                }
+              </td>
+              <td>
+                <strong>${uStats.count} đơn hàng</strong>
+                <div class="tabular-nums" style="font-size: 0.8rem; color: var(--color-text-muted);">
+                  Chi tiêu: <strong style="color: var(--color-primary);">${Storage.formatCurrency(uStats.validSpent)}</strong>
+                </div>
+              </td>
+              <td>
+                ${
+                  isAdmin
+                    ? `<span class="badge badge-admin">Quản trị viên</span>`
+                    : `<span class="badge badge-status-confirmed">Khách hàng</span>`
+                }
+              </td>
+              <td>
+                <button type="button" class="btn btn-secondary btn-sm js-view-admin-user" data-id="${Storage.escapeHTML(u.id)}">
+                  Chi tiết
+                </button>
+              </td>
+            </tr>
+          `;
+        })
+        .join("");
+
+      tbody.querySelectorAll(".js-view-admin-user").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          openAdminUserModal(btn.getAttribute("data-id"), ordersByUser);
+        });
+      });
+    }
+
+    if (searchInput) searchInput.oninput = filterAndRenderUsers;
+    if (roleFilter) roleFilter.onchange = filterAndRenderUsers;
+
+    // Xuất file CSV danh sách người dùng (Mở trực tiếp bằng Excel)
+    if (exportCsvBtn) {
+      exportCsvBtn.onclick = () => {
+        const headers = [
+          "Mã người dùng",
+          "Họ và tên",
+          "Gmail",
+          "Xác thực Gmail (OTP)",
+          "Số điện thoại",
+          "Địa chỉ",
+          "Vai trò",
+          "Thời điểm đăng ký",
+          "Đăng nhập gần nhất",
+          "Số lần đăng nhập",
+          "Số đơn hàng",
+          "Tổng chi tiêu (VND)"
+        ];
+
+        const escapeCsv = (val) => {
+          const str = String(val === undefined || val === null ? "" : val).replace(/"/g, '""');
+          return `"${str}"`;
+        };
+
+        const rows = users.map((u) => {
+          const st = ordersByUser[u.id] || { count: 0, validSpent: 0 };
+          return [
+            u.id,
+            u.fullName || "",
+            u.email || "",
+            u.isEmailVerified ? "Đã xác thực OTP" : "Chưa xác thực",
+            u.phone || "",
+            u.address || "",
+            u.role === "admin" ? "Quản trị viên" : "Khách hàng",
+            u.createdAt ? Storage.formatDate(u.createdAt) : "",
+            u.lastLoginAt ? Storage.formatDate(u.lastLoginAt) : "",
+            u.loginCount || 1,
+            st.count,
+            st.validSpent
+          ]
+            .map(escapeCsv)
+            .join(",");
+        });
+
+        const csvContent = "\uFEFF" + [headers.map(escapeCsv).join(","), ...rows].join("\r\n");
+        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `du-lieu-nguoi-dung-hkstore-${new Date().toISOString().slice(0, 10)}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        UI.showToast("Đã tải xuống file Excel (CSV) dữ liệu người dùng!", "success");
+      };
+    }
+
+    filterAndRenderUsers();
+  }
+
+  // Modal Xem hồ sơ chi tiết Người dùng & Lịch sử mua hàng
+  function openAdminUserModal(userId, ordersByUserMap) {
+    const user = Auth.getUserById ? Auth.getUserById(userId) : null;
+    if (!user) return;
+
+    const uStats = (ordersByUserMap && ordersByUserMap[user.id]) || {
+      count: 0,
+      validSpent: 0,
+      orders: Orders.getByUserId(user.id)
+    };
+
+    const statusNames = {
+      pending: "Chờ xác nhận",
+      confirmed: "Đã xác nhận",
+      shipping: "Đang giao",
+      delivered: "Đã giao",
+      cancelled: "Đã hủy"
+    };
+
+    const currentUser = Auth.getCurrentUser();
+    const canDelete = user.role !== "admin" && (!currentUser || currentUser.id !== user.id);
+
+    const modalContent = `
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+        <div style="background-color: var(--color-bg); padding: 14px; border-radius: 4px; border: 1px solid var(--color-border);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
+            <div>
+              <strong style="font-size: 1.05rem;">${Storage.escapeHTML(user.fullName)}</strong>
+              <span class="text-muted" style="font-size: 0.8rem; margin-left: 6px;">(${Storage.escapeHTML(user.id)})</span>
+            </div>
+            <div>
+              ${
+                user.role === "admin"
+                  ? `<span class="badge badge-admin">Quản trị viên</span>`
+                  : `<span class="badge badge-status-confirmed">Khách hàng</span>`
+              }
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.86rem; line-height: 1.5;">
+            <div><strong>Gmail:</strong> ${Storage.escapeHTML(user.email)}</div>
+            <div><strong>Số điện thoại:</strong> ${Storage.escapeHTML(user.phone || "Chưa cập nhật")}</div>
+            <div><strong>Thời gian đăng ký:</strong> ${user.createdAt ? Storage.formatDate(user.createdAt) : "Tài khoản khởi tạo"}</div>
+            <div>
+              <strong>Xác thực Gmail:</strong>
+              ${
+                user.isEmailVerified
+                  ? `<span style="color: #1B6E32; font-weight: 700;">✓ Đã xác thực OTP${
+                      user.emailVerifiedAt ? ` (${Storage.formatDate(user.emailVerifiedAt)})` : ""
+                    }</span>`
+                  : `<span class="text-muted">Tài khoản tạo trước khi bật OTP</span>`
+              }
+            </div>
+            <div><strong>Đăng nhập gần nhất:</strong> ${user.lastLoginAt ? Storage.formatDate(user.lastLoginAt) : "Chưa ghi nhận"}</div>
+            <div><strong>Số lượt đăng nhập:</strong> ${user.loginCount || 1} lần</div>
+          </div>
+
+          <div style="margin-top: 8px; font-size: 0.86rem;">
+            <strong>Địa chỉ giao hàng mặc định:</strong> ${Storage.escapeHTML(user.address || "Chưa cập nhật địa chỉ")}
+          </div>
+        </div>
+
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <h4 style="font-size: 0.85rem; margin: 0; text-transform: uppercase;">
+              Lịch sử đặt hàng của người dùng (${uStats.count} đơn):
+            </h4>
+            <span class="tabular-nums" style="font-size: 0.86rem; font-weight: 800;">
+              Tổng chi tiêu hợp lệ: ${Storage.formatCurrency(uStats.validSpent)}
+            </span>
+          </div>
+
+          ${
+            uStats.orders && uStats.orders.length > 0
+              ? `
+              <div style="max-height: 200px; overflow-y: auto; border: 1px solid var(--color-border); border-radius: 3px;">
+                ${uStats.orders
+                  .map(
+                    (ord) => `
+                  <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-bottom: 1px solid var(--color-border); font-size: 0.84rem;">
+                    <div>
+                      <strong>${Storage.escapeHTML(ord.id)}</strong>
+                      <span class="text-muted" style="margin-left: 8px;">${Storage.formatDate(ord.createdAt)}</span>
+                      ${
+                        ord.trackingCode
+                          ? `<div style="font-size: 0.75rem; color: var(--color-text-muted);">Mã VĐ: <code>${Storage.escapeHTML(ord.trackingCode)}</code></div>`
+                          : ""
+                      }
+                    </div>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                      <span class="badge badge-status-${ord.orderStatus}">${statusNames[ord.orderStatus] || ord.orderStatus}</span>
+                      <strong class="tabular-nums">${Storage.formatCurrency(ord.total)}</strong>
+                      <button type="button" class="btn btn-secondary btn-sm js-open-order-from-user" data-order-id="${Storage.escapeHTML(ord.id)}" style="padding: 2px 8px; font-size: 0.74rem;">
+                        Xem đơn
+                      </button>
+                    </div>
+                  </div>
+                `
+                  )
+                  .join("")}
+              </div>
+            `
+              : `<div class="text-muted" style="padding: 12px; border: 1px dashed var(--color-border); border-radius: 3px; text-align: center; font-size: 0.85rem;">Người dùng này chưa đặt đơn hàng nào.</div>`
+          }
+        </div>
+
+        ${
+          canDelete
+            ? `
+            <div style="border-top: 1px solid var(--color-border); padding-top: 10px; display: flex; justify-content: flex-end;">
+              <button type="button" class="btn btn-danger btn-sm js-delete-user-account" data-id="${Storage.escapeHTML(user.id)}">
+                Xóa tài khoản người dùng này
+              </button>
+            </div>
+          `
+            : ""
+        }
+      </div>
+    `;
+
+    const modal = UI.showModal({
+      title: `Hồ sơ Người dùng: ${user.fullName}`,
+      content: modalContent,
+      confirmText: "Đóng",
+      showCancel: false
+    });
+
+    // Chuyển sang xem chi tiết đơn hàng ngay khi bấm "Xem đơn"
+    document.querySelectorAll(".js-open-order-from-user").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const ordId = btn.getAttribute("data-order-id");
+        modal.close();
+        openAdminOrderModal(ordId);
+      });
+    });
+
+    // Xóa tài khoản người dùng
+    const delBtn = document.querySelector(".js-delete-user-account");
+    if (delBtn) {
+      delBtn.addEventListener("click", () => {
+        UI.showConfirm(
+          `Bạn có chắc chắn muốn xóa tài khoản "${user.fullName}" (${user.email}) khỏi hệ thống?`,
+          () => {
+            const res = Auth.deleteUser(user.id);
+            modal.close();
+            UI.showToast(res.message, res.success ? "success" : "error");
+            renderUsersTab();
+          }
+        );
       });
     }
   }

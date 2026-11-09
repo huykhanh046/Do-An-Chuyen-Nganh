@@ -268,6 +268,12 @@ window.HKStore = window.HKStore || {};
       // Xóa bộ đếm sai khi đăng nhập thành công
       clearLoginRateLimit(normalizedEmail);
 
+      // Ghi nhận thời điểm đăng nhập gần nhất & số lần truy cập vào dữ liệu người dùng
+      matchedUser.lastLoginAt = new Date().toISOString();
+      matchedUser.loginCount = (Number(matchedUser.loginCount) || 0) + 1;
+      users[userIndex] = matchedUser;
+      Storage.set(Storage.KEYS.USERS, users);
+
       // Lưu phiên đăng nhập (không lưu password vào session)
       const sessionData = {
         id: matchedUser.id,
@@ -604,6 +610,47 @@ window.HKStore = window.HKStore || {};
         return false;
       }
       return true;
+    },
+
+    // Lấy toàn bộ danh sách người dùng đã tham gia website (Dành cho Admin)
+    getAllUsers: function () {
+      const users = Storage.get(Storage.KEYS.USERS, []);
+      return users.slice().sort((a, b) => {
+        const tA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const tB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return tB - tA;
+      });
+    },
+
+    // Lấy chi tiết một người dùng theo ID
+    getUserById: function (userId) {
+      if (!userId) return null;
+      const users = Storage.get(Storage.KEYS.USERS, []);
+      return users.find((u) => u.id === userId) || null;
+    },
+
+    // Xóa tài khoản người dùng (Dành cho Admin)
+    deleteUser: function (userId) {
+      const currentUser = Auth.getCurrentUser();
+      if (!currentUser || currentUser.role !== "admin") {
+        return { success: false, message: "Bạn không có quyền thực hiện thao tác này." };
+      }
+      if (currentUser.id === userId) {
+        return { success: false, message: "Không thể tự xóa tài khoản Quản trị viên đang đăng nhập." };
+      }
+
+      const users = Storage.get(Storage.KEYS.USERS, []);
+      const idx = users.findIndex((u) => u.id === userId);
+      if (idx === -1) {
+        return { success: false, message: "Không tìm thấy người dùng này." };
+      }
+      if (users[idx].role === "admin") {
+        return { success: false, message: "Không thể xóa tài khoản Quản trị viên (Admin)." };
+      }
+
+      users.splice(idx, 1);
+      Storage.set(Storage.KEYS.USERS, users);
+      return { success: true, message: "Đã xóa dữ liệu người dùng thành công." };
     }
   };
 
