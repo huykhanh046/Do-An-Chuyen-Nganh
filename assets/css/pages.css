@@ -8,14 +8,14 @@
   position: relative;
   background-color: #111111;
   color: #FFFFFF;
-  height: clamp(460px, 68vh, 570px);
-  min-height: 460px;
+  height: clamp(780px, 112vh, 1080px);
+  min-height: 780px;
   overflow: hidden;
   display: flex;
   align-items: center;
   background-image: url("https://6ae2d7c9faf5cc20900f415a.imgix.net/sandbox/Group-photo-editorial.jpg?w=3840&q=100");
   background-size: cover;
-  background-position: center 54%;
+  background-position: center 48%;
   background-repeat: no-repeat;
 }
 
@@ -23,7 +23,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 54%;
+  object-position: center 48%;
   display: block;
   image-rendering: -webkit-optimize-contrast;
 }
