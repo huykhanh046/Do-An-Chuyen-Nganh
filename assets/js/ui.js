@@ -536,7 +536,7 @@ window.HKStore = window.HKStore || {};
               </ul>
             </div>
 
-            <!-- Cột 4: Thông tin liên hệ -->
+                        <!-- Cột 4: Thông tin liên hệ -->
             <div class="footer-col">
               <h4 class="footer-title">LIÊN HỆ & SHOWROOM</h4>
               <p class="footer-contact-item"><strong>Store:</strong> 126 Thanh Vinh 10, Phường Hoà Khánh Bắc, Thành Phố Đà Nẵng</p>
@@ -546,6 +546,45 @@ window.HKStore = window.HKStore || {};
                 <span class="badge-tag">Streetwear</span>
                 <span class="badge-tag">Minimalist</span>
                 <span class="badge-tag">Original</span>
+              </div>
+            </div>
+
+            <!-- Cột 5: Fanpage Facebook -->
+            <div class="footer-col footer-col-fanpage">
+              <h4 class="footer-title">FANPAGE</h4>
+              <div class="fb-fanpage-card">
+                <div class="fb-fanpage-body">
+                  <a href="https://www.facebook.com/profile.php?id=61563069746975" target="_blank" rel="noopener noreferrer" class="fb-fanpage-avatar-frame" aria-label="HK Store Fanpage">
+                    <span class="fb-fanpage-avatar-circle">
+                      <span class="fb-fanpage-avatar-text">hk</span>
+                    </span>
+                  </a>
+                  <div class="fb-fanpage-info">
+                    <a href="https://www.facebook.com/profile.php?id=61563069746975" target="_blank" rel="noopener noreferrer" class="fb-fanpage-name">
+                      <span>HK STORE</span>
+                      <svg class="fb-verified-badge" viewBox="0 0 24 24" aria-label="Đã xác minh">
+                        <circle cx="12" cy="12" r="10" fill="#1877F2"></circle>
+                        <path d="M9.8 16.2L6.3 12.7l1.4-1.4 2.1 2.1 6.5-6.5 1.4 1.4-7.9 7.9z" fill="#FFFFFF"></path>
+                      </svg>
+                    </a>
+                    <div class="fb-fanpage-followers">128.450 người theo dõi</div>
+                  </div>
+                </div>
+                <div class="fb-fanpage-actions">
+                  <a href="https://www.facebook.com/profile.php?id=61563069746975" target="_blank" rel="noopener noreferrer" class="fb-fanpage-btn">
+                    <svg class="fb-icon-square" viewBox="0 0 24 24" aria-hidden="true">
+                      <rect x="2" y="2" width="20" height="20" rx="2" fill="#385898"></rect>
+                      <path d="M15.5 8.5h-1.8c-.6 0-.9.3-.9.9v1.4h2.6l-.4 2.6h-2.2V20h-2.7v-6.6H8v-2.6h2.1V9.1c0-2.1 1.2-3.3 3.2-3.3.9 0 1.7.1 2.2.1v2.6z" fill="#FFFFFF"></path>
+                    </svg>
+                    <span>Theo dõi Trang</span>
+                  </a>
+                  <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fwww.facebook.com%2Fprofile.php%3Fid%3D61563069746975" target="_blank" rel="noopener noreferrer" class="fb-fanpage-btn">
+                    <svg class="fb-icon-share" viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M14 5v4C7 10 4 15 3 20c2.5-3.5 6-5.1 11-5.1V19l7-7-7-7z" fill="#4B4F56"></path>
+                    </svg>
+                    <span>Chia sẻ</span>
+                  </a>
+                </div>
               </div>
             </div>
           </div>

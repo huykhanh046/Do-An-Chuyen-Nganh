@@ -965,7 +965,7 @@
 
 .footer-grid {
   display: grid;
-  grid-template-columns: 2fr 1fr 1.2fr 1.2fr;
+  grid-template-columns: 1.55fr 0.95fr 1.05fr 1.15fr 1.35fr;
   gap: var(--space-2xl);
   padding-top: var(--space-3xl);
   padding-bottom: var(--space-3xl);
@@ -1037,6 +1037,132 @@
   font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+}
+
+
+/* Fanpage Widget Card (Footer) */
+.fb-fanpage-card {
+  background-color: #FFFFFF;
+  border: 1px solid #DADDE1;
+  border-radius: 3px;
+  padding: 8px;
+  max-width: 290px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+.fb-fanpage-body {
+  border: 1px solid #E9EBEE;
+  background-color: #FFFFFF;
+  padding: 8px 10px 6px;
+}
+
+.fb-fanpage-avatar-frame {
+  display: flex;
+  align-items: center;
+  border: 1px solid #E5E5E5;
+  padding: 4px 6px;
+  margin-bottom: 6px;
+  background-color: #FFFFFF;
+  text-decoration: none;
+}
+
+.fb-fanpage-avatar-circle {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 2.5px solid #1877F2;
+  background-color: #FFFFFF;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.fb-fanpage-avatar-text {
+  font-family: var(--font-heading);
+  font-weight: 900;
+  font-size: 0.92rem;
+  letter-spacing: 0.01em;
+  color: #FFFFFF;
+  text-transform: lowercase;
+  -webkit-text-stroke: 1.5px #111111;
+  paint-order: stroke fill;
+}
+
+.fb-fanpage-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.fb-fanpage-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 1.08rem;
+  font-weight: 600;
+  color: #385898;
+  text-decoration: none;
+  line-height: 1.25;
+}
+
+.fb-fanpage-name:hover {
+  text-decoration: underline;
+}
+
+.fb-verified-badge {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.fb-fanpage-followers {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #1D2129;
+  line-height: 1.3;
+}
+
+.fb-fanpage-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background-color: #F5F6F7;
+  border: 1px solid #E9EBEE;
+  border-top: none;
+  padding: 7px 8px;
+}
+
+.fb-fanpage-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  background-color: #F5F6F7;
+  border: 1px solid #CCD0D5;
+  border-radius: 2px;
+  padding: 4px 9px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #4B4F56;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.fb-fanpage-btn:hover {
+  background-color: #EBEDF0;
+  border-color: #BEC3C9;
+  color: #1D2129;
+}
+
+.fb-icon-square,
+.fb-icon-share {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
 }
 
 .footer-bottom {
