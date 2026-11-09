@@ -11,9 +11,7 @@
   min-height: 560px;
   display: flex;
   align-items: center;
-  background-image: radial-gradient(circle at 22% 45%, rgba(200, 62, 43, 0.16) 0%, transparent 48%),
-                    linear-gradient(100deg, rgba(14, 14, 14, 0.92) 0%, rgba(17, 17, 17, 0.68) 50%, rgba(17, 17, 17, 0.28) 100%),
-                    url("https://6ae2d7c9faf5cc20900f415a.imgix.net/sandbox/images%20web3.jpg");
+  background-image: url("https://6ae2d7c9faf5cc20900f415a.imgix.net/sandbox/images%20web3.jpg");
   background-size: cover;
   background-position: center 25%;
 }
