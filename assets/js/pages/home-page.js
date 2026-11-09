@@ -18,7 +18,7 @@
     renderBestSellers();
   }
 
-  // Hiệu ứng Animation Parallax & Zoom mượt mà cho Banner khi lướt trang web (60fps)
+  // Hiệu ứng Animation thu phóng nhẹ & lướt theo nhịp cuộn trang bằng nội suy quán tính (Smooth Lerp 60fps)
   function initHeroScrollAnimation() {
     const heroBanner = document.querySelector(".hero-banner");
     const heroImg = document.querySelector(".hero-banner-img");
@@ -28,40 +28,54 @@
       window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (prefersReducedMotion) return;
 
-    let ticking = false;
+    let targetScroll = window.scrollY || window.pageYOffset || 0;
+    let currentScroll = targetScroll;
+    let rafId = null;
 
-    function updateBannerOnScroll() {
-      const scrollY = window.scrollY || window.pageYOffset || 0;
-      const bannerHeight = heroBanner.offsetHeight || 680;
+    // Hiệu ứng thu phóng nhẹ khi vừa mở trang (từ 1.035 về 1.0)
+    let introScaleOffset = 0.035;
 
-      if (scrollY <= bannerHeight * 1.25) {
-        const progress = Math.min(Math.max(scrollY / bannerHeight, 0), 1);
-        const translateY = (scrollY * 0.28).toFixed(2);
-        const scale = (1 + progress * 0.09).toFixed(4);
-        const brightness = (1 - progress * 0.18).toFixed(3);
-        const sideInset = (progress * 18).toFixed(1);
-        const radius = (progress * 10).toFixed(1);
+    function animateFrame() {
+      // Nội suy mượt (Lerp damping) tạo cảm giác lướt êm theo nhịp tay cuộn
+      const diff = targetScroll - currentScroll;
+      currentScroll += diff * 0.085;
 
-        heroImg.style.transform = `translate3d(0, ${translateY}px, 0) scale(${scale})`;
-        heroImg.style.filter = `brightness(${brightness})`;
-        heroBanner.style.clipPath = `inset(0px ${sideInset}px 0px ${sideInset}px round 0px 0px ${radius}px ${radius}px)`;
+      // Giảm dần độ thu phóng mở màn về 0 một cách mượt mà
+      if (introScaleOffset > 0.0002) {
+        introScaleOffset *= 0.94;
+      } else {
+        introScaleOffset = 0;
       }
 
-      ticking = false;
+      const bannerHeight = heroBanner.offsetHeight || 660;
+      const clampedScroll = Math.max(0, Math.min(currentScroll, bannerHeight * 1.4));
+      const progress = Math.min(clampedScroll / bannerHeight, 1);
+
+      // Dịch chuyển lướt nhẹ theo chiều dọc (Parallax êm) + Thu phóng nhẹ nhàng (1.0 -> 1.055)
+      const translateY = clampedScroll * 0.16;
+      const scale = 1 + progress * 0.055 + introScaleOffset;
+
+      heroImg.style.transform = `translate3d(0, ${translateY.toFixed(2)}px, 0) scale(${scale.toFixed(4)})`;
+
+      if (Math.abs(diff) > 0.15 || introScaleOffset > 0) {
+        rafId = window.requestAnimationFrame(animateFrame);
+      } else {
+        currentScroll = targetScroll;
+        rafId = null;
+      }
     }
 
-    window.addEventListener(
-      "scroll",
-      () => {
-        if (!ticking) {
-          window.requestAnimationFrame(updateBannerOnScroll);
-          ticking = true;
-        }
-      },
-      { passive: true }
-    );
+    function onScroll() {
+      targetScroll = window.scrollY || window.pageYOffset || 0;
+      if (!rafId) {
+        rafId = window.requestAnimationFrame(animateFrame);
+      }
+    }
 
-    updateBannerOnScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+
+    // Khởi chạy nhịp mở màn ngay khi tải trang
+    rafId = window.requestAnimationFrame(animateFrame);
   }
 
   // Render thẻ sản phẩm HTML (Sử dụng chuẩn Design DNA dùng chung từ UI.renderProductCard)
