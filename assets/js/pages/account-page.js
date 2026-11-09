@@ -129,6 +129,14 @@
     container.innerHTML = userOrders
       .map((ord) => {
         const canCancel = ord.orderStatus === "pending";
+        const trackingCode = (ord.trackingCode || "").trim();
+        const carrierCode = ord.shippingCarrier || "spx";
+        const carrierName =
+          ord.shippingCarrierName || (Orders.getCarrierName ? Orders.getCarrierName(carrierCode) : "Đơn vị vận chuyển");
+        const trackingUrl =
+          trackingCode && Orders.getCarrierTrackingUrl
+            ? Orders.getCarrierTrackingUrl(carrierCode, trackingCode)
+            : "#";
 
         return `
         <div class="order-card">
@@ -146,6 +154,34 @@
               </span>
             </div>
           </div>
+
+          ${
+            trackingCode || ord.orderStatus === "shipping" || ord.orderStatus === "delivered"
+              ? `
+            <div style="background: var(--color-bg); border: 1px solid var(--color-border); border-radius: 4px; padding: 8px 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 0.84rem;">
+              <div>
+                <span class="text-muted">Mã vận đơn giao hàng:</span>
+                ${
+                  trackingCode
+                    ? `<strong style="font-family: monospace; margin-left: 6px; padding: 2px 6px; background: #FFF; border: 1px solid var(--color-border-dark); border-radius: 2px;">${Storage.escapeHTML(trackingCode)}</strong>
+                       <span class="text-muted" style="margin-left: 6px;">(${Storage.escapeHTML(carrierName)})</span>`
+                    : `<span class="text-muted" style="margin-left: 6px;">Đang cập nhật mã từ ĐVVC...</span>`
+                }
+              </div>
+              ${
+                trackingCode
+                  ? `
+                <div style="display: flex; gap: 8px; align-items: center;">
+                  <button type="button" class="copy-chip-btn js-copy-text" data-copy="${Storage.escapeHTML(trackingCode)}">Sao chép mã</button>
+                  <a href="${trackingUrl}" target="_blank" rel="noopener noreferrer" style="font-weight: 700; text-decoration: underline; font-size: 0.8rem;">Tra cứu vận đơn &nearr;</a>
+                </div>
+              `
+                  : ""
+              }
+            </div>
+          `
+              : ""
+          }
 
           <div class="order-card-body" style="margin-bottom: 16px;">
             ${ord.items

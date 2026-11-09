@@ -52,6 +52,123 @@
     }
   }
 
+  function renderTrackingSection(order) {
+    const trackingEl = document.getElementById("order-tracking-section");
+    if (!trackingEl) return;
+
+    const steps = [
+      { key: "pending", label: "Đặt hàng thành công", desc: "Chờ cửa hàng xác nhận" },
+      { key: "confirmed", label: "Đã xác nhận", desc: "Đang đóng gói & lên đơn" },
+      { key: "shipping", label: "Đang giao hàng", desc: "Đã bàn giao cho ĐVVC" },
+      { key: "delivered", label: "Đã giao thành công", desc: "Khách đã nhận hàng" }
+    ];
+
+    const statusOrder = ["pending", "confirmed", "shipping", "delivered"];
+    const currentIdx = statusOrder.indexOf(order.orderStatus);
+    const isCancelled = order.orderStatus === "cancelled";
+
+    const carrierCode = order.shippingCarrier || "spx";
+    const carrierName =
+      order.shippingCarrierName || (Orders.getCarrierName ? Orders.getCarrierName(carrierCode) : "Đơn vị vận chuyển");
+    const trackingCode = (order.trackingCode || "").trim();
+    const trackingUrl =
+      trackingCode && Orders.getCarrierTrackingUrl
+        ? Orders.getCarrierTrackingUrl(carrierCode, trackingCode)
+        : "#";
+
+    const stepperHtml = isCancelled
+      ? `
+        <div style="padding: 12px 16px; background: #FDF2F2; border: 1px solid #F5C6CB; border-radius: 4px; color: #9B1C1C; font-size: 0.9rem; margin-bottom: 14px;">
+          <strong>Đơn hàng đã bị hủy.</strong> ${order.cancelReason ? `Lý do: ${Storage.escapeHTML(order.cancelReason)}` : ""}
+        </div>
+      `
+      : `
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px;">
+          ${steps
+            .map((step, idx) => {
+              const isDone = idx <= currentIdx;
+              const isCurrent = idx === currentIdx;
+              const borderColor = isCurrent ? "#111" : isDone ? "#1B6E32" : "var(--color-border)";
+              const bgColor = isCurrent ? "#111" : isDone ? "#EEF7F0" : "#FAFAFA";
+              const textColor = isCurrent ? "#FFF" : isDone ? "#1B6E32" : "var(--color-text-muted)";
+
+              return `
+                <div style="border: 1px solid ${borderColor}; background: ${bgColor}; color: ${textColor}; padding: 10px 12px; border-radius: 4px; transition: all 0.2s;">
+                  <div style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; opacity: 0.85; margin-bottom: 2px;">
+                    Bước ${idx + 1} ${isDone ? "✓" : ""}
+                  </div>
+                  <div style="font-size: 0.86rem; font-weight: 800;">${step.label}</div>
+                  <div style="font-size: 0.74rem; opacity: 0.85; margin-top: 2px;">${step.desc}</div>
+                </div>
+              `;
+            })
+            .join("")}
+        </div>
+      `;
+
+    const trackingBoxHtml = !isCancelled
+      ? `
+        <div style="background: var(--color-bg); border: 1px solid var(--color-border); border-radius: 4px; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+          <div>
+            <div style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); margin-bottom: 4px;">
+              Thông tin vận chuyển &amp; Mã vận đơn giao hàng
+            </div>
+            ${
+              trackingCode
+                ? `
+                  <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                    <span style="font-size: 0.92rem;">Đơn vị vận chuyển: <strong>${Storage.escapeHTML(carrierName)}</strong></span>
+                    <span style="color: var(--color-border-dark);">|</span>
+                    <span style="font-size: 0.92rem;">Mã vận đơn: <strong style="font-family: monospace; font-size: 1rem; background: #FFF; padding: 3px 8px; border: 1px solid var(--color-border-dark); border-radius: 3px; letter-spacing: 0.04em;">${Storage.escapeHTML(trackingCode)}</strong></span>
+                  </div>
+                  ${
+                    order.trackingUpdatedAt
+                      ? `<div class="text-muted" style="font-size: 0.76rem; margin-top: 4px;">Cập nhật lúc: ${Storage.formatDate(order.trackingUpdatedAt)}</div>`
+                      : ""
+                  }
+                `
+                : `
+                  <div style="font-size: 0.9rem; color: var(--color-text);">
+                    <strong>Mã vận đơn giao hàng:</strong> <span class="text-muted">Đang chờ cập nhật từ đơn vị vận chuyển</span>
+                  </div>
+                  <div class="text-muted" style="font-size: 0.78rem; margin-top: 2px;">
+                    ${
+                      order.orderStatus === "shipping"
+                        ? "Đơn hàng đang được bàn giao cho đơn vị vận chuyển, mã vận đơn sẽ sớm được hiển thị tại đây."
+                        : "Mã vận đơn sẽ được cửa hàng cập nhật ngay khi đơn hàng chuyển sang trạng thái Đang giao."
+                    }
+                  </div>
+                `
+            }
+          </div>
+
+          ${
+            trackingCode
+              ? `
+                <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                  <button type="button" class="btn btn-secondary btn-sm js-copy-text" data-copy="${Storage.escapeHTML(trackingCode)}">
+                    Sao chép mã vận đơn
+                  </button>
+                  <a href="${trackingUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm">
+                    Tra cứu tiến trình đơn hàng &nearr;
+                  </a>
+                </div>
+              `
+              : ""
+          }
+        </div>
+      `
+      : "";
+
+    trackingEl.innerHTML = `
+      <h2 style="font-size: 0.98rem; font-weight: 800; letter-spacing: 0; margin-bottom: 10px;">
+        Tiến trình đơn hàng &amp; Mã vận đơn giao hàng
+      </h2>
+      ${stepperHtml}
+      ${trackingBoxHtml}
+    `;
+  }
+
   function renderOrderDetail(order, isAdmin) {
     const statusNames = {
       pending: "Chờ xác nhận",
@@ -92,6 +209,8 @@
       paymentStatusEl.className = `badge badge-payment-${order.paymentStatus}`;
       paymentStatusEl.textContent = paymentStatusNames[order.paymentStatus] || order.paymentStatus;
     }
+
+    renderTrackingSection(order);
 
     let pMethod = "Thanh toán khi nhận hàng (COD)";
     if (order.paymentMethod === "banking") pMethod = "Chuyển khoản Ngân hàng (Vietcombank)";

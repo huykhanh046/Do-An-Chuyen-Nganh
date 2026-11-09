@@ -10,7 +10,42 @@ window.HKStore = window.HKStore || {};
 
   const Storage = HK.Storage;
 
+  const SHIPPING_CARRIERS = [
+    { code: "spx", name: "SPX Express (Shopee)", trackUrl: "https://spx.vn/track?" },
+    { code: "ghn", name: "GHN - Giao Hàng Nhanh", trackUrl: "https://donhang.ghn.vn/?order_code=" },
+    { code: "ghtk", name: "GHTK - Giao Hàng Tiết Kiệm", trackUrl: "https://i.ghtk.vn/" },
+    { code: "viettelpost", name: "Viettel Post", trackUrl: "https://viettelpost.com.vn/tra-cuu-hanh-trinh-don/" },
+    { code: "jt", name: "J&T Express", trackUrl: "https://jtexpress.vn/vi/tracking?type=track&billcode=" },
+    { code: "vnpost", name: "VNPost - Bưu điện Việt Nam", trackUrl: "https://vnpost.vn/vi-vn/dinh-vi/buu-pham?key=" },
+    { code: "ninjavan", name: "Ninja Van", trackUrl: "https://www.ninjavan.co/vi-vn/tracking?id=" },
+    { code: "other", name: "Đơn vị vận chuyển khác", trackUrl: "https://www.google.com/search?q=" }
+  ];
+
   const Orders = {
+    // Danh sách đơn vị vận chuyển hỗ trợ
+    getCarriers: function () {
+      return SHIPPING_CARRIERS.slice();
+    },
+
+    getCarrierName: function (carrierCode) {
+      if (!carrierCode) return "Đơn vị vận chuyển";
+      const found = SHIPPING_CARRIERS.find((c) => c.code === carrierCode);
+      return found ? found.name : carrierCode;
+    },
+
+    getCarrierTrackingUrl: function (carrierCode, trackingCode) {
+      const cleanCode = String(trackingCode || "").trim();
+      if (!cleanCode) return "#";
+      const found = SHIPPING_CARRIERS.find((c) => c.code === carrierCode);
+      if (!found || found.code === "other") {
+        return "https://www.google.com/search?q=" + encodeURIComponent("tra cứu mã vận đơn " + cleanCode);
+      }
+      if (found.code === "viettelpost") {
+        return found.trackUrl;
+      }
+      return found.trackUrl + encodeURIComponent(cleanCode);
+    },
+
     // Lấy toàn bộ đơn hàng (cho Admin)
     getAll: function () {
       return Storage.get(Storage.KEYS.ORDERS, []);
@@ -122,6 +157,10 @@ window.HKStore = window.HKStore || {};
         paymentRef: paymentRef, // Mã phiên giao dịch QR (nếu có)
         paymentStatus: paymentStatus, // 'pending' | 'paid' | 'refund_pending' | 'refunded'
         orderStatus: "pending", // Mặc định là 'pending' (Chờ xác nhận)
+        shippingCarrier: "", // Mã đơn vị vận chuyển (spx, ghn, ghtk, viettelpost, jt, vnpost...)
+        shippingCarrierName: "", // Tên hiển thị đơn vị vận chuyển
+        trackingCode: "", // Mã vận đơn giao hàng
+        trackingUpdatedAt: null,
         restocked: false, // Cờ kiểm soát hoàn kho chỉ chạy 1 lần khi hủy
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
@@ -213,7 +252,7 @@ window.HKStore = window.HKStore || {};
 
     // Cập nhật trạng thái đơn hàng (Luồng Admin)
     // Luồng chuẩn: "pending" (Chờ xác nhận) -> "confirmed" (Đã xác nhận) -> "shipping" (Đang giao) -> "delivered" (Đã giao)
-    updateOrderStatus: function (orderId, newStatus) {
+    updateOrderStatus: function (orderId, newStatus, extraData = {}) {
       const orders = Orders.getAll();
       const index = orders.findIndex((o) => o.id === orderId);
       if (index === -1) return { success: false, message: "Không tìm thấy đơn hàng." };
@@ -243,6 +282,21 @@ window.HKStore = window.HKStore || {};
         };
       }
 
+      if (extraData && typeof extraData === "object") {
+        if (typeof extraData.shippingCarrier === "string" && extraData.shippingCarrier.trim()) {
+          order.shippingCarrier = extraData.shippingCarrier.trim();
+          order.shippingCarrierName = Orders.getCarrierName(order.shippingCarrier);
+        }
+        if (typeof extraData.trackingCode === "string" && extraData.trackingCode.trim()) {
+          order.trackingCode = extraData.trackingCode.trim().toUpperCase();
+          order.trackingUpdatedAt = new Date().toISOString();
+          if (!order.shippingCarrier) {
+            order.shippingCarrier = "spx";
+            order.shippingCarrierName = Orders.getCarrierName("spx");
+          }
+        }
+      }
+
       order.orderStatus = newStatus;
       order.updatedAt = new Date().toISOString();
 
@@ -250,6 +304,39 @@ window.HKStore = window.HKStore || {};
       Storage.set(Storage.KEYS.ORDERS, orders);
 
       return { success: true, order: order, message: "Đã cập nhật trạng thái đơn hàng." };
+    },
+
+    // Cập nhật Mã vận đơn giao hàng & Đơn vị vận chuyển (Admin)
+    updateTrackingInfo: function (orderId, { shippingCarrier = "spx", trackingCode = "" } = {}) {
+      const orders = Orders.getAll();
+      const index = orders.findIndex((o) => o.id === orderId);
+      if (index === -1) return { success: false, message: "Không tìm thấy đơn hàng." };
+
+      const order = orders[index];
+      if (order.orderStatus === "cancelled") {
+        return { success: false, message: "Đơn hàng đã hủy, không thể cập nhật mã vận đơn." };
+      }
+
+      const cleanCode = String(trackingCode || "").trim().toUpperCase();
+      if (!cleanCode) {
+        return { success: false, message: "Vui lòng nhập mã vận đơn giao hàng hợp lệ." };
+      }
+
+      const cleanCarrier = String(shippingCarrier || "spx").trim();
+      order.shippingCarrier = cleanCarrier;
+      order.shippingCarrierName = Orders.getCarrierName(cleanCarrier);
+      order.trackingCode = cleanCode;
+      order.trackingUpdatedAt = new Date().toISOString();
+      order.updatedAt = new Date().toISOString();
+
+      orders[index] = order;
+      Storage.set(Storage.KEYS.ORDERS, orders);
+
+      return {
+        success: true,
+        order: order,
+        message: `Đã lưu mã vận đơn ${cleanCode} (${order.shippingCarrierName}) thành công!`
+      };
     },
 
     // Cập nhật trạng thái thanh toán

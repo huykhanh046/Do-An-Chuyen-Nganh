@@ -595,7 +595,8 @@ window.HK_SEED_DATA = {
           (o) =>
             Storage.normalizeText(o.id).includes(q) ||
             Storage.normalizeText(o.customerInfo.fullName).includes(q) ||
-            Storage.normalizeText(o.customerInfo.phone).includes(q)
+            Storage.normalizeText(o.customerInfo.phone).includes(q) ||
+            Storage.normalizeText(o.trackingCode || "").includes(q)
         );
       }
 
@@ -629,6 +630,7 @@ window.HK_SEED_DATA = {
               <span class="badge badge-status-${ord.orderStatus}">
                 ${statusNames[ord.orderStatus] || ord.orderStatus}
               </span>
+              ${ord.trackingCode ? `<div style="margin-top: 4px; font-size: 0.73rem; color: var(--color-text-muted);">Mã VĐ: <strong style="color: var(--color-primary); font-family: monospace;">${Storage.escapeHTML(ord.trackingCode)}</strong></div>` : ""}
             </td>
             <td>
               <span class="badge badge-payment-${ord.paymentStatus}">
@@ -676,6 +678,25 @@ window.HK_SEED_DATA = {
       refund_pending: "Chờ hoàn tiền",
       refunded: "Đã hoàn tiền"
     };
+
+    const carriers = Orders.getCarriers ? Orders.getCarriers() : [
+      { code: "spx", name: "SPX Express (Shopee)" },
+      { code: "ghn", name: "GHN - Giao Hàng Nhanh" },
+      { code: "ghtk", name: "GHTK - Giao Hàng Tiết Kiệm" },
+      { code: "viettelpost", name: "Viettel Post" },
+      { code: "jt", name: "J&T Express" },
+      { code: "vnpost", name: "VNPost - Bưu điện Việt Nam" },
+      { code: "ninjavan", name: "Ninja Van" },
+      { code: "other", name: "Đơn vị vận chuyển khác" }
+    ];
+    const currentCarrier = order.shippingCarrier || "spx";
+    const currentTracking = order.trackingCode || "";
+    const currentCarrierName =
+      order.shippingCarrierName || (Orders.getCarrierName ? Orders.getCarrierName(currentCarrier) : currentCarrier);
+    const trackingUrl =
+      currentTracking && Orders.getCarrierTrackingUrl
+        ? Orders.getCarrierTrackingUrl(currentCarrier, currentTracking)
+        : "#";
 
     const modalContent = `
       <div style="display: flex; flex-direction: column; gap: 14px;">
@@ -768,6 +789,55 @@ window.HK_SEED_DATA = {
           </div>
         </div>
 
+        <!-- MÃ VẬN ĐƠN GIAO HÀNG (HIỂN THỊ KHI ĐƠN ĐÃ XÁC NHẬN / ĐANG GIAO / ĐÃ GIAO) -->
+        ${
+          order.orderStatus !== "cancelled"
+            ? `
+        <div style="border-top: 1px solid var(--color-border); padding-top: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
+            <h4 style="font-size: 0.85rem; margin: 0; text-transform: uppercase;">Mã vận đơn giao hàng:</h4>
+            ${
+              currentTracking
+                ? `<span style="font-size: 0.78rem; background: #EEF7F0; color: #1B6E32; padding: 3px 8px; border-radius: 3px; font-weight: 600;">
+                     ✓ Đã gắn mã: <strong style="font-family: monospace;">${Storage.escapeHTML(currentTracking)}</strong> (${Storage.escapeHTML(currentCarrierName)})
+                     <a href="${trackingUrl}" target="_blank" rel="noopener noreferrer" style="margin-left: 6px; text-decoration: underline; color: #111;">Tra cứu ↗</a>
+                   </span>`
+                : `<span class="text-muted" style="font-size: 0.78rem;">Chưa gắn mã vận đơn</span>`
+            }
+          </div>
+          <div style="background: var(--color-bg); padding: 10px 12px; border-radius: 4px; border: 1px solid var(--color-border);">
+            <div style="display: grid; grid-template-columns: 1fr 1.2fr auto; gap: 8px; align-items: center;">
+              <select id="admin-shipping-carrier" class="form-control" style="height: 36px; padding: 0 8px; font-size: 0.82rem;">
+                ${carriers
+                  .map(
+                    (c) =>
+                      `<option value="${Storage.escapeHTML(c.code)}" ${
+                        c.code === currentCarrier ? "selected" : ""
+                      }>${Storage.escapeHTML(c.name)}</option>`
+                  )
+                  .join("")}
+              </select>
+              <input
+                type="text"
+                id="admin-tracking-code"
+                class="form-control"
+                style="height: 36px; padding: 0 10px; font-size: 0.84rem; font-family: monospace; text-transform: uppercase;"
+                placeholder="Nhập mã vận đơn (VD: SPXVN0394812)..."
+                value="${Storage.escapeHTML(currentTracking)}"
+              />
+              <button type="button" class="btn btn-primary btn-sm js-save-tracking-code" style="height: 36px; white-space: nowrap;">
+                Lưu mã vận đơn
+              </button>
+            </div>
+            <div class="text-muted" style="font-size: 0.74rem; margin-top: 6px;">
+              Admin lên đơn ở sàn TMĐT / Đơn vị vận chuyển rồi nhập mã vận đơn vào đây để khách hàng theo dõi tiến trình đơn hàng.
+            </div>
+          </div>
+        </div>
+        `
+            : ""
+        }
+
         <!-- CẬP NHẬT TRẠNG THÁI THANH TOÁN -->
         <div style="border-top: 1px solid var(--color-border); padding-top: 12px;">
           <h4 style="font-size: 0.85rem; margin-bottom: 6px; text-transform: uppercase;">Thanh toán (${
@@ -819,6 +889,33 @@ window.HK_SEED_DATA = {
       });
     });
 
+    // Sự kiện Lưu mã vận đơn giao hàng
+    const saveTrackingBtn = document.querySelector(".js-save-tracking-code");
+    if (saveTrackingBtn) {
+      saveTrackingBtn.addEventListener("click", () => {
+        const carrierEl = document.getElementById("admin-shipping-carrier");
+        const codeEl = document.getElementById("admin-tracking-code");
+        const shippingCarrier = carrierEl ? carrierEl.value : "spx";
+        const trackingCode = codeEl ? codeEl.value.trim() : "";
+
+        if (!trackingCode) {
+          UI.showToast("Vui lòng nhập mã vận đơn giao hàng!", "error");
+          if (codeEl) codeEl.focus();
+          return;
+        }
+
+        const res = Orders.updateTrackingInfo(order.id, { shippingCarrier, trackingCode });
+        if (res.success) {
+          UI.showToast(res.message, "success");
+          modal.close();
+          renderOrdersTab();
+          openAdminOrderModal(order.id);
+        } else {
+          UI.showToast(res.message, "error");
+        }
+      });
+    }
+
     // Sự kiện chuyển trạng thái
     document.querySelectorAll(".js-order-transition").forEach((btn) => {
       btn.addEventListener("click", () => {
@@ -835,11 +932,24 @@ window.HK_SEED_DATA = {
             }
           );
         } else {
-          const res = Orders.updateOrderStatus(order.id, nextStatus);
+          const carrierEl = document.getElementById("admin-shipping-carrier");
+          const codeEl = document.getElementById("admin-tracking-code");
+          const extraData = {};
+          if (carrierEl && carrierEl.value) extraData.shippingCarrier = carrierEl.value;
+          if (codeEl && codeEl.value.trim()) extraData.trackingCode = codeEl.value.trim();
+
+          const res = Orders.updateOrderStatus(order.id, nextStatus, extraData);
           modal.close();
           UI.showToast(res.message, res.success ? "success" : "error");
           renderOrdersTab();
           renderOverviewTab();
+
+          // Khi chuyển sang trạng thái Đang giao (shipping), mở lại modal để Admin tiện nhập/kiểm tra Mã vận đơn
+          if (res.success && nextStatus === "shipping" && !extraData.trackingCode) {
+            openAdminOrderModal(order.id);
+            const newCodeEl = document.getElementById("admin-tracking-code");
+            if (newCodeEl) newCodeEl.focus();
+          }
         }
       });
     });
