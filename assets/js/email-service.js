@@ -13,7 +13,7 @@ window.HKStore = window.HKStore || {};
   // Cấu hình mặc định trong source code (Lưu cố định khi deploy lên Vercel)
   const DEFAULT_CONFIG = {
     // Cách 1 (Khuyên dùng - Chính chủ Google): Dán URL Web App từ https://script.google.com
-    googleScriptUrl: "",
+    googleScriptUrl: "https://script.google.com/macros/s/AKfycbzmP_ihBU_BbwizaRyeeI49PoOAhc3N7J3RSELv6d7ZanoVA8ThIm8XKhjBa1f7-9yF/exec",
 
     // Cách 2 (EmailJS): Điền thông tin từ https://www.emailjs.com
     serviceId: "",
@@ -136,6 +136,14 @@ window.HKStore = window.HKStore || {};
             }),
             redirect: "follow"
           });
+
+          if (response.status === 401 || response.status === 403) {
+            return {
+              success: false,
+              permissionError: true,
+              message: "Google Script đang để quyền 'Chỉ mình tôi' (Lỗi 401). Hãy vào Quản lý triển khai -> Sửa -> chọn Ai có quyền truy cập: 'Bất kỳ ai (Anyone)'!"
+            };
+          }
 
           // Với Google Apps Script, nếu đọc được JSON thì kiểm tra, nếu opaque (no-cors) vẫn là đã gửi
           if (response.type === "opaque" || response.ok) {
