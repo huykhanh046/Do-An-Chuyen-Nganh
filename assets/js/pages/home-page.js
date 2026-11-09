@@ -22,7 +22,10 @@
   function initHeroScrollAnimation() {
     const heroBanner = document.querySelector(".hero-banner");
     const heroImg = document.querySelector(".hero-banner-img");
-    if (!heroBanner || !heroImg) return;
+    const lookbookWrap = document.querySelector(".lookbook-image-wrap");
+    const lookbookImg = document.querySelector(".lookbook-banner-img");
+
+    if (!heroImg && !lookbookImg) return;
 
     const prefersReducedMotion =
       window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -47,15 +50,38 @@
         introScaleOffset = 0;
       }
 
-      const bannerHeight = heroBanner.offsetHeight || 660;
-      const clampedScroll = Math.max(0, Math.min(currentScroll, bannerHeight * 1.4));
-      const progress = Math.min(clampedScroll / bannerHeight, 1);
+      // 1. Animation cho Hero Banner chính
+      if (heroBanner && heroImg) {
+        const bannerHeight = heroBanner.offsetHeight || 660;
+        const clampedScroll = Math.max(0, Math.min(currentScroll, bannerHeight * 1.4));
+        const progress = Math.min(clampedScroll / bannerHeight, 1);
 
-      // Dịch chuyển lướt nhẹ theo chiều dọc (Parallax êm) + Thu phóng nhẹ nhàng (1.0 -> 1.055)
-      const translateY = clampedScroll * 0.16;
-      const scale = 1 + progress * 0.055 + introScaleOffset;
+        // Dịch chuyển lướt nhẹ theo chiều dọc (Parallax êm) + Thu phóng nhẹ nhàng (1.0 -> 1.055)
+        const translateY = clampedScroll * 0.16;
+        const scale = 1 + progress * 0.055 + introScaleOffset;
 
-      heroImg.style.transform = `translate3d(0, ${translateY.toFixed(2)}px, 0) scale(${scale.toFixed(4)})`;
+        heroImg.style.transform = `translate3d(0, ${translateY.toFixed(2)}px, 0) scale(${scale.toFixed(4)})`;
+      }
+
+      // 2. Animation cho ảnh Lookbook 4K (thu phóng nhẹ & lướt êm theo nhịp cuộn)
+      if (lookbookWrap && lookbookImg) {
+        const actualScroll = window.scrollY || window.pageYOffset || 0;
+        const rect = lookbookWrap.getBoundingClientRect();
+        const wrapDocTop = rect.top + actualScroll;
+        const wrapHeight = rect.height || 560;
+        const vh = window.innerHeight || 800;
+
+        // Tính tiến trình cuộn qua vùng Lookbook theo vị trí nội suy mượt currentScroll (0 -> 1)
+        const totalTravel = vh + wrapHeight;
+        const rawProgress = (currentScroll + vh - wrapDocTop) / (totalTravel || 1);
+        const lookbookProgress = Math.max(0, Math.min(rawProgress, 1));
+
+        // Trượt dọc nhẹ nhàng (-14px -> +14px) kết hợp thu phóng tinh tế (1.045 -> 1.095)
+        const lookbookTranslateY = (lookbookProgress - 0.5) * 28;
+        const lookbookScale = 1.045 + lookbookProgress * 0.05;
+
+        lookbookImg.style.transform = `translate3d(0, ${lookbookTranslateY.toFixed(2)}px, 0) scale(${lookbookScale.toFixed(4)})`;
+      }
 
       if (Math.abs(diff) > 0.15 || introScaleOffset > 0) {
         rafId = window.requestAnimationFrame(animateFrame);
@@ -73,6 +99,7 @@
     }
 
     window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
 
     // Khởi chạy nhịp mở màn ngay khi tải trang
     rafId = window.requestAnimationFrame(animateFrame);

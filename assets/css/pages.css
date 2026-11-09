@@ -313,6 +313,19 @@
   background-color: #1A1A18;
 }
 
+.lookbook-banner-img {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  object-position: center center;
+  display: block;
+  image-rendering: -webkit-optimize-contrast;
+  will-change: transform;
+  transform-origin: center center;
+  transform: translate3d(0, 0, 0) scale(1.045);
+  backface-visibility: hidden;
+}
+
 .lookbook-model-caption {
   position: absolute;
   left: 14px;
