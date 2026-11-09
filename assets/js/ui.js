@@ -992,7 +992,7 @@ window.HKStore = window.HKStore || {};
           title = "Bảng thông số chọn Size Streetwear";
           content = `
             <div class="size-guide-modal-content">
-              <p>Phom dáng của HK Store thiết kế theo chuẩn Boxy Oversize rộng vai, đứng phom. Nếu muốn mặc gọn vừa người, bạn có thể chọn lùi 1 size.</p>
+              <p>Form dáng của HK Store thiết kế theo chuẩn Boxy Oversize rộng vai, đứng form. Nếu muốn mặc gọn vừa người, bạn có thể chọn lùi 1 size.</p>
               <div style="overflow-x: auto;">
                 <table class="table-size-guide">
                   <thead>

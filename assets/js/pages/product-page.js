@@ -117,7 +117,7 @@
     if (product.category === "ao-khoac" || mat.includes("du") || mat.includes("nylon") || mat.includes("parachute")) {
       return "Giặt tay hoặc giặt máy chế độ nhẹ trong túi giặt, kéo kín khóa kéo, không ủi trực tiếp ở nhiệt độ cao.";
     }
-    return "Giặt nhẹ dưới 30°C, lộn trái khi giặt, không dùng thuốc tẩy mạnh và không sấy nhiệt cao để giữ phom đứng chuẩn.";
+    return "Giặt nhẹ dưới 30°C, lộn trái khi giặt, không dùng thuốc tẩy mạnh và không sấy nhiệt cao để giữ form đứng chuẩn.";
   }
 
   function renderProductDetail() {
@@ -506,7 +506,7 @@
     }
   }
 
-  // Đánh giá thực tế từ khách hàng & Cảm nhận phom dáng (Hỗ trợ lưu thêm đánh giá mới vào localStorage)
+  // Đánh giá thực tế từ khách hàng & Cảm nhận form dáng (Hỗ trợ lưu thêm đánh giá mới vào localStorage)
   function getSeededReviewsForProduct(p) {
     if (p.category === "phu-kien") {
       return [
@@ -524,7 +524,7 @@
           fitSpec: "Đã mua: One size",
           fitFeel: "Dễ điều chỉnh kích cỡ",
           date: "02/10/2026",
-          comment: "Đóng gói chỉn chu, lên phom cứng cáp đúng chất tối giản của HK Store, dùng đi học hay đi chơi đều tiện."
+          comment: "Đóng gói chỉn chu, lên form cứng cáp đúng chất tối giản của HK Store, dùng đi học hay đi chơi đều tiện."
         }
       ];
     }
@@ -535,7 +535,7 @@
           author: "Hoàng Nam",
           rating: 5,
           fitSpec: "1m75 · 68kg · Size L",
-          fitFeel: "Chuẩn phom ống rộng",
+          fitFeel: "Chuẩn form ống rộng",
           date: "18/10/2026",
           comment: "Ống quần suông đứng dáng, phủ nhẹ lên giày sneaker rất đẹp. Lưng quần thoải mái, vải dày không bị nhăn nhàu."
         },
@@ -555,7 +555,7 @@
         author: "Quốc Anh",
         rating: 5,
         fitSpec: "1m74 · 66kg · Size L",
-        fitFeel: "Chuẩn phom Boxy Oversize",
+        fitFeel: "Chuẩn form Boxy Oversize",
         date: "20/10/2026",
         comment: "Vải định lượng cao cầm nặng tay, cổ bo dày không bị bai dão sau khi giặt. Mặc lên rũ vai đúng chất streetwear."
       },
@@ -606,7 +606,7 @@
       <div class="section-header">
         <div>
           <span class="section-subtitle">Trải nghiệm thực tế</span>
-          <h2 class="section-title">ĐÁNH GIÁ &amp; CẢM NHẬN PHOM DÁNG</h2>
+          <h2 class="section-title">ĐÁNH GIÁ &amp; CẢM NHẬN FORM DÁNG</h2>
         </div>
       </div>
 
@@ -622,7 +622,7 @@
 
           <div class="reviews-fit-meter">
             <div style="display: flex; justify-content: space-between; font-weight: 700;">
-              <span>Độ chuẩn phom Streetwear</span>
+              <span>Độ chuẩn form Streetwear</span>
               <span class="tabular-nums">94%</span>
             </div>
             <div class="fit-meter-bar" aria-hidden="true">
@@ -684,9 +684,9 @@
                   <input type="text" id="rev-fit-spec" class="form-control" placeholder="VD: 1m72 · 64kg · Size L" />
                 </div>
                 <div class="form-group">
-                  <label class="form-label" for="rev-fit-feel">Cảm nhận phom dáng</label>
+                  <label class="form-label" for="rev-fit-feel">Cảm nhận form dáng</label>
                   <select id="rev-fit-feel" class="form-control">
-                    <option value="Chuẩn phom Oversize">Chuẩn phom Oversize</option>
+                    <option value="Chuẩn form Oversize">Chuẩn form Oversize</option>
                     <option value="Vừa vặn thoải mái">Vừa vặn thoải mái</option>
                     <option value="Hơi rộng so với bảng size">Hơi rộng so với bảng size</option>
                   </select>
@@ -695,7 +695,7 @@
 
               <div class="form-group">
                 <label class="form-label" for="rev-comment">Chia sẻ chất liệu &amp; trải nghiệm mặc thực tế <span class="required">*</span></label>
-                <textarea id="rev-comment" class="form-control" rows="3" placeholder="Chất vải, đường may, độ đứng phom khi mặc..." required></textarea>
+                <textarea id="rev-comment" class="form-control" rows="3" placeholder="Chất vải, đường may, độ đứng form khi mặc..." required></textarea>
               </div>
 
               <button type="submit" class="btn btn-primary btn-sm">Gửi đánh giá</button>

@@ -8,7 +8,7 @@ Dự án được tối ưu hóa để dễ học, dễ đọc hiểu, dễ tùy
 
 ## 1. TỔNG QUAN VÀ ĐẶC ĐIỂM NỔI BẬT
 
-- **Thương hiệu & Phong cách:** "HK Store" – Streetwear tối giản, hiện đại, phom dáng Boxy Oversize, tông màu than đen `#111111` kết hợp trắng ngà `#F5F5F0`.
+- **Thương hiệu & Phong cách:** "HK Store" – Streetwear tối giản, hiện đại, form dáng Boxy Oversize, tông màu than đen `#111111` kết hợp trắng ngà `#F5F5F0`.
 - **Stack công nghệ thuần túy:** Không sử dụng React, Vue, Angular, Bootstrap, Tailwind, jQuery hay Node.js backend.
 - **Không yêu cầu cài đặt hoặc build:** Không cần chạy `npm install`, `npm run build` hay cài đặt database.
 - **Dữ liệu hạt giống độc lập (No CORS issue):** Dữ liệu mẫu ban đầu được khai báo qua file JavaScript (`seed.js`) thay vì `fetch('data.json')`, cho phép click đúp mở trực tiếp file `index.html` trên trình duyệt mà không bị lỗi CORS chính sách bảo mật cục bộ.

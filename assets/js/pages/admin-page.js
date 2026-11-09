@@ -317,7 +317,7 @@ window.HK_SEED_DATA = {
     ];
 
     const currentVariants = prod ? JSON.parse(JSON.stringify(prod.variants || [])) : [
-      { id: Storage.generateId("var"), sku: "", size: "M", colorName: "Đen Than", colorCode: "#111111", stock: 10 }
+      { id: Storage.generateId("var"), sku: "", size: "M", colorName: "", colorCode: "", stock: "" }
     ];
 
     const modalContent = `
@@ -365,17 +365,17 @@ window.HK_SEED_DATA = {
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
           <div class="form-group">
             <label class="form-label">Chất liệu</label>
-            <input type="text" id="m-prod-material" class="form-control" value="${prod ? Storage.escapeHTML(prod.material || "") : "100% Cotton định lượng cao"}" />
+            <input type="text" id="m-prod-material" class="form-control" value="${prod ? Storage.escapeHTML(prod.material || "") : ""}" />
           </div>
           <div class="form-group">
-            <label class="form-label">Phom dáng</label>
-            <input type="text" id="m-prod-fit" class="form-control" value="${prod ? Storage.escapeHTML(prod.fit || "") : "Boxy Oversize"}" />
+            <label class="form-label">Form dáng</label>
+            <input type="text" id="m-prod-fit" class="form-control" value="${prod ? Storage.escapeHTML(prod.fit || "") : ""}" />
           </div>
         </div>
 
         <div class="form-group">
           <label class="form-label">URL Ảnh sản phẩm (Mỗi ảnh một dòng hoặc cách nhau dấu phẩy)</label>
-          <textarea id="m-prod-images" class="form-control" rows="2">${prod && prod.images ? prod.images.join("\n") : "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=800"}</textarea>
+          <textarea id="m-prod-images" class="form-control" rows="2">${prod && prod.images ? prod.images.join("\n") : ""}</textarea>
         </div>
 
         <div class="form-group">
@@ -408,7 +408,7 @@ window.HK_SEED_DATA = {
     `;
 
     const modal = UI.showModal({
-      title: isEdit ? `Chỉnh sửa: ${prod.name}` : "Thêm Sản phẩm Streetwear Mới",
+      title: isEdit ? `Chỉnh sửa: ${prod.name}` : "Thêm sản phẩm mới",
       content: modalContent,
       confirmText: "Lưu sản phẩm",
       cancelText: "Hủy bỏ",
@@ -428,8 +428,9 @@ window.HK_SEED_DATA = {
         currentVariants[idx].sku = row.querySelector(".v-sku").value.trim();
         currentVariants[idx].size = row.querySelector(".v-size").value;
         currentVariants[idx].colorName = row.querySelector(".v-color-name").value.trim();
-        currentVariants[idx].colorCode = row.querySelector(".v-color-code").value.trim() || "#111111";
-        currentVariants[idx].stock = Number(row.querySelector(".v-stock").value) || 0;
+        currentVariants[idx].colorCode = row.querySelector(".v-color-code").value.trim();
+        const stockVal = row.querySelector(".v-stock").value.trim();
+        currentVariants[idx].stock = stockVal === "" ? "" : Number(stockVal) || 0;
       });
     }
 
@@ -439,7 +440,7 @@ window.HK_SEED_DATA = {
         .map(
           (v, idx) => `
         <tr data-idx="${idx}" data-variant-id="${Storage.escapeHTML(v.id || "")}">
-          <td><input type="text" class="variant-input v-sku" value="${Storage.escapeHTML(v.sku || "")}" placeholder="HK-SKU-01" required /></td>
+          <td><input type="text" class="variant-input v-sku" value="${Storage.escapeHTML(v.sku || "")}" required /></td>
           <td>
             <select class="variant-input v-size">
               <option value="S" ${v.size === "S" ? "selected" : ""}>S</option>
@@ -449,9 +450,9 @@ window.HK_SEED_DATA = {
               <option value="One size" ${v.size === "One size" ? "selected" : ""}>One size</option>
             </select>
           </td>
-          <td><input type="text" class="variant-input v-color-name" value="${Storage.escapeHTML(v.colorName || "")}" placeholder="Đen Than" required /></td>
-          <td><input type="text" class="variant-input v-color-code" value="${Storage.escapeHTML(v.colorCode || "#111111")}" style="max-width: 80px;" /></td>
-          <td><input type="number" class="variant-input v-stock" value="${v.stock !== undefined ? v.stock : 10}" min="0" step="1" required /></td>
+          <td><input type="text" class="variant-input v-color-name" value="${Storage.escapeHTML(v.colorName || "")}" required /></td>
+          <td><input type="text" class="variant-input v-color-code" value="${Storage.escapeHTML(v.colorCode || "")}" style="max-width: 80px;" /></td>
+          <td><input type="number" class="variant-input v-stock" value="${v.stock !== undefined && v.stock !== "" ? v.stock : ""}" min="0" step="1" required /></td>
           <td class="text-center">
             <button type="button" class="btn btn-sm btn-danger js-remove-variant" data-idx="${idx}" aria-label="Xóa biến thể">&times;</button>
           </td>
@@ -482,9 +483,9 @@ window.HK_SEED_DATA = {
           id: Storage.generateId("var"),
           sku: "",
           size: "L",
-          colorName: "Đen Than",
-          colorCode: "#111111",
-          stock: 5
+          colorName: "",
+          colorCode: "",
+          stock: ""
         });
         renderVariantRows();
       });
