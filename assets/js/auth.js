@@ -350,7 +350,7 @@ window.HKStore = window.HKStore || {};
       const code = String(Math.floor(100000 + Math.random() * 900000));
       const otpPayload = {
         email: normalizedEmail,
-        code: code,
+        codeHash: sha256Sync(code + ":" + normalizedEmail),
         expiresAt: Date.now() + OTP_EXPIRY_MS,
         attempts: 0
       };
@@ -415,7 +415,8 @@ window.HKStore = window.HKStore || {};
       }
 
       const cleanCode = String(inputCode || "").trim();
-      if (cleanCode !== pending.code) {
+      const inputHash = sha256Sync(cleanCode + ":" + normalizedEmail);
+      if (inputHash !== pending.codeHash) {
         pending.attempts = (pending.attempts || 0) + 1;
         try {
           sessionStorage.setItem(PENDING_OTP_KEY, JSON.stringify(pending));

@@ -54,9 +54,9 @@
 
           <div class="form-group">
             <label class="form-label" for="reg-email">Địa chỉ Email (Gmail) <span class="required">*</span></label>
-            <input type="email" id="reg-email" class="form-control" autocomplete="email" required placeholder="name@example.com" />
+            <input type="email" id="reg-email" class="form-control" autocomplete="email" required placeholder="name@gmail.com" />
             <small class="form-hint" style="color: var(--color-text-muted); font-size: 0.8rem; margin-top: 4px; display: block;">
-              Mã OTP bảo mật sẽ được gửi đến email này để kích hoạt tài khoản.
+              Mã xác thực OTP 6 chữ số sẽ được gửi trực tiếp về hộp thư Gmail này.
             </small>
           </div>
 
@@ -106,37 +106,27 @@
             </svg>
           </div>
           <h2 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 4px; text-transform: uppercase;">
-            Xác thực hộp thư Gmail
+            Kiểm tra hộp thư Gmail của bạn
           </h2>
           <p class="text-muted" style="font-size: 0.85rem; margin: 0;">
-            Hệ thống đã gửi mã OTP xác nhận gồm 6 chữ số đến email của bạn.
+            Chúng tôi đã gửi email chứa mã xác thực 6 chữ số đến địa chỉ:
           </p>
         </div>
 
         <!-- Hộp hiển thị Email nhận mã -->
         <div class="otp-target-box">
           <div>
-            <span style="font-size: 0.78rem; color: var(--color-text-muted); display: block;">Mã gửi đến email:</span>
-            <span class="otp-email-text" id="otp-display-email">name@example.com</span>
+            <span style="font-size: 0.78rem; color: var(--color-text-muted); display: block;">Hộp thư Gmail nhận mã:</span>
+            <span class="otp-email-text" id="otp-display-email">name@gmail.com</span>
           </div>
           <button type="button" class="btn-link-edit" id="btn-edit-email" title="Quay lại đổi email">
             Đổi email
           </button>
         </div>
 
-        <!-- Banner thông báo mã OTP Demo & Hỗ trợ chấm Đồ án chuyên ngành -->
-        <div class="demo-otp-banner" id="demo-otp-banner">
-          <div>
-            <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 2px;">
-              <span style="font-weight: 800; font-size: 0.82rem;">⚡ MÃ OTP XÁC THỰC:</span>
-              <span class="otp-code-highlight" id="demo-otp-code">------</span>
-            </div>
-            <div style="font-size: 0.76rem; opacity: 0.95;">
-              Hệ thống đã phát mã OTP. Nhấn nút bên cạnh để điền nhanh khi thử nghiệm.
-            </div>
-          </div>
-          <button type="button" class="btn-autofill-otp" id="btn-autofill-otp">Điền mã</button>
-        </div>
+        <p style="font-size: 0.82rem; color: var(--color-text-muted); text-align: center; margin-bottom: var(--space-md); line-height: 1.5;">
+          Vui lòng mở <strong>Gmail</strong> trên điện thoại hoặc máy tính (kiểm tra mục <em>Hộp thư đến</em> hoặc <em>Thư rác / Spam</em>) để lấy mã OTP.
+        </p>
 
         <!-- 6 ô nhập mã OTP -->
         <div class="form-group" style="margin-bottom: 12px;">
