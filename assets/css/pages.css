@@ -8,12 +8,13 @@
   position: relative;
   background-color: #111111;
   color: #FFFFFF;
-  min-height: 700px;
+  min-height: clamp(640px, 96vh, 940px);
   display: flex;
   align-items: center;
-  background-image: url("https://6ae2d7c9faf5cc20900f415a.imgix.net/sandbox/justartandfashion_ssspin.io_1794248443.jpg");
+  background-image: url("https://6ae2d7c9faf5cc20900f415a.imgix.net/sandbox/Jordan-concept-AD-by-Sydney-Patterson-2026.jpg");
   background-size: cover;
-  background-position: center 25%;
+  background-position: center 53%;
+  background-repeat: no-repeat;
 }
 
 .hero-content {
