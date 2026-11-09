@@ -12,9 +12,56 @@
   function initHomePage() {
     UI.initCommonUI("home");
 
+    initHeroScrollAnimation();
     renderNewArrivals();
     renderLookbook();
     renderBestSellers();
+  }
+
+  // Hiệu ứng Animation Parallax & Zoom mượt mà cho Banner khi lướt trang web (60fps)
+  function initHeroScrollAnimation() {
+    const heroBanner = document.querySelector(".hero-banner");
+    const heroImg = document.querySelector(".hero-banner-img");
+    if (!heroBanner || !heroImg) return;
+
+    const prefersReducedMotion =
+      window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReducedMotion) return;
+
+    let ticking = false;
+
+    function updateBannerOnScroll() {
+      const scrollY = window.scrollY || window.pageYOffset || 0;
+      const bannerHeight = heroBanner.offsetHeight || 680;
+
+      if (scrollY <= bannerHeight * 1.25) {
+        const progress = Math.min(Math.max(scrollY / bannerHeight, 0), 1);
+        const translateY = (scrollY * 0.28).toFixed(2);
+        const scale = (1 + progress * 0.09).toFixed(4);
+        const brightness = (1 - progress * 0.18).toFixed(3);
+        const sideInset = (progress * 18).toFixed(1);
+        const radius = (progress * 10).toFixed(1);
+
+        heroImg.style.transform = `translate3d(0, ${translateY}px, 0) scale(${scale})`;
+        heroImg.style.filter = `brightness(${brightness})`;
+        heroBanner.style.clipPath = `inset(0px ${sideInset}px 0px ${sideInset}px round 0px 0px ${radius}px ${radius}px)`;
+      }
+
+      ticking = false;
+    }
+
+    window.addEventListener(
+      "scroll",
+      () => {
+        if (!ticking) {
+          window.requestAnimationFrame(updateBannerOnScroll);
+          ticking = true;
+        }
+      },
+      { passive: true }
+    );
+
+    updateBannerOnScroll();
   }
 
   // Render thẻ sản phẩm HTML (Sử dụng chuẩn Design DNA dùng chung từ UI.renderProductCard)

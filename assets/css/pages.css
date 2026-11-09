@@ -4,12 +4,24 @@
  */
 
 /* 1. TRANG CHỦ (HOME PAGE - Accessible Streetwear Editorial DNA) */
+@keyframes heroBannerReveal {
+  0% {
+    opacity: 0.72;
+    transform: scale(1.06);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 .hero-banner {
   position: relative;
   background-color: #111111;
   color: #FFFFFF;
-  height: clamp(780px, 112vh, 1080px);
-  min-height: 780px;
+  height: calc(100vh - 72px - 4.2cm);
+  min-height: 520px;
+  max-height: calc(780px - 1.5cm);
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -17,6 +29,8 @@
   background-size: cover;
   background-position: center 48%;
   background-repeat: no-repeat;
+  will-change: clip-path;
+  transition: clip-path 0.08s linear;
 }
 
 .hero-banner-img {
@@ -26,6 +40,9 @@
   object-position: center 48%;
   display: block;
   image-rendering: -webkit-optimize-contrast;
+  will-change: transform, filter;
+  transform-origin: center center;
+  animation: heroBannerReveal 1.15s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .hero-content {
