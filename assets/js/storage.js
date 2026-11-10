@@ -36,8 +36,8 @@ window.HKStore = window.HKStore || {};
       }
     },
 
-    // Lưu dữ liệu an toàn vào localStorage
-    set: function (key, value) {
+    // Lưu trực tiếp vào localStorage (không kích hoạt đẩy ngược lên Cloud DB)
+    setRaw: function (key, value) {
       try {
         localStorage.setItem(key, JSON.stringify(value));
         return true;
@@ -52,6 +52,53 @@ window.HKStore = window.HKStore || {};
         }
         return false;
       }
+    },
+
+    // Lưu dữ liệu an toàn vào localStorage & Tự động đồng bộ lên Cloud Database (Supabase PostgreSQL)
+    set: function (key, value) {
+      if (
+        Array.isArray(value) &&
+        (key === KEYS.PRODUCTS || key === KEYS.ORDERS || key === KEYS.USERS)
+      ) {
+        const prevList = Storage.get(key, []);
+        const prevMap = new Map();
+        if (Array.isArray(prevList)) {
+          prevList.forEach((item) => {
+            if (item && item.id) prevMap.set(item.id, item);
+          });
+        }
+        value.forEach((item) => {
+          if (!item || typeof item !== "object" || !item.id) return;
+          const prevItem = prevMap.get(item.id);
+          if (!prevItem) {
+            item._rev = Number(item._rev) || 1;
+          } else {
+            const prevRev = Number(prevItem._rev) || 0;
+            const curRev = Number(item._rev) || 0;
+            const baseRev = Math.max(prevRev, curRev);
+            const clonePrev = { ...prevItem };
+            const cloneCur = { ...item };
+            delete clonePrev._rev;
+            delete cloneCur._rev;
+            if (JSON.stringify(clonePrev) !== JSON.stringify(cloneCur)) {
+              item._rev = baseRev + 1;
+            } else {
+              item._rev = baseRev;
+            }
+          }
+        });
+      }
+
+      const ok = Storage.setRaw(key, value);
+      if (
+        ok &&
+        (key === KEYS.PRODUCTS || key === KEYS.ORDERS || key === KEYS.USERS) &&
+        HK.CloudDB &&
+        typeof HK.CloudDB.schedulePushKey === "function"
+      ) {
+        HK.CloudDB.schedulePushKey(key, value);
+      }
+      return ok;
     },
 
     // Xóa một key
@@ -108,11 +155,24 @@ window.HKStore = window.HKStore || {};
       }
 
       // 2. Khi bạn chỉnh sửa dữ liệu trong source code seed.js:
-      // Tự động nhận diện thay đổi và cập nhật danh sách sản phẩm mới, KHÔNG reset giỏ hàng hay đơn hàng
+      // Hợp nhất sản phẩm mới từ seed.js với các sản phẩm đã thêm trên Cloud DB (không làm mất sản phẩm mới)
       if (savedSeedHash !== null && savedSeedHash !== currentSeedHash) {
-        Storage.set(KEYS.PRODUCTS, window.HK_SEED_DATA.products);
-        Storage.set(KEYS.SEED_HASH, currentSeedHash);
-        console.log("[HKStore] Phát hiện thay đổi trong source code seed.js. Đã tự động cập nhật sản phẩm mới vào web.");
+        const currentProds = Storage.get(KEYS.PRODUCTS, []);
+        const seedProds = Array.isArray(window.HK_SEED_DATA.products) ? window.HK_SEED_DATA.products : [];
+        let deletedIds = [];
+        try {
+          const rawDel = localStorage.getItem("hkstore_v1_deleted_ids");
+          if (rawDel) deletedIds = JSON.parse(rawDel) || [];
+        } catch (e) {}
+        const deletedSet = new Set(deletedIds);
+
+        const seedIds = new Set(seedProds.map((p) => p.id));
+        const customCloudProds = currentProds.filter((p) => p && p.id && !seedIds.has(p.id) && !deletedSet.has(p.id));
+        const filteredSeedProds = seedProds.filter((p) => p && p.id && !deletedSet.has(p.id));
+
+        Storage.setRaw(KEYS.PRODUCTS, [...customCloudProds, ...filteredSeedProds]);
+        Storage.setRaw(KEYS.SEED_HASH, currentSeedHash);
+        console.log("[HKStore] Phát hiện thay đổi trong source code seed.js. Đã hợp nhất sản phẩm mới vào web.");
         return true;
       }
 

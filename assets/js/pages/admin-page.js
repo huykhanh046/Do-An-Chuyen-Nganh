@@ -22,6 +22,28 @@
     UI.setupGlobalEvents();
     setupSidebar();
     switchTab("overview", true);
+
+    const cloudDbBtn = document.getElementById("btn-cloud-db-config");
+    if (cloudDbBtn) {
+      cloudDbBtn.addEventListener("click", () => {
+        if (HKStore.CloudDB && typeof HKStore.CloudDB.openConfigModal === "function") {
+          HKStore.CloudDB.openConfigModal();
+        }
+      });
+    }
+    if (HKStore.CloudDB && typeof HKStore.CloudDB.updateStatusBadge === "function") {
+      HKStore.CloudDB.updateStatusBadge();
+    }
+
+    // Tự động làm mới bảng quản trị khi có dữ liệu mới đồng bộ từ Supabase Cloud (VD: khách đặt đơn từ điện thoại)
+    window.addEventListener("hkstore:cloud-sync", () => {
+      const hasOpenModal = Boolean(document.querySelector(".modal-backdrop"));
+      if (hasOpenModal) return;
+      if (currentTab === "overview") renderOverviewTab();
+      else if (currentTab === "products") renderProductsTab();
+      else if (currentTab === "orders") renderOrdersTab();
+      else if (currentTab === "users") renderUsersTab();
+    });
   }
 
   // Chuyển đổi các Tab quản trị
@@ -286,12 +308,14 @@
         const users = Storage.get(Storage.KEYS.USERS, []);
         const orders = Storage.get(Storage.KEYS.ORDERS, []);
 
+        const cloudCfg = HKStore.CloudDB && typeof HKStore.CloudDB.getConfig === "function" ? HKStore.CloudDB.getConfig() : {};
         const fileContent = `/**
  * HK STORE - STREETWEAR MINIMALIST
  * Dữ liệu hạt giống (Seed Data) chuẩn từ Admin Dashboard.
  * Cập nhật lúc: ${new Date().toLocaleString("vi-VN")}
  */
 window.HK_SEED_DATA = {
+  cloudConfig: ${JSON.stringify(cloudCfg, null, 2)},
   products: ${JSON.stringify(products, null, 2)},
   users: ${JSON.stringify(users, null, 2)},
   orders: ${JSON.stringify(orders, null, 2)}

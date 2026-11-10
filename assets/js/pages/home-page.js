@@ -16,6 +16,11 @@
     renderNewArrivals();
     renderLookbook();
     renderBestSellers();
+
+    window.addEventListener("hkstore:cloud-sync", () => {
+      renderNewArrivals();
+      renderBestSellers();
+    });
   }
 
   // Hiệu ứng Animation thu phóng nhẹ & lướt theo nhịp cuộn trang bằng nội suy quán tính (Smooth Lerp 60fps)

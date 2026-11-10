@@ -256,7 +256,12 @@ window.HKStore = window.HKStore || {};
       const index = allProducts.findIndex((p) => p.id === id);
       if (index === -1) return { success: false, message: "Không tìm thấy sản phẩm." };
 
-      // Xóa hoàn toàn khỏi cơ sở dữ liệu localStorage
+      // Đánh dấu ID đã xóa trên Cloud Database để không bị hồi sinh từ thiết bị khác hoặc seed.js
+      if (HK.CloudDB && typeof HK.CloudDB.markDeleted === "function") {
+        HK.CloudDB.markDeleted(id);
+      }
+
+      // Xóa hoàn toàn khỏi cơ sở dữ liệu localStorage & đẩy lên Cloud DB
       allProducts.splice(index, 1);
       Storage.set(Storage.KEYS.PRODUCTS, allProducts);
 

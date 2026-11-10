@@ -21,6 +21,12 @@
     setupTabs();
     populateProfileForm();
     renderOrdersHistory();
+
+    window.addEventListener("hkstore:cloud-sync", () => {
+      if (!document.querySelector(".modal-backdrop")) {
+        renderOrdersHistory();
+      }
+    });
   }
 
   function setupTabs() {

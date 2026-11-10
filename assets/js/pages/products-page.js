@@ -43,6 +43,10 @@
     setupQuickCategoryPills();
     applyFilterAndRender();
 
+    window.addEventListener("hkstore:cloud-sync", () => {
+      applyFilterAndRender();
+    });
+
     const recentSection = document.getElementById("hk-recently-viewed-catalog");
     if (recentSection && HKStore.Features && HKStore.Features.renderRecentlyViewedSection) {
       HKStore.Features.renderRecentlyViewedSection(recentSection, null);

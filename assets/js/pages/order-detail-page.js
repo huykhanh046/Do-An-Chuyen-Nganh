@@ -38,6 +38,14 @@
 
     renderOrderDetail(order, isAdmin);
 
+    window.addEventListener("hkstore:cloud-sync", () => {
+      if (document.querySelector(".modal-backdrop")) return;
+      const updatedOrder = Orders.getById(orderId);
+      if (updatedOrder) {
+        renderOrderDetail(updatedOrder, isAdmin);
+      }
+    });
+
     const printInvoiceBtn = document.getElementById("btn-detail-print-invoice");
     if (printInvoiceBtn) {
       printInvoiceBtn.addEventListener("click", () => {
