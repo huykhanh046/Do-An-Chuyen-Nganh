@@ -36,16 +36,18 @@ window.HKStore = window.HKStore || {};
     try {
       if (typeof window === "undefined" || !window.location || !window.location.search) return;
       const params = new URLSearchParams(window.location.search);
-      const cloudUrl = (params.get("cloudUrl") || params.get("supabaseUrl") || "").trim();
+      let cloudUrl = (params.get("cloudUrl") || params.get("supabaseUrl") || "").trim();
       const cloudKey = (params.get("cloudKey") || params.get("supabaseKey") || "").trim();
 
-      if (cloudUrl && cloudKey && /^https:\/\/[a-z0-9-]+\.supabase\.co/i.test(cloudUrl)) {
+      cloudUrl = CloudDB ? CloudDB.normalizeUrl(cloudUrl) : cloudUrl;
+
+      if (cloudUrl && cloudKey && /^https:\/\/[a-z0-9_-]+\.supabase\.co/i.test(cloudUrl)) {
         const current = getSavedConfigRaw();
         const updated = {
-          ... DEFAULT_CLOUD_DB_CONFIG,
+          ...DEFAULT_CLOUD_DB_CONFIG,
           ...current,
           enabled: true,
-          supabaseUrl: cloudUrl.replace(/\/+$/, ""),
+          supabaseUrl: cloudUrl,
           supabaseAnonKey: cloudKey
         };
         localStorage.setItem(CONFIG_STORAGE_KEY, JSON.stringify(updated));
@@ -92,6 +94,29 @@ window.HKStore = window.HKStore || {};
   const CloudDB = {
     DELETED_IDS_KEY: DELETED_IDS_KEY,
 
+    // Chuẩn hóa đường dẫn Supabase URL: chấp nhận cả Project Ref (iptztjjkxtigcvnnaign) hoặc Dashboard URL
+    normalizeUrl: function (rawUrl) {
+      let u = String(rawUrl || "").trim().replace(/\/+$/, "");
+      if (!u) return "";
+      // Nếu người dùng dán link Dashboard (VD: https://supabase.com/dashboard/project/xyz/...)
+      const dashMatch = u.match(/supabase\.com\/dashboard\/project\/([a-z0-9_-]+)/i);
+      if (dashMatch) {
+        return `https://${dashMatch[1]}.supabase.co`;
+      }
+      // Nếu người dùng chỉ nhập mỗi mã Project Ref (VD: iptztjjkxtigcvnnaign)
+      if (/^[a-z0-9_-]{12,30}$/i.test(u)) {
+        return `https://${u}.supabase.co`;
+      }
+      // Nếu người dùng gõ xyz.supabase.co mà quên https://
+      if (/^[a-z0-9_-]+\.supabase\.co$/i.test(u)) {
+        return `https://${u}`;
+      }
+      if (!u.startsWith("http://") && !u.startsWith("https://") && u.includes(".")) {
+        return `https://${u}`;
+      }
+      return u;
+    },
+
     getConfig: function () {
       const saved = getSavedConfigRaw();
       const seedCfg = getSeedCloudConfig();
@@ -100,7 +125,7 @@ window.HKStore = window.HKStore || {};
         ...seedCfg,
         ...saved
       };
-      merged.supabaseUrl = String(merged.supabaseUrl || "").trim().replace(/\/+$/, "");
+      merged.supabaseUrl = CloudDB.normalizeUrl(merged.supabaseUrl);
       merged.supabaseAnonKey = String(merged.supabaseAnonKey || "").trim();
       merged.tableName = String(merged.tableName || "hkstore_cloud_state").trim();
       return merged;
@@ -112,7 +137,7 @@ window.HKStore = window.HKStore || {};
         ...current,
         ...newCfg
       };
-      merged.supabaseUrl = String(merged.supabaseUrl || "").trim().replace(/\/+$/, "");
+      merged.supabaseUrl = CloudDB.normalizeUrl(merged.supabaseUrl);
       merged.supabaseAnonKey = String(merged.supabaseAnonKey || "").trim();
       try {
         localStorage.setItem(CONFIG_STORAGE_KEY, JSON.stringify(merged));
@@ -123,11 +148,12 @@ window.HKStore = window.HKStore || {};
 
     isConfigured: function () {
       const cfg = CloudDB.getConfig();
+      const normalizedUrl = CloudDB.normalizeUrl(cfg.supabaseUrl);
       return Boolean(
         cfg.enabled &&
-          cfg.supabaseUrl &&
+          normalizedUrl &&
           cfg.supabaseAnonKey &&
-          /^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(cfg.supabaseUrl)
+          /^https:\/\/[a-z0-9_-]+\.supabase\.co$/i.test(normalizedUrl)
       );
     },
 
@@ -270,12 +296,20 @@ window.HKStore = window.HKStore || {};
     // Kiểm tra kết nối tới bảng PostgreSQL trên Supabase
     testConnection: async function (customCfg = null) {
       const cfg = customCfg || CloudDB.getConfig();
-      const cleanUrl = String(cfg.supabaseUrl || "").trim().replace(/\/+$/, "");
+      const rawUrl = String(cfg.supabaseUrl || "").trim();
+      const cleanUrl = CloudDB.normalizeUrl(rawUrl);
       const cleanKey = String(cfg.supabaseAnonKey || "").trim();
       const table = String(cfg.tableName || "hkstore_cloud_state").trim();
 
       if (!cleanUrl || !cleanKey) {
         return { success: false, message: "Vui lòng nhập đầy đủ Supabase Project URL và Anon Public Key." };
+      }
+
+      if (!/^https:\/\/[a-z0-9_-]+\.supabase\.co$/i.test(cleanUrl)) {
+        return {
+          success: false,
+          message: "Project URL không hợp lệ. Vui lòng nhập đường dẫn có dạng https://xxxx.supabase.co"
+        };
       }
 
       try {
@@ -289,19 +323,30 @@ window.HKStore = window.HKStore || {};
 
         if (!res.ok) {
           let errMsg = `HTTP ${res.status}`;
+          let isJson = false;
           try {
             const errData = await res.json();
-            errMsg = errData.message || errData.error || errMsg;
+            isJson = true;
+            errMsg = errData.message || errData.hint || errData.error || errMsg;
           } catch (e) {}
 
-          if (res.status === 404 || /relation .* does not exist|Could not find the table/i.test(errMsg)) {
+          // Chỉ coi là thiếu bảng nếu phản hồi từ Supabase PostgREST xác nhận bảng chưa tồn tại
+          if (isJson && (res.status === 404 || /relation .* does not exist|Could not find the table/i.test(errMsg))) {
             return {
               success: false,
               missingTable: true,
               message: `Kết nối Supabase thành công nhưng chưa có bảng "${table}". Vui lòng copy đoạn mã SQL ở Bước 1 và chạy trong Supabase SQL Editor!`
             };
           }
-          return { success: false, message: `Lỗi xác thực Supabase: ${errMsg}` };
+
+          if (res.status === 401 || res.status === 403 || /JWT|API key/i.test(errMsg)) {
+            return {
+              success: false,
+              message: `Khóa Anon Public Key không hợp lệ hoặc đã hết hạn (${errMsg}). Vui lòng kiểm tra lại Anon Key trong Project Settings -> API.`
+            };
+          }
+
+          return { success: false, message: `Lỗi kết nối Supabase: ${errMsg}` };
         }
 
         const rows = await res.json();
@@ -313,7 +358,7 @@ window.HKStore = window.HKStore || {};
       } catch (err) {
         return {
           success: false,
-          message: "Không thể kết nối tới Supabase URL. Vui lòng kiểm tra lại đường dẫn Project URL."
+          message: `Không thể kết nối tới "${cleanUrl}". Vui lòng kiểm tra lại đường dẫn Project URL và kết nối mạng.`
         };
       }
     },
@@ -646,26 +691,34 @@ WHERE key = 'hkstore_v1_orders';`;
           </div>
 
           <div style="margin-bottom: 10px;">
-            <strong style="font-size: 0.8rem; display: block; margin-bottom: 6px;">
-              Bước 2: Nhập thông tin kết nối (Project Settings &rarr; API)
-            </strong>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 6px;">
+              <strong style="font-size: 0.8rem;">
+                Bước 2: Lấy URL &amp; Key trong Supabase (Project Settings &rarr; API)
+              </strong>
+              <small style="color: var(--color-text-muted); font-size: 0.74rem;">
+                Bấm biểu tượng ⚙️ góc dưới trái Supabase &rarr; chọn <strong>API</strong>
+              </small>
+            </div>
             <div class="form-group" style="margin-bottom: 8px;">
               <label class="form-label" style="font-size: 0.78rem;">Supabase Project URL <span class="required">*</span></label>
               <input
-                type="url"
+                type="text"
                 id="cloud-db-supabase-url"
                 class="form-control"
-                placeholder="https://abcdefghijklm.supabase.co"
+                placeholder="https://abcdefghijklm.supabase.co (hoặc dán mã Project Ref)"
                 value="${esc(cfg.supabaseUrl)}"
               />
+              <small style="font-size: 0.72rem; color: var(--color-text-muted); display: block; margin-top: 2px;">
+                * Hệ thống tự động nhận diện nếu bạn dán mã Project Ref (VD: <code>iptztjjkxtigcvnnaign</code>) hoặc URL Dashboard.
+              </small>
             </div>
             <div class="form-group" style="margin-bottom: 8px;">
-              <label class="form-label" style="font-size: 0.78rem;">Supabase Anon Public Key (<code>anon</code> <code>public</code>) <span class="required">*</span></label>
+              <label class="form-label" style="font-size: 0.78rem;">Supabase Anon Public Key (<code>anon</code> <code>public</code> hoặc <code>sb_publishable_...</code>) <span class="required">*</span></label>
               <input
                 type="text"
                 id="cloud-db-supabase-key"
                 class="form-control"
-                placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9... hoặc sb_publishable_..."
                 value="${esc(cfg.supabaseAnonKey)}"
                 style="font-family: monospace; font-size: 0.78rem;"
               />
@@ -703,7 +756,8 @@ WHERE key = 'hkstore_v1_orders';`;
         confirmText: "Lưu & Đồng bộ lên Cloud",
         cancelText: "Đóng",
         onConfirm: () => {
-          const urlVal = (document.getElementById("cloud-db-supabase-url")?.value || "").trim().replace(/\/+$/, "");
+          const rawUrl = document.getElementById("cloud-db-supabase-url")?.value || "";
+          const urlVal = CloudDB.normalizeUrl(rawUrl);
           const keyVal = (document.getElementById("cloud-db-supabase-key")?.value || "").trim();
 
           if (!urlVal && !keyVal) {
@@ -712,12 +766,12 @@ WHERE key = 'hkstore_v1_orders';`;
             return true;
           }
 
-          if (!/^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(urlVal)) {
+          if (!/^https:\/\/[a-z0-9_-]+\.supabase\.co$/i.test(urlVal)) {
             HK.UI.showToast("Project URL không hợp lệ (Ví dụ đúng: https://abcdefgh.supabase.co)", "error");
             return false;
           }
-          if (keyVal.length < 20) {
-            HK.UI.showToast("Vui lòng dán đúng chuỗi Anon Public Key từ Supabase.", "error");
+          if (keyVal.length < 15) {
+            HK.UI.showToast("Vui lòng dán đúng chuỗi Anon Public Key (anon public) từ Supabase.", "error");
             return false;
           }
 
@@ -730,7 +784,7 @@ WHERE key = 'hkstore_v1_orders';`;
           HK.UI.showToast("Đang kiểm tra và đồng bộ dữ liệu lên Supabase PostgreSQL...", "info");
           CloudDB.testConnection().then(async (testRes) => {
             if (!testRes.success) {
-              HK.UI.showToast(testRes.message, "error", 6000);
+              HK.UI.showToast(testRes.message, "error", 7000);
               return;
             }
             await CloudDB.pushAll();
@@ -742,6 +796,18 @@ WHERE key = 'hkstore_v1_orders';`;
       });
 
       setTimeout(() => {
+        const urlInput = document.getElementById("cloud-db-supabase-url");
+        if (urlInput) {
+          const handleAutoFormat = () => {
+            const normalized = CloudDB.normalizeUrl(urlInput.value);
+            if (normalized && normalized !== urlInput.value && normalized.includes(".supabase.co")) {
+              urlInput.value = normalized;
+            }
+          };
+          urlInput.addEventListener("blur", handleAutoFormat);
+          urlInput.addEventListener("change", handleAutoFormat);
+        }
+
         const copySqlBtn = document.getElementById("btn-copy-supabase-sql");
         if (copySqlBtn) {
           copySqlBtn.addEventListener("click", () => {
@@ -761,8 +827,14 @@ WHERE key = 'hkstore_v1_orders';`;
         const resultEl = document.getElementById("cloud-db-test-result");
         if (testBtn) {
           testBtn.addEventListener("click", async () => {
-            const urlVal = (document.getElementById("cloud-db-supabase-url")?.value || "").trim().replace(/\/+$/, "");
+            const rawUrl = document.getElementById("cloud-db-supabase-url")?.value || "";
+            const urlVal = CloudDB.normalizeUrl(rawUrl);
             const keyVal = (document.getElementById("cloud-db-supabase-key")?.value || "").trim();
+
+            if (urlInput && urlVal && urlVal !== urlInput.value) {
+              urlInput.value = urlVal;
+            }
+
             testBtn.disabled = true;
             testBtn.textContent = "Đang kiểm tra...";
             if (resultEl) {
@@ -791,8 +863,12 @@ WHERE key = 'hkstore_v1_orders';`;
         const syncNowBtn = document.getElementById("btn-force-sync-supabase");
         if (syncNowBtn) {
           syncNowBtn.addEventListener("click", async () => {
-            const urlVal = (document.getElementById("cloud-db-supabase-url")?.value || "").trim().replace(/\/+$/, "");
+            const rawUrl = document.getElementById("cloud-db-supabase-url")?.value || "";
+            const urlVal = CloudDB.normalizeUrl(rawUrl);
             const keyVal = (document.getElementById("cloud-db-supabase-key")?.value || "").trim();
+            if (urlInput && urlVal && urlVal !== urlInput.value) {
+              urlInput.value = urlVal;
+            }
             if (urlVal && keyVal) {
               CloudDB.setConfig({ enabled: true, supabaseUrl: urlVal, supabaseAnonKey: keyVal });
             }
