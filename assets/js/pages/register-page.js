@@ -490,6 +490,12 @@
 
       if (regRes.success) {
         clearInterval(countdownInterval);
+        if (EmailService && typeof EmailService.sendWelcomeEmail === "function") {
+          EmailService.sendWelcomeEmail({
+            toEmail: pendingRegistrationData.email,
+            toName: pendingRegistrationData.fullName
+          }).catch(() => {});
+        }
         UI.showToast("Xác thực Gmail & đăng ký tài khoản thành công!", "success", 3000);
 
         setTimeout(() => {

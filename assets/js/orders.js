@@ -184,6 +184,11 @@ window.HKStore = window.HKStore || {};
       // 6. XÓA SẠCH GIỎ HÀNG CỦA TÀI KHOẢN SAU KHI ĐẶT THÀNH CÔNG
       HK.Cart.clearCart(currentUser.id);
 
+      // 7. GỬI EMAIL XÁC NHẬN ĐƠN HÀNG & HÓA ĐƠN CHI TIẾT VỀ GMAIL KHÁCH HÀNG (BẤT ĐỒNG BỘ)
+      if (HK.EmailService && typeof HK.EmailService.sendOrderConfirmationEmail === "function") {
+        HK.EmailService.sendOrderConfirmationEmail(newOrder).catch(() => {});
+      }
+
       return {
         success: true,
         order: newOrder,
@@ -303,7 +308,25 @@ window.HKStore = window.HKStore || {};
       orders[index] = order;
       Storage.set(Storage.KEYS.ORDERS, orders);
 
-      return { success: true, order: order, message: "Đã cập nhật trạng thái đơn hàng." };
+      // Tự động gửi email thông báo khi đơn hàng chuyển sang "Đang giao hàng" (shipping) hoặc "Giao thành công" (delivered)
+      if (
+        (newStatus === "shipping" || newStatus === "delivered") &&
+        HK.EmailService &&
+        typeof HK.EmailService.sendOrderStatusEmail === "function"
+      ) {
+        HK.EmailService.sendOrderStatusEmail(order, newStatus).catch(() => {});
+      }
+
+      return {
+        success: true,
+        order: order,
+        message:
+          newStatus === "shipping"
+            ? "Đã chuyển sang Đang giao hàng & gửi Email thông báo cho khách!"
+            : newStatus === "delivered"
+            ? "Đã xác nhận Giao thành công & gửi Email cảm ơn cho khách!"
+            : "Đã cập nhật trạng thái đơn hàng."
+      };
     },
 
     // Cập nhật Mã vận đơn giao hàng & Đơn vị vận chuyển (Admin)
@@ -331,6 +354,15 @@ window.HKStore = window.HKStore || {};
 
       orders[index] = order;
       Storage.set(Storage.KEYS.ORDERS, orders);
+
+      // Nếu đơn hàng đang ở trạng thái Đang giao hàng, gửi email cập nhật mã vận đơn mới cho khách
+      if (
+        order.orderStatus === "shipping" &&
+        HK.EmailService &&
+        typeof HK.EmailService.sendOrderStatusEmail === "function"
+      ) {
+        HK.EmailService.sendOrderStatusEmail(order, "shipping").catch(() => {});
+      }
 
       return {
         success: true,
@@ -368,7 +400,17 @@ window.HKStore = window.HKStore || {};
       orders[index].updatedAt = new Date().toISOString();
 
       Storage.set(Storage.KEYS.ORDERS, orders);
-      return { success: true, order: orders[index], message: "Đã xác nhận giao hàng và thu tiền COD thành công." };
+
+      // Gửi email thông báo Giao hàng thành công về Gmail khách hàng
+      if (HK.EmailService && typeof HK.EmailService.sendOrderStatusEmail === "function") {
+        HK.EmailService.sendOrderStatusEmail(orders[index], "delivered").catch(() => {});
+      }
+
+      return {
+        success: true,
+        order: orders[index],
+        message: "Đã xác nhận giao hàng, thu tiền COD & gửi Email thông báo cho khách!"
+      };
     },
 
     // Xác nhận đã hoàn tiền mô phỏng (Admin)

@@ -123,6 +123,22 @@
 
     if (totalEl) totalEl.textContent = Storage.formatCurrency(order.total);
     if (detailLink) detailLink.href = `order-detail.html?id=${order.id}`;
+
+    const emailBanner = document.getElementById("success-email-banner");
+    if (emailBanner && order.customerInfo && order.customerInfo.email) {
+      emailBanner.innerHTML = `
+        <strong>📧 Đã gửi Email xác nhận &amp; Hóa đơn điện tử:</strong> Thông tin chi tiết đơn hàng <strong>#${Storage.escapeHTML(order.id)}</strong> kèm link theo dõi vận đơn đã được gửi tự động tới hộp thư <strong>${Storage.escapeHTML(order.customerInfo.email)}</strong>.
+      `;
+    }
+
+    const printBtn = document.getElementById("btn-success-print-invoice");
+    if (printBtn) {
+      printBtn.addEventListener("click", () => {
+        if (HKStore.EmailService && typeof HKStore.EmailService.openPrintableInvoicePDF === "function") {
+          HKStore.EmailService.openPrintableInvoicePDF(order);
+        }
+      });
+    }
   }
 
   document.addEventListener("DOMContentLoaded", initOrderSuccessPage);

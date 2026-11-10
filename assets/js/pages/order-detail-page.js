@@ -37,6 +37,24 @@
     }
 
     renderOrderDetail(order, isAdmin);
+
+    const printInvoiceBtn = document.getElementById("btn-detail-print-invoice");
+    if (printInvoiceBtn) {
+      printInvoiceBtn.addEventListener("click", () => {
+        if (HKStore.EmailService && typeof HKStore.EmailService.openPrintableInvoicePDF === "function") {
+          HKStore.EmailService.openPrintableInvoicePDF(order);
+        }
+      });
+    }
+
+    // Nếu người dùng mở từ nút "Tải Hóa Đơn PDF" trong Gmail (?invoice=pdf)
+    if (Storage.getUrlParam("invoice") === "pdf") {
+      setTimeout(() => {
+        if (HKStore.EmailService && typeof HKStore.EmailService.openPrintableInvoicePDF === "function") {
+          HKStore.EmailService.openPrintableInvoicePDF(order);
+        }
+      }, 350);
+    }
   }
 
   function renderError(message) {

@@ -262,6 +262,16 @@
     if (searchInput) searchInput.oninput = filterAndRender;
     if (catSelect) catSelect.onchange = filterAndRender;
 
+    // Nút Cấu hình Cloud Media Storage
+    const cloudCfgBtn = document.getElementById("btn-cloud-media-config");
+    if (cloudCfgBtn) {
+      cloudCfgBtn.onclick = () => {
+        if (HKStore.MediaStorage && typeof HKStore.MediaStorage.openConfigModal === "function") {
+          HKStore.MediaStorage.openConfigModal();
+        }
+      };
+    }
+
     // Nút Thêm sản phẩm mới
     const addBtn = document.getElementById("btn-add-product");
     if (addBtn) {
@@ -376,8 +386,40 @@ window.HK_SEED_DATA = {
         </div>
 
         <div class="form-group">
-          <label class="form-label">URL Ảnh sản phẩm (Mỗi ảnh một dòng hoặc cách nhau dấu phẩy)</label>
-          <textarea id="m-prod-images" class="form-control" rows="2">${prod && prod.images ? prod.images.join("\n") : ""}</textarea>
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 6px;">
+            <label class="form-label" style="margin-bottom: 0;">Hình ảnh sản phẩm (Cloud Media Storage &amp; CDN)</label>
+            <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+              <input type="file" id="m-prod-file-input" accept="image/*" multiple style="display: none;" />
+              <button type="button" class="btn btn-primary btn-sm" id="btn-trigger-cloud-upload" style="padding: 5px 12px; font-size: 0.78rem;">
+                📤 Tải ảnh từ máy tính
+              </button>
+              <button type="button" class="btn btn-secondary btn-sm" id="btn-config-cloud-in-modal" style="padding: 5px 10px; font-size: 0.75rem;" title="Cấu hình Cloudinary / Supabase Storage / ImgBB">
+                ⚙️ Cấu hình Cloud
+              </button>
+            </div>
+          </div>
+
+          <div
+            id="m-prod-dropzone"
+            style="border: 1.5px dashed var(--color-border-dark); background: var(--color-bg); border-radius: 4px; padding: 12px; text-align: center; cursor: pointer; transition: all 0.2s; margin-bottom: 8px;"
+          >
+            <div style="font-size: 0.83rem; font-weight: 700; color: var(--color-primary);">
+              Bấm vào đây để chọn tệp ảnh từ máy tính hoặc Kéo &amp; Thả nhiều ảnh vào khung này
+            </div>
+            <div class="text-muted" id="m-prod-upload-status" style="font-size: 0.75rem; margin-top: 3px;">
+              Hỗ trợ JPG, PNG, WEBP, AVIF • Tự động đẩy lên Cloud CDN (Cloudinary / Supabase / Smart HD WebP)
+            </div>
+          </div>
+
+          <div
+            id="m-prod-images-preview"
+            style="display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 8px; margin-bottom: 8px;"
+          ></div>
+
+          <label class="form-label" style="font-size: 0.75rem; color: var(--color-text-muted); margin-bottom: 4px;">
+            Danh sách Link CDN / URL Ảnh (Mỗi ảnh một dòng hoặc tự động điền khi tải ảnh từ máy):
+          </label>
+          <textarea id="m-prod-images" class="form-control" rows="2" placeholder="Tải ảnh từ máy tính hoặc dán URL ảnh CDN vào đây...">${prod && prod.images ? prod.images.join("\n") : ""}</textarea>
         </div>
 
         <div class="form-group">
@@ -494,6 +536,178 @@ window.HK_SEED_DATA = {
     }
 
     renderVariantRows();
+
+    // =========================================================================
+    // CLOUD MEDIA STORAGE UPLOADER & LIVE THUMBNAIL PREVIEW
+    // =========================================================================
+    const fileInput = document.getElementById("m-prod-file-input");
+    const uploadBtn = document.getElementById("btn-trigger-cloud-upload");
+    const configCloudBtn = document.getElementById("btn-config-cloud-in-modal");
+    const dropzone = document.getElementById("m-prod-dropzone");
+    const uploadStatusEl = document.getElementById("m-prod-upload-status");
+    const imagesTextarea = document.getElementById("m-prod-images");
+    const previewGrid = document.getElementById("m-prod-images-preview");
+
+    function getImagesArrayFromTextarea() {
+      if (!imagesTextarea) return [];
+      return imagesTextarea.value
+        .split(/[\n,]+/)
+        .map((s) => s.trim())
+        .filter((s) => s !== "");
+    }
+
+    function setImagesArrayToTextarea(arr) {
+      if (!imagesTextarea) return;
+      imagesTextarea.value = arr.join("\n");
+      renderImagesPreviewGrid();
+    }
+
+    function renderImagesPreviewGrid() {
+      if (!previewGrid) return;
+      const urls = getImagesArrayFromTextarea();
+      if (urls.length === 0) {
+        previewGrid.innerHTML = "";
+        return;
+      }
+
+      previewGrid.innerHTML = urls
+        .map(
+          (url, idx) => `
+          <div style="position: relative; border: 1px solid ${idx === 0 ? "#111" : "var(--color-border)"}; border-radius: 4px; overflow: hidden; background: #fff;">
+            <img
+              src="${Storage.escapeHTML(url)}"
+              alt="Ảnh ${idx + 1}"
+              style="width: 100%; aspect-ratio: 3/4; object-fit: cover; display: block;"
+              onerror="this.src='assets/images/placeholder.svg'"
+            />
+            <div style="position: absolute; top: 4px; left: 4px; right: 4px; display: flex; justify-content: space-between; align-items: center;">
+              ${
+                idx === 0
+                  ? `<span style="background: #111; color: #fff; font-size: 0.62rem; font-weight: 800; padding: 2px 5px; border-radius: 2px;">ẢNH CHÍNH</span>`
+                  : `<button type="button" class="js-set-primary-img" data-idx="${idx}" title="Đặt làm ảnh chính" style="background: rgba(255,255,255,0.92); color: #111; border: 1px solid #ccc; font-size: 0.62rem; font-weight: 700; padding: 1px 5px; border-radius: 2px; cursor: pointer;">Đặt chính</button>`
+              }
+              <button
+                type="button"
+                class="js-remove-img-thumb"
+                data-idx="${idx}"
+                title="Xóa ảnh này"
+                style="background: rgba(198, 40, 40, 0.92); color: #fff; border: none; width: 20px; height: 20px; border-radius: 50%; font-size: 0.78rem; font-weight: 800; line-height: 1; cursor: pointer;"
+              >&times;</button>
+            </div>
+          </div>
+        `
+        )
+        .join("");
+
+      previewGrid.querySelectorAll(".js-remove-img-thumb").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const idx = Number(btn.getAttribute("data-idx"));
+          const current = getImagesArrayFromTextarea();
+          current.splice(idx, 1);
+          setImagesArrayToTextarea(current);
+        });
+      });
+
+      previewGrid.querySelectorAll(".js-set-primary-img").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const idx = Number(btn.getAttribute("data-idx"));
+          const current = getImagesArrayFromTextarea();
+          if (idx > 0 && idx < current.length) {
+            const [picked] = current.splice(idx, 1);
+            current.unshift(picked);
+            setImagesArrayToTextarea(current);
+            UI.showToast("Đã đặt làm ảnh đại diện chính của sản phẩm!", "info");
+          }
+        });
+      });
+    }
+
+    async function handleSelectedImageFiles(fileList) {
+      if (!fileList || fileList.length === 0) return;
+      if (!HKStore.MediaStorage || typeof HKStore.MediaStorage.uploadFiles !== "function") {
+        UI.showToast("Mô-đun Cloud Media Storage chưa sẵn sàng.", "error");
+        return;
+      }
+
+      if (uploadBtn) {
+        uploadBtn.disabled = true;
+        uploadBtn.textContent = "Đang tải lên Cloud...";
+      }
+
+      const res = await HKStore.MediaStorage.uploadFiles(fileList, (statusText) => {
+        if (uploadStatusEl) {
+          uploadStatusEl.textContent = statusText;
+          uploadStatusEl.style.color = "#1B6E32";
+          uploadStatusEl.style.fontWeight = "700";
+        }
+      });
+
+      if (uploadBtn) {
+        uploadBtn.disabled = false;
+        uploadBtn.textContent = "📤 Tải ảnh từ máy tính";
+      }
+
+      if (res.urls && res.urls.length > 0) {
+        const existing = getImagesArrayFromTextarea();
+        const combined = [...existing, ...res.urls];
+        setImagesArrayToTextarea(combined);
+        const providerNames = (res.providers || []).join(", ");
+        if (uploadStatusEl) {
+          uploadStatusEl.textContent = `✓ Đã tải thành công ${res.urls.length} ảnh lên ${providerNames || "Cloud CDN"}!`;
+        }
+        UI.showToast(`Đã tải ${res.urls.length} ảnh từ máy tính lên ${providerNames || "Cloud CDN"}!`, "success");
+      }
+
+      if (res.errors && res.errors.length > 0) {
+        UI.showToast(res.errors[0], "error");
+      }
+    }
+
+    if (uploadBtn && fileInput) {
+      uploadBtn.addEventListener("click", () => fileInput.click());
+    }
+    if (dropzone && fileInput) {
+      dropzone.addEventListener("click", () => fileInput.click());
+      dropzone.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        dropzone.style.borderColor = "#111";
+        dropzone.style.backgroundColor = "#EFEFEA";
+      });
+      dropzone.addEventListener("dragleave", () => {
+        dropzone.style.borderColor = "var(--color-border-dark)";
+        dropzone.style.backgroundColor = "var(--color-bg)";
+      });
+      dropzone.addEventListener("drop", (e) => {
+        e.preventDefault();
+        dropzone.style.borderColor = "var(--color-border-dark)";
+        dropzone.style.backgroundColor = "var(--color-bg)";
+        if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+          handleSelectedImageFiles(e.dataTransfer.files);
+        }
+      });
+    }
+    if (fileInput) {
+      fileInput.addEventListener("change", () => {
+        if (fileInput.files && fileInput.files.length > 0) {
+          handleSelectedImageFiles(fileInput.files);
+          fileInput.value = "";
+        }
+      });
+    }
+    if (configCloudBtn) {
+      configCloudBtn.addEventListener("click", () => {
+        if (HKStore.MediaStorage && typeof HKStore.MediaStorage.openConfigModal === "function") {
+          HKStore.MediaStorage.openConfigModal();
+        }
+      });
+    }
+    if (imagesTextarea) {
+      imagesTextarea.addEventListener("input", renderImagesPreviewGrid);
+    }
+
+    renderImagesPreviewGrid();
   }
 
   function saveProductFromModal(existingId, modal) {
@@ -708,9 +922,17 @@ window.HK_SEED_DATA = {
             <span>Mã đơn: <strong>${order.id}</strong></span>
             <span>Ngày đặt: ${Storage.formatDate(order.createdAt)}</span>
           </div>
-          <div>Khách hàng: <strong>${Storage.escapeHTML(order.customerInfo.fullName)}</strong> (${Storage.escapeHTML(order.customerInfo.phone)})</div>
+          <div>Khách hàng: <strong>${Storage.escapeHTML(order.customerInfo.fullName)}</strong> (${Storage.escapeHTML(order.customerInfo.phone)}) • <span class="text-muted">${Storage.escapeHTML(order.customerInfo.email || "")}</span></div>
           <div>Địa chỉ: ${Storage.escapeHTML(order.customerInfo.address)}</div>
           ${order.customerInfo.note ? `<div>Ghi chú: <em>${Storage.escapeHTML(order.customerInfo.note)}</em></div>` : ""}
+          <div style="margin-top: 10px; padding-top: 8px; border-top: 1px dashed var(--color-border); display: flex; gap: 8px; flex-wrap: wrap;">
+            <button type="button" class="btn btn-secondary btn-sm js-admin-print-invoice" style="font-size: 0.76rem; padding: 4px 10px;">
+              📄 Xuất / Tải Hóa đơn PDF
+            </button>
+            <button type="button" class="btn btn-secondary btn-sm js-admin-resend-email" style="font-size: 0.76rem; padding: 4px 10px;">
+              📧 Gửi lại Email Hóa đơn &amp; Vận đơn về Gmail khách
+            </button>
+          </div>
         </div>
 
         <div>
@@ -980,6 +1202,42 @@ window.HK_SEED_DATA = {
         UI.showToast(res.message, "success");
         renderOrdersTab();
         renderOverviewTab();
+      });
+    }
+
+    // Sự kiện Xuất Hóa đơn PDF (Admin)
+    const printInvoiceBtn = document.querySelector(".js-admin-print-invoice");
+    if (printInvoiceBtn) {
+      printInvoiceBtn.addEventListener("click", () => {
+        if (HKStore.EmailService && typeof HKStore.EmailService.openPrintableInvoicePDF === "function") {
+          HKStore.EmailService.openPrintableInvoicePDF(order);
+        }
+      });
+    }
+
+    // Sự kiện Gửi lại Email xác nhận / vận đơn về Gmail khách hàng
+    const resendEmailBtn = document.querySelector(".js-admin-resend-email");
+    if (resendEmailBtn) {
+      resendEmailBtn.addEventListener("click", async () => {
+        if (!HKStore.EmailService) return;
+        resendEmailBtn.disabled = true;
+        resendEmailBtn.textContent = "Đang gửi Email...";
+
+        let mailRes;
+        if (order.orderStatus === "shipping" || order.orderStatus === "delivered") {
+          mailRes = await HKStore.EmailService.sendOrderStatusEmail(order, order.orderStatus);
+        } else {
+          mailRes = await HKStore.EmailService.sendOrderConfirmationEmail(order);
+        }
+
+        resendEmailBtn.disabled = false;
+        resendEmailBtn.textContent = "📧 Gửi lại Email Hóa đơn & Vận đơn về Gmail khách";
+
+        if (mailRes && mailRes.success) {
+          UI.showToast(`Đã gửi Email thông báo đơn #${order.id} tới ${order.customerInfo.email}!`, "success");
+        } else {
+          UI.showToast((mailRes && mailRes.message) || "Không thể gửi email lúc này.", "error");
+        }
       });
     }
 
