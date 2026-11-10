@@ -29,6 +29,15 @@ window.HKStore = window.HKStore || {};
     },
 
     // Nạp phông chữ Google Fonts chuẩn Design DNA (Montserrat toàn diện) với fallback an toàn khi offline
+    injectChatbotCSS: function () {
+      if (document.getElementById("hk-chatbot-css")) return;
+      const link = document.createElement("link");
+      link.id = "hk-chatbot-css";
+      link.rel = "stylesheet";
+      link.href = "assets/css/chatbot.css?v=20261110v12";
+      document.head.appendChild(link);
+    },
+
     injectDesignDNAFonts: function () {
       if (document.getElementById("hk-design-dna-fonts")) return;
       const link = document.createElement("link");
@@ -42,6 +51,7 @@ window.HKStore = window.HKStore || {};
     // Khởi tạo giao diện chung (Header, Footer, Toast Container, Event Listeners, Number Counters, Scroll Reveals, Fashion Features)
     initCommonUI: function (activeNavKey = "") {
       UI.injectDesignDNAFonts();
+      UI.injectChatbotCSS();
       UI.renderHeader(activeNavKey);
       UI.renderFooter();
       UI.initToastContainer();
@@ -53,6 +63,9 @@ window.HKStore = window.HKStore || {};
       UI.initScrollReveals();
       if (HK.Features && typeof HK.Features.init === "function") {
         HK.Features.init();
+      }
+      if (HK.Chatbot && typeof HK.Chatbot.init === "function") {
+        HK.Chatbot.init();
       }
     },
 
