@@ -34,7 +34,7 @@ window.HKStore = window.HKStore || {};
       const link = document.createElement("link");
       link.id = "hk-chatbot-css";
       link.rel = "stylesheet";
-      link.href = "assets/css/chatbot.css?v=20261110v12";
+      link.href = "assets/css/chatbot.css?v=20261110v13";
       document.head.appendChild(link);
     },
 

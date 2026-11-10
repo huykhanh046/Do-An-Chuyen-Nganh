@@ -121,7 +121,7 @@ Bạn cần tư vấn phong cách gì hôm nay?`,
         </div>
         <div class="hk-chatbot-launcher-text">
           <span class="hk-chatbot-launcher-title">HK Store AI</span>
-          <span class="hk-chatbot-launcher-sub">Tư vấn size &amp; đồ 24/7</span>
+          <span class="hk-chatbot-launcher-sub">Hotline : 0965 811 846</span>
         </div>
       </button>
 
