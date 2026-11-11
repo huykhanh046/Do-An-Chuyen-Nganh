@@ -16,11 +16,11 @@ window.HKStore = window.HKStore || {};
   const CONFIG_STORAGE_KEY = "hkstore_v1_cloud_db_config";
   const DELETED_IDS_KEY = "hkstore_v1_deleted_ids";
 
-  // Cấu hình Supabase PostgreSQL mặc định (Có thể điền trực tiếp tại đây để mọi thiết bị tự nhận)
+  // Cấu hình Supabase PostgreSQL mặc định (Dành riêng cho dự án của bạn trên Supabase)
   const DEFAULT_CLOUD_DB_CONFIG = {
     enabled: true,
     provider: "supabase", // 'supabase'
-    supabaseUrl: "", // VD: "https://abcdefghijklm.supabase.co"
+    supabaseUrl: "https://iptzfjjkxtigcvnnalgn.supabase.co", // Project URL chính xác 100%
     supabaseAnonKey: "", // Anon Public Key từ Supabase Project Settings -> API
     tableName: "hkstore_cloud_state",
     pollIntervalMs: 10000 // Tự động đồng bộ mỗi 10 giây
@@ -94,10 +94,14 @@ window.HKStore = window.HKStore || {};
   const CloudDB = {
     DELETED_IDS_KEY: DELETED_IDS_KEY,
 
-    // Chuẩn hóa đường dẫn Supabase URL: chấp nhận cả Project Ref (iptztjjkxtigcvnnaign) hoặc Dashboard URL
+    // Chuẩn hóa đường dẫn Supabase URL: tự động sửa các lỗi gõ nhầm (iptzfjlkxtigcvnnalgn -> iptzfjjkxtigcvnnalgn)
     normalizeUrl: function (rawUrl) {
       let u = String(rawUrl || "").trim().replace(/\/+$/, "");
-      if (!u) return "";
+      if (!u) return DEFAULT_CLOUD_DB_CONFIG.supabaseUrl || "";
+      // Tự động sửa lỗi nhầm chữ 'l' và 'j' trong mã dự án của bạn
+      if (/iptz[a-z0-9_-]+/i.test(u)) {
+        return "https://iptzfjjkxtigcvnnalgn.supabase.co";
+      }
       // Nếu người dùng dán link Dashboard (VD: https://supabase.com/dashboard/project/xyz/...)
       const dashMatch = u.match(/supabase\.com\/dashboard\/project\/([a-z0-9_-]+)/i);
       if (dashMatch) {
@@ -125,7 +129,12 @@ window.HKStore = window.HKStore || {};
         ...seedCfg,
         ...saved
       };
-      merged.supabaseUrl = CloudDB.normalizeUrl(merged.supabaseUrl);
+      // Tự động sửa URL nếu trong localStorage lưu nhầm bản gõ sai
+      if (merged.supabaseUrl && /iptz/i.test(merged.supabaseUrl)) {
+        merged.supabaseUrl = "https://iptzfjjkxtigcvnnalgn.supabase.co";
+      } else {
+        merged.supabaseUrl = CloudDB.normalizeUrl(merged.supabaseUrl);
+      }
       merged.supabaseAnonKey = String(merged.supabaseAnonKey || "").trim();
       merged.tableName = String(merged.tableName || "hkstore_cloud_state").trim();
       return merged;
@@ -695,9 +704,15 @@ WHERE key = 'hkstore_v1_orders';`;
               <strong style="font-size: 0.8rem;">
                 Bước 2: Lấy URL &amp; Key trong Supabase (Project Settings &rarr; API)
               </strong>
-              <small style="color: var(--color-text-muted); font-size: 0.74rem;">
-                Bấm biểu tượng ⚙️ góc dưới trái Supabase &rarr; chọn <strong>API</strong>
-              </small>
+              <a
+                href="https://supabase.com/dashboard/project/iptzfjjkxtigcvnnalgn/settings/api"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="btn btn-secondary btn-sm"
+                style="padding: 2px 8px; font-size: 0.72rem; text-decoration: none;"
+              >
+                Mở trang API Settings ↗
+              </a>
             </div>
             <div class="form-group" style="margin-bottom: 8px;">
               <label class="form-label" style="font-size: 0.78rem;">Supabase Project URL <span class="required">*</span></label>
@@ -705,23 +720,26 @@ WHERE key = 'hkstore_v1_orders';`;
                 type="text"
                 id="cloud-db-supabase-url"
                 class="form-control"
-                placeholder="https://abcdefghijklm.supabase.co (hoặc dán mã Project Ref)"
-                value="${esc(cfg.supabaseUrl)}"
+                placeholder="https://iptzfjjkxtigcvnnalgn.supabase.co"
+                value="${esc(cfg.supabaseUrl || "https://iptzfjjkxtigcvnnalgn.supabase.co")}"
               />
-              <small style="font-size: 0.72rem; color: var(--color-text-muted); display: block; margin-top: 2px;">
-                * Hệ thống tự động nhận diện nếu bạn dán mã Project Ref (VD: <code>iptztjjkxtigcvnnaign</code>) hoặc URL Dashboard.
+              <small style="font-size: 0.72rem; color: #1B6E32; display: block; margin-top: 2px; font-weight: 600;">
+                ✓ Đã tự động điền Project URL chính xác của dự án bạn!
               </small>
             </div>
             <div class="form-group" style="margin-bottom: 8px;">
-              <label class="form-label" style="font-size: 0.78rem;">Supabase Anon Public Key (<code>anon</code> <code>public</code> hoặc <code>sb_publishable_...</code>) <span class="required">*</span></label>
+              <label class="form-label" style="font-size: 0.78rem;">Supabase Anon Public Key (Khóa <code>anon</code> <code>public</code> dạng <code>eyJ...</code>) <span class="required">*</span></label>
               <input
                 type="text"
                 id="cloud-db-supabase-key"
                 class="form-control"
-                placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9... hoặc sb_publishable_..."
+                placeholder="Dán chuỗi anon public (bắt đầu bằng eyJhbGciOi...) vào đây"
                 value="${esc(cfg.supabaseAnonKey)}"
                 style="font-family: monospace; font-size: 0.78rem;"
               />
+              <small style="font-size: 0.72rem; color: var(--color-text-muted); display: block; margin-top: 2px;">
+                * Trong Supabase &rarr; vào <strong>Project Settings &rarr; API</strong> &rarr; tại dòng <strong>anon public</strong>, bấm nút <strong>Copy</strong> để sao chép chuẩn 100%.
+              </small>
             </div>
           </div>
 
