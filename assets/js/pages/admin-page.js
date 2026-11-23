@@ -23,6 +23,18 @@
     setupSidebar();
     switchTab("overview", true);
 
+    const mysqlDbBtn = document.getElementById("btn-mysql-db-config");
+    if (mysqlDbBtn) {
+      mysqlDbBtn.addEventListener("click", () => {
+        if (HKStore.MySQL && typeof HKStore.MySQL.openConfigModal === "function") {
+          HKStore.MySQL.openConfigModal();
+        }
+      });
+    }
+    if (HKStore.MySQL && typeof HKStore.MySQL.updateStatusBadge === "function") {
+      HKStore.MySQL.updateStatusBadge();
+    }
+
     const cloudDbBtn = document.getElementById("btn-cloud-db-config");
     if (cloudDbBtn) {
       cloudDbBtn.addEventListener("click", () => {

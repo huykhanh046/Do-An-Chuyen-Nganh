@@ -298,27 +298,17 @@ window.HK_SEED_DATA = {
     "role": "customer",
     "createdAt": "2026-08-15T10:00:00.000Z",
     "passwordHash": "det5nex8mw7lu5hq$1294087b1f1e6cfcac36bacaf74508cf81aca5c031ace34877578430507bdd6f"
-  },
-  {
-    "id": "user-cust-02",
-    "fullName": "Trần Thị Mai",
-    "email": "khach2@hkstore.vn",
-    "phone": "0912345678",
-    "address": "45 Phố Huế, Phường Hàng Bài, Quận Hoàn Kiếm, Hà Nội",
-    "role": "customer",
-    "createdAt": "2026-09-01T14:20:00.000Z",
-    "passwordHash": "54q5ne3emw7kh93q$c5ed9b1c107730b74f87216cd5c2e91a382b684089d02100ac0c12662ff872a5"
   }
 ],
   orders: [
   {
     "id": "ORD-20261108-5491",
-    "userId": "user-cust-02",
+    "userId": "user-cust-01",
     "customerInfo": {
-      "fullName": "Trần Thị Mai",
-      "email": "khach2@hkstore.vn",
-      "phone": "0912345678",
-      "address": "45 Phố Huế, Phường Hàng Bài, Quận Hoàn Kiếm, Hà Nội",
+      "fullName": "Nguyễn Văn An",
+      "email": "khach1@hkstore.vn",
+      "phone": "0901234567",
+      "address": "123 Đường Lê Lợi, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh",
       "note": ""
     },
     "items": [

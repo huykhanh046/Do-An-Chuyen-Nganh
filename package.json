@@ -1,0 +1,24 @@
+{
+  "name": "hk-store-backend",
+  "version": "1.0.0",
+  "description": "HK Store E-Commerce Fullstack Backend with MySQL 8.0+",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node server/index.js"
+  },
+  "keywords": [
+    "hk-store",
+    "ecommerce",
+    "mysql",
+    "express"
+  ],
+  "author": "HK Store",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "mysql2": "^3.9.8"
+  }
+}

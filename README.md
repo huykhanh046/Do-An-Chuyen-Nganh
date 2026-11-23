@@ -93,13 +93,12 @@ Do website là một hệ thống thương mại điện tử đa trang (Multi-P
 
 ## 4. TÀI KHOẢN DÙNG THỬ (DEMO ACCOUNTS)
 
-Hệ thống đã chuẩn bị sẵn 3 tài khoản demo với các vai trò khác nhau. Tại trang `login.html`, bạn có thể bấm trực tiếp vào các nút màu xám để hệ thống tự động điền:
+Hệ thống đã chuẩn bị sẵn 2 tài khoản demo chuẩn với các vai trò khác nhau:
 
 | Vai trò | Email đăng nhập | Mật khẩu | Quyền hạn & Mô tả |
 | :--- | :--- | :--- | :--- |
 | **Quản trị viên (Admin)** | `admin@hkstore.vn` | `admin1234` | Toàn quyền truy cập Dashboard `/admin.html`, quản lý sản phẩm, tồn kho và xử lý trạng thái đơn hàng. |
-| **Khách hàng 1** | `khach1@hkstore.vn` | `khach1234` | Tài khoản đã có sẵn 3 đơn hàng mẫu ở các trạng thái khác nhau (Đã giao, Đang giao, Chờ xác nhận). |
-| **Khách hàng 2** | `khach2@hkstore.vn` | `khach1234` | Tài khoản khách hàng mới, chưa có đơn hàng. |
+| **Khách hàng kiểm thử** | `khach1@hkstore.vn` | `khach1234` | Tài khoản khách hàng mẫu đã có sẵn đơn hàng ở các trạng thái khác nhau (Hoàn thành, Đang giao, Chờ xác nhận...). |
 
 *Ngoài ra, bạn có thể tự đăng ký thêm tài khoản mới tại trang `register.html`.*
 
