@@ -57,4 +57,4 @@ Without resource-level ownership validation (IDOR), users could view personal in
 
 ## Recommendations
 
-- When transitioning to a production backend API (Node.js/Express, Python/FastAPI, or Supabase), replicate this exact check at the API layer: `WHERE order.user_id = req.user.id` so that frontend bypass is impossible.
+- When transitioning to a production backend API (Node.js/Express, Python/FastAPI), replicate this exact check at the API layer: `WHERE order.user_id = req.user.id` so that frontend bypass is impossible.

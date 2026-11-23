@@ -15,4 +15,4 @@
 
 ## Manual verification (for the human)
 
-- When migrating to Supabase or Firebase in the future, verify that Row Level Security (RLS) is enabled on every table before deployment.
+- When migrating to a production backend (MySQL/Express), verify that server-side authorization middleware validates user ownership on every query before deployment.

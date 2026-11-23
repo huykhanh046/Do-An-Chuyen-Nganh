@@ -31,4 +31,4 @@ Without rate limiting, attackers can perform automated dictionary attacks and cr
 
 ## Recommendations
 
-- When connecting to a production backend API (Express / FastAPI / Supabase), implement IP-based and user-based rate limiting on the edge using Redis (`express-rate-limit` / `slow_api`) with strict IP resolution behind trusted reverse proxies (Cloudflare `CF-Connecting-IP`).
+- When connecting to a production backend API (Express / FastAPI), implement IP-based and user-based rate limiting on the edge using Redis (`express-rate-limit` / `slow_api`) with strict IP resolution behind trusted reverse proxies (Cloudflare `CF-Connecting-IP`).

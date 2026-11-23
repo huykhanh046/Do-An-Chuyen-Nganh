@@ -12,8 +12,8 @@ These rules apply to all code generated in this project. They are non-negotiable
 
 ## Database
 
-- Enable Row Level Security on EVERY Supabase table before deployment. Default policy: deny all. Write explicit policies scoped to auth.uid()
-- NEVER set a Supabase RLS policy to `USING (true)` or `FOR ALL` without a WHERE condition
+- Enable strict authorization middleware on EVERY database table/endpoint before deployment. Default policy: deny all. Write explicit access rules scoped to the authenticated user's ID
+- NEVER set a database access policy to allow all without a WHERE condition scoped to the current user
 - Firebase Security Rules MUST require `request.auth != null` and scope access to `request.auth.uid`
 - NEVER use `pickle.loads`, `pickle.load`, or any deserialization on user-supplied data. Use JSON for all network data exchange
 

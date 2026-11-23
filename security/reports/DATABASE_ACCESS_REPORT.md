@@ -6,7 +6,7 @@
 
 The HK Store application currently operates with a client-side data layer:
 - All data persistence (`products`, `users`, `cart`, `orders`) is handled via `window.localStorage` in `assets/js/storage.js`.
-- No connection strings or client SDKs for cloud databases (Supabase, Firebase, MongoDB, PostgreSQL, MySQL) are present in the repository.
+- No connection strings or client SDKs for cloud databases (Firebase, MongoDB, PostgreSQL) are present in the repository. MySQL is used locally via the Node.js backend server.
 - There are no misconfigured Row Level Security (RLS) policies, exposed database admin roles, or leaking database credentials.
 
 ## What's at risk
