@@ -54,7 +54,7 @@ window.HKStore = window.HKStore || {};
       }
     },
 
-    // Lưu dữ liệu an toàn vào localStorage & Tự động đồng bộ lên Cloud Database (Supabase PostgreSQL)
+    // Lưu dữ liệu an toàn vào localStorage
     set: function (key, value) {
       if (
         Array.isArray(value) &&
@@ -89,16 +89,7 @@ window.HKStore = window.HKStore || {};
         });
       }
 
-      const ok = Storage.setRaw(key, value);
-      if (
-        ok &&
-        (key === KEYS.PRODUCTS || key === KEYS.ORDERS || key === KEYS.USERS) &&
-        HK.CloudDB &&
-        typeof HK.CloudDB.schedulePushKey === "function"
-      ) {
-        HK.CloudDB.schedulePushKey(key, value);
-      }
-      return ok;
+      return Storage.setRaw(key, value);
     },
 
     // Xóa một key

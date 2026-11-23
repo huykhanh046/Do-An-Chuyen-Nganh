@@ -3,9 +3,8 @@
  * Dịch vụ Lưu trữ Tệp Ảnh Đám mây (Cloud Media Storage Service)
  * Hỗ trợ:
  *   1. Cloudinary CDN (Unsigned Upload Preset)
- *   2. Supabase Storage Bucket (REST API)
- *   3. ImgBB Cloud CDN API
- *   4. Smart HD WebP/JPEG Optimizer (Tự động nén ảnh chuẩn HD sắc nét khi chưa gắn khóa Cloud riêng)
+ *   2. ImgBB Cloud CDN API
+ *   3. Smart HD WebP/JPEG Optimizer (Tự động nén ảnh chuẩn HD sắc nét khi chưa gắn khóa Cloud riêng)
  */
 window.HKStore = window.HKStore || {};
 
@@ -15,12 +14,9 @@ window.HKStore = window.HKStore || {};
   const STORAGE_KEY = "hkstore_v1_cloud_media_config";
 
   const DEFAULT_CONFIG = {
-    provider: "auto", // 'auto' | 'cloudinary' | 'supabase' | 'imgbb'
+    provider: "auto", // 'auto' | 'cloudinary' | 'imgbb'
     cloudinaryCloudName: "",
     cloudinaryUploadPreset: "",
-    supabaseUrl: "",
-    supabaseAnonKey: "",
-    supabaseBucket: "products",
     imgbbApiKey: "",
     maxDimension: 1280,
     quality: 0.85
@@ -141,50 +137,7 @@ window.HKStore = window.HKStore || {};
     };
   }
 
-  // 2. Đẩy file lên Supabase Storage Bucket
-  async function uploadToSupabase(fileOrBlob, fileName, mimeType, cfg) {
-    const supabaseUrl = (cfg.supabaseUrl || "").trim().replace(/\/+$/, "");
-    const supabaseKey = (cfg.supabaseAnonKey || "").trim();
-    const bucket = (cfg.supabaseBucket || "products").trim();
-
-    if (!supabaseUrl || !supabaseKey) {
-      throw new Error("Chưa cấu hình Supabase Project URL hoặc API Key.");
-    }
-
-    const safeName =
-      Date.now() +
-      "-" +
-      Math.random().toString(36).substring(2, 8) +
-      "-" +
-      String(fileName || "image.webp").replace(/[^a-zA-Z0-9._-]/g, "_");
-    const objectPath = `products/${safeName}`;
-    const uploadEndpoint = `${supabaseUrl}/storage/v1/object/${encodeURIComponent(bucket)}/${objectPath}`;
-
-    const response = await fetch(uploadEndpoint, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${supabaseKey}`,
-        apikey: supabaseKey,
-        "Content-Type": mimeType || "image/webp",
-        "x-upsert": "true"
-      },
-      body: fileOrBlob
-    });
-
-    if (!response.ok) {
-      const errData = await response.json().catch(() => ({}));
-      throw new Error(errData.message || errData.error || `Supabase Storage HTTP ${response.status}`);
-    }
-
-    const publicUrl = `${supabaseUrl}/storage/v1/object/public/${encodeURIComponent(bucket)}/${objectPath}`;
-    return {
-      url: publicUrl,
-      provider: "supabase",
-      publicId: objectPath
-    };
-  }
-
-  // 3. Đẩy file lên ImgBB CDN
+  // 2. Đẩy file lên ImgBB CDN
   async function uploadToImgBB(dataUrl, fileName, cfg) {
     const apiKey = (cfg.imgbbApiKey || "").trim();
     if (!apiKey) {
@@ -239,9 +192,6 @@ window.HKStore = window.HKStore || {};
       if (cfg.cloudinaryCloudName && cfg.cloudinaryUploadPreset) {
         return `Cloudinary CDN (${cfg.cloudinaryCloudName})`;
       }
-      if (cfg.supabaseUrl && cfg.supabaseAnonKey) {
-        return `Supabase Storage (${cfg.supabaseBucket || "products"})`;
-      }
       if (cfg.imgbbApiKey) {
         return "ImgBB Cloud CDN";
       }
@@ -269,21 +219,7 @@ window.HKStore = window.HKStore || {};
         }
       }
 
-      // 2. Thử Supabase Storage nếu đã cấu hình
-      if (
-        (cfg.provider === "supabase" || cfg.provider === "auto") &&
-        cfg.supabaseUrl &&
-        cfg.supabaseAnonKey
-      ) {
-        try {
-          return await uploadToSupabase(optimized.blob, file.name, optimized.mimeType, cfg);
-        } catch (err) {
-          console.warn("[MediaStorage] Supabase fallback:", err.message);
-          if (cfg.provider === "supabase") throw err;
-        }
-      }
-
-      // 3. Thử ImgBB nếu đã cấu hình
+      // 2. Thử ImgBB nếu đã cấu hình
       if ((cfg.provider === "imgbb" || cfg.provider === "auto") && cfg.imgbbApiKey) {
         try {
           return await uploadToImgBB(optimized.dataUrl, file.name, cfg);
@@ -355,7 +291,7 @@ window.HKStore = window.HKStore || {};
     },
 
     /**
-     * Mở Modal Cấu hình Cloud Media Storage (Cloudinary / Supabase / ImgBB) cho Admin
+     * Mở Modal Cấu hình Cloud Media Storage (Cloudinary / ImgBB) cho Admin
      */
     openConfigModal: function (onSaved) {
       const UI = HK.UI;
@@ -369,7 +305,7 @@ window.HKStore = window.HKStore || {};
           <div style="background: var(--color-bg); border: 1px solid var(--color-border); padding: 10px 12px; border-radius: 4px; font-size: 0.81rem;">
             <strong>Trạng thái hiện tại:</strong> <span style="color: #1B6E32; font-weight: 700;">${Storage.escapeHTML(MediaStorage.getActiveProviderLabel())}</span>
             <div class="text-muted" style="margin-top: 2px;">
-              Mặc định hệ thống đã tích hợp sẵn bộ nén ảnh <strong>Smart Cloud WebP/HD</strong> giúp tải ảnh trực tiếp từ máy tính tức thì. Nếu muốn đẩy ảnh lên <strong>Cloudinary</strong>, <strong>Supabase Storage</strong> hoặc <strong>ImgBB</strong> để lấy link CDN công khai, hãy điền thông số bên dưới:
+              Mặc định hệ thống đã tích hợp sẵn bộ nén ảnh <strong>Smart Cloud WebP/HD</strong> giúp tải ảnh trực tiếp từ máy tính tức thì. Nếu muốn đẩy ảnh lên <strong>Cloudinary</strong> hoặc <strong>ImgBB</strong> để lấy link CDN công khai, hãy điền thông số bên dưới:
             </div>
           </div>
 
@@ -391,27 +327,7 @@ window.HKStore = window.HKStore || {};
 
           <div style="border: 1px solid var(--color-border); padding: 12px; border-radius: 4px;">
             <div style="font-weight: 800; font-size: 0.82rem; text-transform: uppercase; margin-bottom: 8px;">
-              2. Supabase Storage Bucket
-            </div>
-            <div style="display: grid; grid-template-columns: 1.3fr 0.7fr; gap: 8px; margin-bottom: 8px;">
-              <div class="form-group" style="margin: 0;">
-                <label class="form-label" style="font-size: 0.76rem;">Supabase Project URL</label>
-                <input type="url" id="cfg-sb-url" class="form-control" placeholder="https://xxxx.supabase.co" value="${Storage.escapeHTML(cfg.supabaseUrl || "")}" />
-              </div>
-              <div class="form-group" style="margin: 0;">
-                <label class="form-label" style="font-size: 0.76rem;">Public Bucket Name</label>
-                <input type="text" id="cfg-sb-bucket" class="form-control" placeholder="products" value="${Storage.escapeHTML(cfg.supabaseBucket || "products")}" />
-              </div>
-            </div>
-            <div class="form-group" style="margin: 0;">
-              <label class="form-label" style="font-size: 0.76rem;">Supabase Anon / Service Key</label>
-              <input type="password" id="cfg-sb-key" class="form-control" placeholder="eyJhbGciOiJIUzI1NiIsInR5..." value="${Storage.escapeHTML(cfg.supabaseAnonKey || "")}" />
-            </div>
-          </div>
-
-          <div style="border: 1px solid var(--color-border); padding: 12px; border-radius: 4px;">
-            <div style="font-weight: 800; font-size: 0.82rem; text-transform: uppercase; margin-bottom: 8px;">
-              3. ImgBB Cloud API
+              2. ImgBB Cloud API
             </div>
             <div class="form-group" style="margin: 0;">
               <label class="form-label" style="font-size: 0.76rem;">ImgBB API Key (api.imgbb.com)</label>
@@ -430,9 +346,6 @@ window.HKStore = window.HKStore || {};
           const newCfg = {
             cloudinaryCloudName: (document.getElementById("cfg-cld-name")?.value || "").trim(),
             cloudinaryUploadPreset: (document.getElementById("cfg-cld-preset")?.value || "").trim(),
-            supabaseUrl: (document.getElementById("cfg-sb-url")?.value || "").trim(),
-            supabaseBucket: (document.getElementById("cfg-sb-bucket")?.value || "products").trim(),
-            supabaseAnonKey: (document.getElementById("cfg-sb-key")?.value || "").trim(),
             imgbbApiKey: (document.getElementById("cfg-imgbb-key")?.value || "").trim()
           };
           MediaStorage.setConfig(newCfg);
