@@ -9,7 +9,10 @@
   const Cart = HKStore.Cart;
   const UI = HKStore.UI;
 
-  function initCartPage() {
+  async function initCartPage() {
+    if (HKStore.MySQL && HKStore.MySQL.ready) {
+      await HKStore.MySQL.ready;
+    }
     UI.initCommonUI();
     renderCart();
   }

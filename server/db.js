@@ -1,6 +1,6 @@
 /**
  * HK STORE - MYSQL DATABASE CONNECTION & POOL MANAGER
- * Hệ quản trị: MySQL 8.0+
+ * Hệ quản trị: MySQL 8.0+ / MariaDB 10.11+
  * Thư viện: mysql2/promise
  */
 const mysql = require("mysql2/promise");
@@ -32,6 +32,28 @@ function getPool() {
 }
 
 /**
+ * Thực thi các thao tác trong một MySQL Transaction an toàn (tự động commit/rollback)
+ */
+async function withTransaction(callback) {
+  const conn = await getPool().getConnection();
+  try {
+    await conn.beginTransaction();
+    const result = await callback(conn);
+    await conn.commit();
+    return result;
+  } catch (err) {
+    try {
+      await conn.rollback();
+    } catch (rbErr) {
+      console.error("[MySQL] Rollback error:", rbErr.message);
+    }
+    throw err;
+  } finally {
+    conn.release();
+  }
+}
+
+/**
  * Kiểm tra kết nối tới MySQL và kiểm tra trạng thái database
  */
 async function testConnection() {
@@ -39,20 +61,25 @@ async function testConnection() {
     const currentPool = getPool();
     const [rows] = await currentPool.query("SELECT 1 + 1 AS result, NOW() AS server_time, VERSION() AS version");
     const [dbRows] = await currentPool.query("SELECT DATABASE() AS current_db");
-    
+
     // Thống kê nhanh số lượng bản ghi các bảng chính
     let counts = {};
     try {
       const [u] = await currentPool.query("SELECT COUNT(*) AS total FROM users");
+      const [c] = await currentPool.query("SELECT COUNT(*) AS total FROM categories");
       const [p] = await currentPool.query("SELECT COUNT(*) AS total FROM products");
+      const [v] = await currentPool.query("SELECT COUNT(*) AS total FROM product_variants");
+      const [ci] = await currentPool.query("SELECT COUNT(*) AS total FROM cart_items");
       const [o] = await currentPool.query("SELECT COUNT(*) AS total FROM orders");
       counts = {
         users: u[0].total,
+        categories: c[0].total,
         products: p[0].total,
+        product_variants: v[0].total,
+        cart_items: ci[0].total,
         orders: o[0].total
       };
     } catch (tblErr) {
-      // Bảng có thể chưa được import từ database_setup.sql
       counts = { note: "Cần import file database_setup.sql để khởi tạo bảng" };
     }
 
@@ -98,7 +125,7 @@ async function query(sql, params = []) {
 }
 
 /**
- * Lấy số lượng chi tiết tất cả các bảng trong MySQL
+ * Lấy số lượng chi tiết tất cả 10 bảng trong MySQL
  */
 async function getTableStats() {
   const currentPool = getPool();
@@ -110,7 +137,9 @@ async function getTableStats() {
     "product_variants",
     "cart_items",
     "orders",
-    "order_items"
+    "order_items",
+    "product_reviews",
+    "wishlists"
   ];
 
   const stats = {};
@@ -119,7 +148,7 @@ async function getTableStats() {
       const [r] = await currentPool.query(`SELECT COUNT(*) AS cnt FROM \`${t}\``);
       stats[t] = r[0].cnt;
     } catch (e) {
-      stats[t] = null; // Chưa tồn tại bảng
+      stats[t] = null;
     }
   }
   return stats;
@@ -147,7 +176,10 @@ async function runSetupScript() {
 
   try {
     await adminConnection.query(sqlContent);
-    return { success: true, message: "Đã nạp toàn bộ cấu trúc và dữ liệu chuẩn hóa từ database_setup.sql thành công!" };
+    return {
+      success: true,
+      message: "Đã nạp toàn bộ cấu trúc 10 bảng và dữ liệu chuẩn hóa từ database_setup.sql thành công!"
+    };
   } finally {
     await adminConnection.end();
   }
@@ -156,6 +188,7 @@ async function runSetupScript() {
 module.exports = {
   dbConfig,
   getPool,
+  withTransaction,
   query,
   testConnection,
   getTableStats,

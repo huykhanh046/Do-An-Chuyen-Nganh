@@ -36,7 +36,7 @@ window.HKStore = window.HKStore || {};
       }
     },
 
-    // Lưu trực tiếp vào localStorage (không kích hoạt đẩy ngược lên Cloud DB)
+    // Lưu trực tiếp vào localStorage (không làm tăng _rev)
     setRaw: function (key, value) {
       try {
         localStorage.setItem(key, JSON.stringify(value));
@@ -146,7 +146,7 @@ window.HKStore = window.HKStore || {};
       }
 
       // 2. Khi bạn chỉnh sửa dữ liệu trong source code seed.js:
-      // Hợp nhất sản phẩm mới từ seed.js với các sản phẩm đã thêm trên Cloud DB (không làm mất sản phẩm mới)
+      // Hợp nhất sản phẩm mới từ seed.js với các sản phẩm đã thêm cục bộ (không làm mất sản phẩm mới)
       if (savedSeedHash !== null && savedSeedHash !== currentSeedHash) {
         const currentProds = Storage.get(KEYS.PRODUCTS, []);
         const seedProds = Array.isArray(window.HK_SEED_DATA.products) ? window.HK_SEED_DATA.products : [];
@@ -158,10 +158,10 @@ window.HKStore = window.HKStore || {};
         const deletedSet = new Set(deletedIds);
 
         const seedIds = new Set(seedProds.map((p) => p.id));
-        const customCloudProds = currentProds.filter((p) => p && p.id && !seedIds.has(p.id) && !deletedSet.has(p.id));
+        const customLocalProds = currentProds.filter((p) => p && p.id && !seedIds.has(p.id) && !deletedSet.has(p.id));
         const filteredSeedProds = seedProds.filter((p) => p && p.id && !deletedSet.has(p.id));
 
-        Storage.setRaw(KEYS.PRODUCTS, [...customCloudProds, ...filteredSeedProds]);
+        Storage.setRaw(KEYS.PRODUCTS, [...customLocalProds, ...filteredSeedProds]);
         Storage.setRaw(KEYS.SEED_HASH, currentSeedHash);
         console.log("[HKStore] Phát hiện thay đổi trong source code seed.js. Đã hợp nhất sản phẩm mới vào web.");
         return true;

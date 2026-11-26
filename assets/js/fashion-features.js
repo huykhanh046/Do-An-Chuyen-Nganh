@@ -129,6 +129,17 @@ window.HKStore = window.HKStore || {};
       Storage.set(WISHLIST_KEY, currentIds);
       Features.updateWishlistUI(true);
 
+      // Đồng bộ Wishlist lên MySQL nếu đã đăng nhập và Backend đang chạy
+      const currentUser = HK.Auth ? HK.Auth.getCurrentUser() : null;
+      if (currentUser && HK.MySQL && HK.MySQL.isOnline) {
+        HK.MySQL.toggleWishlist(productId).then((res) => {
+          if (res && res.ok && res.data && Array.isArray(res.data.wishlist)) {
+            Storage.setRaw(WISHLIST_KEY, res.data.wishlist);
+            Features.updateWishlistUI(false);
+          }
+        }).catch(() => {});
+      }
+
       if (triggerBtn && added && !Features.isLowMotionOrLowPower()) {
         triggerBtn.classList.remove("heart-pop");
         void triggerBtn.offsetWidth;

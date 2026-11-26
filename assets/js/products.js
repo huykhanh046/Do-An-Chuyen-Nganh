@@ -232,6 +232,24 @@ window.HKStore = window.HKStore || {};
       return { success: true, product: finalProduct };
     },
 
+    // Lưu sản phẩm trực tiếp xuống MySQL (fallback LocalStorage nếu Backend offline)
+    saveProductAsync: async function (productData) {
+      if (HK.MySQL) {
+        const res = await HK.MySQL.saveProduct(productData);
+        if (!res.networkError) {
+          if (res.ok && res.data && res.data.status === "ok") {
+            await HK.MySQL.hydrate(true);
+            return { success: true, product: res.data.product };
+          }
+          return {
+            success: false,
+            message: (res.data && res.data.message) || "Không thể lưu sản phẩm vào MySQL."
+          };
+        }
+      }
+      return Products.saveProduct(productData);
+    },
+
     // Kiểm tra sản phẩm đã phát sinh trong đơn hàng nào chưa
     hasOrders: function (productId) {
       const orders = Storage.get(Storage.KEYS.ORDERS, []);
@@ -256,12 +274,6 @@ window.HKStore = window.HKStore || {};
       const index = allProducts.findIndex((p) => p.id === id);
       if (index === -1) return { success: false, message: "Không tìm thấy sản phẩm." };
 
-      // Đánh dấu ID đã xóa trên Cloud Database để không bị hồi sinh từ thiết bị khác hoặc seed.js
-      if (HK.CloudDB && typeof HK.CloudDB.markDeleted === "function") {
-        HK.CloudDB.markDeleted(id);
-      }
-
-      // Xóa hoàn toàn khỏi cơ sở dữ liệu localStorage & đẩy lên Cloud DB
       allProducts.splice(index, 1);
       Storage.set(Storage.KEYS.PRODUCTS, allProducts);
 
@@ -270,6 +282,24 @@ window.HKStore = window.HKStore || {};
         archived: false,
         message: "Đã xóa sản phẩm"
       };
+    },
+
+    // Xóa vĩnh viễn sản phẩm trực tiếp trên MySQL (fallback LocalStorage nếu Backend offline)
+    deleteProductAsync: async function (id) {
+      if (HK.MySQL) {
+        const res = await HK.MySQL.deleteProduct(id);
+        if (!res.networkError) {
+          if (res.ok && res.data && res.data.status === "ok") {
+            await HK.MySQL.hydrate(true);
+            return { success: true, archived: false, message: res.data.message || "Đã xóa sản phẩm khỏi MySQL" };
+          }
+          return {
+            success: false,
+            message: (res.data && res.data.message) || "Không thể xóa sản phẩm trong MySQL."
+          };
+        }
+      }
+      return Products.deleteProduct(id);
     }
   };
 

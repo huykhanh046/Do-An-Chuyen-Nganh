@@ -9,7 +9,10 @@
   const Orders = HKStore.Orders;
   const UI = HKStore.UI;
 
-  function initOrderSuccessPage() {
+  async function initOrderSuccessPage() {
+    if (HKStore.MySQL && HKStore.MySQL.ready) {
+      await HKStore.MySQL.ready;
+    }
     UI.initCommonUI();
 
     const orderId = Storage.getUrlParam("orderId");

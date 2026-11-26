@@ -16,7 +16,10 @@
   let currentQuantity = 1;
   let stickyBarRef = null;
 
-  function initProductPage() {
+  async function initProductPage() {
+    if (HKStore.MySQL && HKStore.MySQL.ready) {
+      await HKStore.MySQL.ready;
+    }
     UI.initCommonUI("products");
 
     const productId = Storage.getUrlParam("id");
@@ -707,7 +710,7 @@
 
     const revForm = document.getElementById("product-review-form");
     if (revForm) {
-      revForm.addEventListener("submit", (e) => {
+      revForm.addEventListener("submit", async (e) => {
         e.preventDefault();
         const authorEl = document.getElementById("rev-author");
         const commentEl = document.getElementById("rev-comment");
@@ -731,22 +734,43 @@
           return;
         }
 
-        const now = new Date();
-        const dd = String(now.getDate()).padStart(2, "0");
-        const mm = String(now.getMonth() + 1).padStart(2, "0");
-        const yyyy = now.getFullYear();
-
-        const latestMap = Storage.get(REVIEWS_KEY, {});
-        if (!Array.isArray(latestMap[p.id])) latestMap[p.id] = [];
-        latestMap[p.id].unshift({
+        const reviewPayload = {
           author: authorEl.value.trim(),
           rating: ratingVal,
           fitSpec: fitSpecVal || (selectedSize ? `Đã chọn Size ${selectedSize}` : ""),
           fitFeel: fitFeelVal,
-          date: `${dd}/${mm}/${yyyy}`,
           comment: commentEl.value.trim()
-        });
-        Storage.set(REVIEWS_KEY, latestMap);
+        };
+
+        let savedViaMySQL = false;
+        if (HKStore.MySQL && HKStore.MySQL.isOnline) {
+          const apiRes = await HKStore.MySQL.addReview(p.id, reviewPayload);
+          if (apiRes && !apiRes.networkError) {
+            if (apiRes.ok) {
+              await HKStore.MySQL.hydrate(true);
+              currentProduct = Products.getById(p.id) || currentProduct;
+              savedViaMySQL = true;
+            } else {
+              UI.showToast((apiRes.data && apiRes.data.message) || "Không thể gửi đánh giá lúc này.", "error");
+              return;
+            }
+          }
+        }
+
+        if (!savedViaMySQL) {
+          const now = new Date();
+          const dd = String(now.getDate()).padStart(2, "0");
+          const mm = String(now.getMonth() + 1).padStart(2, "0");
+          const yyyy = now.getFullYear();
+
+          const latestMap = Storage.get(REVIEWS_KEY, {});
+          if (!Array.isArray(latestMap[p.id])) latestMap[p.id] = [];
+          latestMap[p.id].unshift({
+            ...reviewPayload,
+            date: `${dd}/${mm}/${yyyy}`
+          });
+          Storage.set(REVIEWS_KEY, latestMap);
+        }
 
         UI.showToast("Cảm ơn bạn đã chia sẻ đánh giá thực tế!", "success");
         renderProductReviews();

@@ -196,6 +196,54 @@ window.HKStore = window.HKStore || {};
       };
     },
 
+    // Tạo đơn hàng trực tiếp trong MySQL Transaction (trừ tồn kho + tạo snapshot + xóa cart_items)
+    createOrderAsync: async function ({ customerInfo, paymentMethod, paymentProvider = null, paymentRef = null, paymentStatus = "pending" }) {
+      const currentUser = HK.Auth.getCurrentUser();
+      if (!currentUser) {
+        return { success: false, message: "Bạn cần đăng nhập để hoàn tất đặt hàng." };
+      }
+
+      const summary = HK.Cart.getCartSummary(currentUser.id);
+      if (!summary.items || summary.items.length === 0) {
+        return { success: false, message: "Giỏ hàng của bạn đang trống." };
+      }
+
+      if (HK.MySQL) {
+        const res = await HK.MySQL.createOrder({
+          customerInfo,
+          paymentMethod,
+          paymentProvider,
+          paymentRef,
+          paymentStatus,
+          items: summary.items.map((it) => ({
+            productId: it.productId,
+            variantId: it.variantId,
+            quantity: it.quantity
+          }))
+        });
+
+        if (!res.networkError) {
+          if (res.ok && res.data && res.data.status === "ok" && res.data.order) {
+            await HK.MySQL.hydrate(true);
+            if (HK.EmailService && typeof HK.EmailService.sendOrderConfirmationEmail === "function") {
+              HK.EmailService.sendOrderConfirmationEmail(res.data.order).catch(() => {});
+            }
+            return {
+              success: true,
+              order: res.data.order,
+              message: res.data.message || "Đặt hàng thành công!"
+            };
+          }
+          return {
+            success: false,
+            message: (res.data && res.data.message) || "Không thể tạo đơn hàng trên MySQL."
+          };
+        }
+      }
+
+      return Orders.createOrder({ customerInfo, paymentMethod, paymentProvider, paymentRef, paymentStatus });
+    },
+
     // Khách hàng hoặc Admin hủy đơn hàng
     cancelOrder: function (orderId, reason = "Khách hàng yêu cầu hủy") {
       const orders = Orders.getAll();
@@ -253,6 +301,28 @@ window.HKStore = window.HKStore || {};
       Storage.set(Storage.KEYS.ORDERS, orders);
 
       return { success: true, order: order, message: "Đã hủy đơn hàng và hoàn lại tồn kho thành công." };
+    },
+
+    // Hủy đơn hàng đồng bộ MySQL (hoàn tồn kho trong Transaction)
+    cancelOrderAsync: async function (orderId, reason = "Khách hàng yêu cầu hủy") {
+      if (HK.MySQL) {
+        const res = await HK.MySQL.cancelOrder(orderId, reason);
+        if (!res.networkError) {
+          if (res.ok && res.data && res.data.status === "ok") {
+            await HK.MySQL.hydrate(true);
+            return {
+              success: true,
+              order: res.data.order,
+              message: res.data.message || "Đã hủy đơn hàng và hoàn lại tồn kho thành công."
+            };
+          }
+          return {
+            success: false,
+            message: (res.data && res.data.message) || "Không thể hủy đơn hàng trên MySQL."
+          };
+        }
+      }
+      return Orders.cancelOrder(orderId, reason);
     },
 
     // Cập nhật trạng thái đơn hàng (Luồng Admin)
@@ -329,6 +399,40 @@ window.HKStore = window.HKStore || {};
       };
     },
 
+    // Cập nhật trạng thái đơn hàng trực tiếp trên MySQL
+    updateOrderStatusAsync: async function (orderId, newStatus, extraData = {}) {
+      if (HK.MySQL) {
+        const res = await HK.MySQL.updateOrderStatus(orderId, newStatus, extraData);
+        if (!res.networkError) {
+          if (res.ok && res.data && res.data.status === "ok" && res.data.order) {
+            await HK.MySQL.hydrate(true);
+            if (
+              (newStatus === "shipping" || newStatus === "delivered") &&
+              HK.EmailService &&
+              typeof HK.EmailService.sendOrderStatusEmail === "function"
+            ) {
+              HK.EmailService.sendOrderStatusEmail(res.data.order, newStatus).catch(() => {});
+            }
+            return {
+              success: true,
+              order: res.data.order,
+              message:
+                newStatus === "shipping"
+                  ? "Đã chuyển sang Đang giao hàng & gửi Email thông báo cho khách!"
+                  : newStatus === "delivered"
+                  ? "Đã xác nhận Giao thành công & gửi Email cảm ơn cho khách!"
+                  : res.data.message || "Đã cập nhật trạng thái đơn hàng."
+            };
+          }
+          return {
+            success: false,
+            message: (res.data && res.data.message) || "Không thể cập nhật trạng thái đơn hàng."
+          };
+        }
+      }
+      return Orders.updateOrderStatus(orderId, newStatus, extraData);
+    },
+
     // Cập nhật Mã vận đơn giao hàng & Đơn vị vận chuyển (Admin)
     updateTrackingInfo: function (orderId, { shippingCarrier = "spx", trackingCode = "" } = {}) {
       const orders = Orders.getAll();
@@ -371,6 +475,27 @@ window.HKStore = window.HKStore || {};
       };
     },
 
+    updateTrackingInfoAsync: async function (orderId, { shippingCarrier = "spx", trackingCode = "" } = {}) {
+      if (HK.MySQL) {
+        const res = await HK.MySQL.updateTrackingInfo(orderId, { shippingCarrier, trackingCode });
+        if (!res.networkError) {
+          if (res.ok && res.data && res.data.status === "ok" && res.data.order) {
+            await HK.MySQL.hydrate(true);
+            if (
+              res.data.order.orderStatus === "shipping" &&
+              HK.EmailService &&
+              typeof HK.EmailService.sendOrderStatusEmail === "function"
+            ) {
+              HK.EmailService.sendOrderStatusEmail(res.data.order, "shipping").catch(() => {});
+            }
+            return { success: true, order: res.data.order, message: res.data.message };
+          }
+          return { success: false, message: (res.data && res.data.message) || "Không thể cập nhật mã vận đơn." };
+        }
+      }
+      return Orders.updateTrackingInfo(orderId, { shippingCarrier, trackingCode });
+    },
+
     // Cập nhật trạng thái thanh toán
     updatePaymentStatus: function (orderId, newStatus) {
       const orders = Orders.getAll();
@@ -384,9 +509,27 @@ window.HKStore = window.HKStore || {};
       return { success: true, order: orders[index], message: "Đã cập nhật trạng thái thanh toán." };
     },
 
+    updatePaymentStatusAsync: async function (orderId, newStatus) {
+      if (HK.MySQL) {
+        const res = await HK.MySQL.updatePaymentStatus(orderId, newStatus);
+        if (!res.networkError) {
+          if (res.ok && res.data && res.data.status === "ok") {
+            await HK.MySQL.hydrate(true);
+            return { success: true, order: res.data.order, message: res.data.message || "Đã cập nhật trạng thái thanh toán." };
+          }
+          return { success: false, message: (res.data && res.data.message) || "Không thể cập nhật thanh toán." };
+        }
+      }
+      return Orders.updatePaymentStatus(orderId, newStatus);
+    },
+
     // Xác nhận đã nhận tiền chuyển khoản (Mô phỏng thao tác Admin)
     confirmBankTransfer: function (orderId) {
       return Orders.updatePaymentStatus(orderId, "paid");
+    },
+
+    confirmBankTransferAsync: async function (orderId) {
+      return Orders.updatePaymentStatusAsync(orderId, "paid");
     },
 
     // Xác nhận đã thu tiền khi giao hàng COD (Admin/Shipper)
@@ -413,9 +556,34 @@ window.HKStore = window.HKStore || {};
       };
     },
 
+    confirmCodDeliveredWithCashAsync: async function (orderId) {
+      if (HK.MySQL) {
+        const res = await HK.MySQL.updateOrderStatus(orderId, "delivered", { paymentStatus: "paid" });
+        if (!res.networkError) {
+          if (res.ok && res.data && res.data.status === "ok" && res.data.order) {
+            await HK.MySQL.hydrate(true);
+            if (HK.EmailService && typeof HK.EmailService.sendOrderStatusEmail === "function") {
+              HK.EmailService.sendOrderStatusEmail(res.data.order, "delivered").catch(() => {});
+            }
+            return {
+              success: true,
+              order: res.data.order,
+              message: "Đã xác nhận giao hàng, thu tiền COD & gửi Email thông báo cho khách!"
+            };
+          }
+          return { success: false, message: (res.data && res.data.message) || "Không thể xác nhận COD." };
+        }
+      }
+      return Orders.confirmCodDeliveredWithCash(orderId);
+    },
+
     // Xác nhận đã hoàn tiền mô phỏng (Admin)
     confirmRefund: function (orderId) {
       return Orders.updatePaymentStatus(orderId, "refunded");
+    },
+
+    confirmRefundAsync: async function (orderId) {
+      return Orders.updatePaymentStatusAsync(orderId, "refunded");
     },
 
     // Tính toán số liệu thống kê Dashboard Admin theo thời gian thực

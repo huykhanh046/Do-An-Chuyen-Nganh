@@ -9,7 +9,10 @@
   const Products = HKStore.Products;
   const UI = HKStore.UI;
 
-  function initHomePage() {
+  async function initHomePage() {
+    if (HKStore.MySQL && HKStore.MySQL.ready) {
+      await HKStore.MySQL.ready;
+    }
     UI.initCommonUI("home");
 
     initHeroScrollAnimation();

@@ -35,8 +35,11 @@
 
   let debounceTimer = null;
 
-  function initProductsPage() {
+  async function initProductsPage() {
     loadStateFromUrl();
+    if (HKStore.MySQL && HKStore.MySQL.ready) {
+      await HKStore.MySQL.ready;
+    }
     UI.initCommonUI(filterState.category !== "all" ? filterState.category : "products");
     syncInputsWithState();
     setupEventListeners();

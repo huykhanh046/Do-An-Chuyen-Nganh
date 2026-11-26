@@ -38,7 +38,10 @@
 
   let isSubmitting = false;
 
-  function initCheckoutPage() {
+  async function initCheckoutPage() {
+    if (HKStore.MySQL && HKStore.MySQL.ready) {
+      await HKStore.MySQL.ready;
+    }
     // 1. Kiểm tra đăng nhập (Bảo vệ luồng thanh toán)
     if (!Auth.requireAuth("checkout.html")) {
       return;
@@ -512,8 +515,8 @@
     });
   }
 
-  // Gọi Service để tạo đơn hàng chính thức
-  function executeCreateOrder(customerInfo, paymentMethod, paymentStatus, paymentProvider = null, paymentRef = null) {
+  // Gọi Service để tạo đơn hàng chính thức (lưu trực tiếp MySQL nếu Backend online)
+  async function executeCreateOrder(customerInfo, paymentMethod, paymentStatus, paymentProvider = null, paymentRef = null) {
     isSubmitting = true;
     const submitBtn = document.getElementById("btn-submit-order");
     if (submitBtn) {
@@ -522,13 +525,14 @@
     }
 
     try {
-      const res = Orders.createOrder({
+      const payload = {
         customerInfo: customerInfo,
         paymentMethod: paymentMethod,
         paymentProvider: paymentProvider,
         paymentRef: paymentRef,
         paymentStatus: paymentStatus
-      });
+      };
+      const res = Orders.createOrderAsync ? await Orders.createOrderAsync(payload) : Orders.createOrder(payload);
 
       if (res.success) {
         UI.showToast("Đặt hàng thành công!", "success");

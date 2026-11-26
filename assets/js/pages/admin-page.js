@@ -14,7 +14,11 @@
   const TAB_ORDER = ["overview", "products", "orders", "users"];
   let currentTab = ""; // 'overview' | 'products' | 'orders'
 
-  function initAdminPage() {
+  async function initAdminPage() {
+    if (HKStore.MySQL && HKStore.MySQL.ready) {
+      await HKStore.MySQL.ready;
+    }
+
     // 1. Kiểm tra quyền Admin
     if (!Auth.requireAdmin()) return;
 
@@ -22,6 +26,13 @@
     UI.setupGlobalEvents();
     setupSidebar();
     switchTab("overview", true);
+
+    window.addEventListener("hkstore:mysql-synced", () => {
+      if (currentTab === "overview") renderOverviewTab();
+      else if (currentTab === "products") renderProductsTab();
+      else if (currentTab === "orders") renderOrdersTab();
+      else if (currentTab === "users") renderUsersTab();
+    });
 
     const mysqlDbBtn = document.getElementById("btn-mysql-db-config");
     if (mysqlDbBtn) {
@@ -32,7 +43,7 @@
       });
     }
     if (HKStore.MySQL && typeof HKStore.MySQL.updateStatusBadge === "function") {
-      HKStore.MySQL.updateStatusBadge();
+      HKStore.MySQL.updateStatusBadge(HKStore.MySQL.isOnline ? true : null);
     }
   }
 
@@ -256,10 +267,12 @@
           const id = btn.getAttribute("data-id");
           UI.showConfirm(
             "Bạn có chắc chắn muốn xóa vĩnh viễn sản phẩm này? Sản phẩm sẽ bị xóa hoàn toàn khỏi hệ thống (các đơn hàng cũ đã từng mua sản phẩm này vẫn được giữ nguyên đầy đủ giá trị và sẽ hiển thị chi tiết sản phẩm dưới dạng Data ẩn).",
-            () => {
-              const res = Products.deleteProduct(id);
+            async () => {
+              const res = Products.deleteProductAsync
+                ? await Products.deleteProductAsync(id)
+                : Products.deleteProduct(id);
               if (res.success) {
-                UI.showToast("Đã xóa sản phẩm", "success");
+                UI.showToast(res.message || "Đã xóa sản phẩm", "success");
                 renderProductsTab();
                 renderOverviewTab();
               } else {
@@ -722,7 +735,7 @@ window.HK_SEED_DATA = {
     renderImagesPreviewGrid();
   }
 
-  function saveProductFromModal(existingId, modal) {
+  async function saveProductFromModal(existingId, modal) {
     const name = document.getElementById("m-prod-name").value.trim();
     const catSelect = document.getElementById("m-prod-cat");
     const category = catSelect.value;
@@ -779,11 +792,14 @@ window.HK_SEED_DATA = {
       status: "active"
     };
 
-    const res = Products.saveProduct(productPayload);
+    const res = Products.saveProductAsync
+      ? await Products.saveProductAsync(productPayload)
+      : Products.saveProduct(productPayload);
     if (res.success) {
-      UI.showToast("Đã lưu sản phẩm", "success");
+      UI.showToast("Đã lưu sản phẩm vào cơ sở dữ liệu!", "success");
       modal.close();
       renderProductsTab();
+      renderOverviewTab();
     } else {
       UI.showToast(res.message, "error");
     }
@@ -1129,7 +1145,7 @@ window.HK_SEED_DATA = {
     // Sự kiện Lưu mã vận đơn giao hàng
     const saveTrackingBtn = document.querySelector(".js-save-tracking-code");
     if (saveTrackingBtn) {
-      saveTrackingBtn.addEventListener("click", () => {
+      saveTrackingBtn.addEventListener("click", async () => {
         const carrierEl = document.getElementById("admin-shipping-carrier");
         const codeEl = document.getElementById("admin-tracking-code");
         const shippingCarrier = carrierEl ? carrierEl.value : "spx";
@@ -1141,7 +1157,9 @@ window.HK_SEED_DATA = {
           return;
         }
 
-        const res = Orders.updateTrackingInfo(order.id, { shippingCarrier, trackingCode });
+        const res = Orders.updateTrackingInfoAsync
+          ? await Orders.updateTrackingInfoAsync(order.id, { shippingCarrier, trackingCode })
+          : Orders.updateTrackingInfo(order.id, { shippingCarrier, trackingCode });
         if (res.success) {
           UI.showToast(res.message, "success");
           modal.close();
@@ -1155,13 +1173,15 @@ window.HK_SEED_DATA = {
 
     // Sự kiện chuyển trạng thái
     document.querySelectorAll(".js-order-transition").forEach((btn) => {
-      btn.addEventListener("click", () => {
+      btn.addEventListener("click", async () => {
         const nextStatus = btn.getAttribute("data-status");
         if (nextStatus === "cancelled") {
           UI.showConfirm(
             "Xác nhận hủy đơn hàng này? Toàn bộ số lượng sản phẩm sẽ được hoàn lại kho đúng 1 lần.",
-            () => {
-              const res = Orders.cancelOrder(order.id, "Admin hủy đơn");
+            async () => {
+              const res = Orders.cancelOrderAsync
+                ? await Orders.cancelOrderAsync(order.id, "Admin hủy đơn")
+                : Orders.cancelOrder(order.id, "Admin hủy đơn");
               modal.close();
               UI.showToast(res.message, res.success ? "success" : "error");
               renderOrdersTab();
@@ -1175,7 +1195,9 @@ window.HK_SEED_DATA = {
           if (carrierEl && carrierEl.value) extraData.shippingCarrier = carrierEl.value;
           if (codeEl && codeEl.value.trim()) extraData.trackingCode = codeEl.value.trim();
 
-          const res = Orders.updateOrderStatus(order.id, nextStatus, extraData);
+          const res = Orders.updateOrderStatusAsync
+            ? await Orders.updateOrderStatusAsync(order.id, nextStatus, extraData)
+            : Orders.updateOrderStatus(order.id, nextStatus, extraData);
           modal.close();
           UI.showToast(res.message, res.success ? "success" : "error");
           renderOrdersTab();
@@ -1195,10 +1217,12 @@ window.HK_SEED_DATA = {
     const codDeliverBtn = document.querySelector(".js-admin-cod-deliver");
     if (codDeliverBtn) {
       codDeliverBtn.addEventListener("click", () => {
-        UI.showConfirm("Xác nhận đã giao hàng thành công và thu đủ tiền mặt từ khách hàng?", () => {
-          const res = Orders.confirmCodDeliveredWithCash(order.id);
+        UI.showConfirm("Xác nhận đã giao hàng thành công và thu đủ tiền mặt từ khách hàng?", async () => {
+          const res = Orders.confirmCodDeliveredWithCashAsync
+            ? await Orders.confirmCodDeliveredWithCashAsync(order.id)
+            : Orders.confirmCodDeliveredWithCash(order.id);
           modal.close();
-          UI.showToast(res.message, "success");
+          UI.showToast(res.message, res.success ? "success" : "error");
           renderOrdersTab();
           renderOverviewTab();
         });
@@ -1208,10 +1232,12 @@ window.HK_SEED_DATA = {
     // Sự kiện xác nhận đã nhận tiền chuyển khoản
     const bankingBtn = document.querySelector(".js-confirm-banking");
     if (bankingBtn) {
-      bankingBtn.addEventListener("click", () => {
-        const res = Orders.confirmBankTransfer(order.id);
+      bankingBtn.addEventListener("click", async () => {
+        const res = Orders.confirmBankTransferAsync
+          ? await Orders.confirmBankTransferAsync(order.id)
+          : Orders.confirmBankTransfer(order.id);
         modal.close();
-        UI.showToast(res.message, "success");
+        UI.showToast(res.message, res.success ? "success" : "error");
         renderOrdersTab();
         renderOverviewTab();
       });
@@ -1256,10 +1282,12 @@ window.HK_SEED_DATA = {
     // Sự kiện hoàn tiền
     const refundBtn = document.querySelector(".js-confirm-refund");
     if (refundBtn) {
-      refundBtn.addEventListener("click", () => {
-        const res = Orders.confirmRefund(order.id);
+      refundBtn.addEventListener("click", async () => {
+        const res = Orders.confirmRefundAsync
+          ? await Orders.confirmRefundAsync(order.id)
+          : Orders.confirmRefund(order.id);
         modal.close();
-        UI.showToast(res.message, "success");
+        UI.showToast(res.message, res.success ? "success" : "error");
         renderOrdersTab();
         renderOverviewTab();
       });
@@ -1625,8 +1653,10 @@ window.HK_SEED_DATA = {
       delBtn.addEventListener("click", () => {
         UI.showConfirm(
           `Bạn có chắc chắn muốn xóa tài khoản "${user.fullName}" (${user.email}) khỏi hệ thống?`,
-          () => {
-            const res = Auth.deleteUser(user.id);
+          async () => {
+            const res = Auth.deleteUserAsync
+              ? await Auth.deleteUserAsync(user.id)
+              : Auth.deleteUser(user.id);
             modal.close();
             UI.showToast(res.message, res.success ? "success" : "error");
             renderUsersTab();

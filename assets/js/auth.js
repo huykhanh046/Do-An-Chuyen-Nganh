@@ -295,6 +295,51 @@ window.HKStore = window.HKStore || {};
       return { success: true, user: sessionData };
     },
 
+    // Đăng nhập đồng bộ trực tiếp với MySQL (fallback về localStorage nếu Backend offline)
+    loginAsync: async function (email, password) {
+      if (!email || !password) {
+        return { success: false, message: "Vui lòng nhập đầy đủ email và mật khẩu." };
+      }
+
+      if (HK.MySQL) {
+        const res = await HK.MySQL.login(email, password);
+        if (!res.networkError) {
+          if (res.ok && res.data && res.data.status === "ok" && res.data.user) {
+            HK.MySQL.setToken(res.data.token);
+            const sessionData = {
+              id: String(res.data.user.id),
+              fullName: res.data.user.fullName,
+              email: res.data.user.email,
+              phone: res.data.user.phone || "",
+              address: res.data.user.address || "",
+              role: res.data.user.role || "customer",
+              loginAt: new Date().toISOString()
+            };
+            Storage.setRaw(Storage.KEYS.SESSION, sessionData);
+
+            // Hợp nhất giỏ hàng khách (guest) lên MySQL nếu có
+            const guestItems = Storage.get(Storage.KEYS.GUEST_CART, []);
+            if (Array.isArray(guestItems) && guestItems.length > 0) {
+              await HK.MySQL.mergeGuestCart(guestItems);
+              Storage.remove(Storage.KEYS.GUEST_CART);
+            }
+
+            await HK.MySQL.hydrate(true);
+            return { success: true, user: Auth.getCurrentUser() || sessionData };
+          }
+
+          return {
+            success: false,
+            status: res.status,
+            rateLimited: Boolean(res.data && res.data.rateLimited),
+            message: (res.data && res.data.message) || "Email hoặc mật khẩu không chính xác."
+          };
+        }
+      }
+
+      return Auth.login(email, password);
+    },
+
     // Kiểm tra tính hợp lệ của dữ liệu trước khi gửi mã xác thực OTP
     validateRegistrationInfo: function ({ fullName, email, password, confirmPassword, phone, address }) {
       if (!checkRegistrationRateLimit()) {
@@ -477,6 +522,58 @@ window.HKStore = window.HKStore || {};
       return Auth.login(normalizedEmail, password);
     },
 
+    // Hoàn tất đăng ký qua MySQL (sau khi đã xác thực OTP)
+    registerVerifiedUserAsync: async function ({ fullName, email, password, phone, address }) {
+      const validateRes = Auth.validateRegistrationInfo({ fullName, email, password, phone, address });
+      if (!validateRes.success) {
+        return validateRes;
+      }
+
+      if (HK.MySQL) {
+        const res = await HK.MySQL.register({
+          fullName: fullName.trim(),
+          email: email.trim().toLowerCase(),
+          password,
+          phone: Auth.normalizePhone(phone),
+          address: address ? address.trim() : "",
+          isEmailVerified: true
+        });
+
+        if (!res.networkError) {
+          if (res.ok && res.data && res.data.status === "ok" && res.data.user) {
+            HK.MySQL.setToken(res.data.token);
+            const sessionData = {
+              id: String(res.data.user.id),
+              fullName: res.data.user.fullName,
+              email: res.data.user.email,
+              phone: res.data.user.phone || "",
+              address: res.data.user.address || "",
+              role: res.data.user.role || "customer",
+              loginAt: new Date().toISOString()
+            };
+            Storage.setRaw(Storage.KEYS.SESSION, sessionData);
+
+            const guestItems = Storage.get(Storage.KEYS.GUEST_CART, []);
+            if (Array.isArray(guestItems) && guestItems.length > 0) {
+              await HK.MySQL.mergeGuestCart(guestItems);
+              Storage.remove(Storage.KEYS.GUEST_CART);
+            }
+
+            await HK.MySQL.hydrate(true);
+            return { success: true, user: Auth.getCurrentUser() || sessionData };
+          }
+          return {
+            success: false,
+            status: res.status,
+            field: res.data && res.data.field,
+            message: (res.data && res.data.message) || "Không thể đăng ký tài khoản trên MySQL."
+          };
+        }
+      }
+
+      return Auth.registerVerifiedUser({ fullName, email, password, phone, address });
+    },
+
     // Đăng ký tài khoản mới (Mật khẩu được băm có Salt + Rate limiting chống spam)
     register: function ({ fullName, email, password, confirmPassword, phone, address }) {
       if (!checkRegistrationRateLimit()) {
@@ -579,9 +676,37 @@ window.HKStore = window.HKStore || {};
       return { success: true, user: currentUser };
     },
 
+    // Cập nhật hồ sơ trực tiếp xuống MySQL (fallback localStorage)
+    updateProfileAsync: async function ({ fullName, phone, address }) {
+      const currentUser = Auth.getCurrentUser();
+      if (!currentUser) {
+        return { success: false, message: "Bạn chưa đăng nhập." };
+      }
+
+      if (HK.MySQL) {
+        const res = await HK.MySQL.updateProfile({ fullName, phone, address });
+        if (!res.networkError) {
+          if (res.ok && res.data && res.data.status === "ok" && res.data.user) {
+            await HK.MySQL.hydrate(true);
+            return { success: true, user: Auth.getCurrentUser() || res.data.user };
+          }
+          return {
+            success: false,
+            field: res.data && res.data.field,
+            message: (res.data && res.data.message) || "Không thể cập nhật thông tin trên MySQL."
+          };
+        }
+      }
+
+      return Auth.updateProfile({ fullName, phone, address });
+    },
+
     // Đăng xuất
     logout: function (redirectUrl = "index.html") {
       Storage.remove(Storage.KEYS.SESSION);
+      if (HK.MySQL && typeof HK.MySQL.setToken === "function") {
+        HK.MySQL.setToken(null);
+      }
       if (redirectUrl) {
         window.location.href = redirectUrl;
       }
@@ -651,6 +776,24 @@ window.HKStore = window.HKStore || {};
       users.splice(idx, 1);
       Storage.set(Storage.KEYS.USERS, users);
       return { success: true, message: "Đã xóa dữ liệu người dùng thành công." };
+    },
+
+    // Xóa tài khoản người dùng trực tiếp trên MySQL (Dành cho Admin)
+    deleteUserAsync: async function (userId) {
+      if (HK.MySQL) {
+        const res = await HK.MySQL.deleteUser(userId);
+        if (!res.networkError) {
+          if (res.ok && res.data && res.data.status === "ok") {
+            await HK.MySQL.hydrate(true);
+            return { success: true, message: res.data.message || "Đã xóa dữ liệu người dùng khỏi MySQL." };
+          }
+          return {
+            success: false,
+            message: (res.data && res.data.message) || "Không thể xóa người dùng trên MySQL."
+          };
+        }
+      }
+      return Auth.deleteUser(userId);
     }
   };
 

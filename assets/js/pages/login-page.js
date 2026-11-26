@@ -9,7 +9,10 @@
   const Auth = HKStore.Auth;
   const UI = HKStore.UI;
 
-  function initLoginPage() {
+  async function initLoginPage() {
+    if (HKStore.MySQL && HKStore.MySQL.ready) {
+      await HKStore.MySQL.ready;
+    }
     UI.initCommonUI();
 
     const safeReturnUrl = Auth.getSafeReturnUrl ? Auth.getSafeReturnUrl("") : Storage.getUrlParam("returnUrl") || "";
@@ -48,7 +51,7 @@
     const form = document.getElementById("login-form");
     if (!form) return;
 
-    form.addEventListener("submit", (e) => {
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
       const emailEl = document.getElementById("login-email");
@@ -76,7 +79,14 @@
         return;
       }
 
-      const res = Auth.login(email, password);
+      const submitBtn = form.querySelector('button[type="submit"]');
+      if (submitBtn) {
+        submitBtn.disabled = true;
+      }
+      const res = Auth.loginAsync ? await Auth.loginAsync(email, password) : Auth.login(email, password);
+      if (submitBtn) {
+        submitBtn.disabled = false;
+      }
 
       if (res.success) {
         UI.showToast(`Xin chào ${res.user.fullName}!`, "success");

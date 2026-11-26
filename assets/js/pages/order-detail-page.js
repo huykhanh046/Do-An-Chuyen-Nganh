@@ -10,7 +10,10 @@
   const Orders = HKStore.Orders;
   const UI = HKStore.UI;
 
-  function initOrderDetailPage() {
+  async function initOrderDetailPage() {
+    if (HKStore.MySQL && HKStore.MySQL.ready) {
+      await HKStore.MySQL.ready;
+    }
     if (!Auth.requireAuth("order-detail.html")) return;
 
     UI.initCommonUI();
@@ -323,13 +326,17 @@
           UI.showConfirm(
             "Bạn có chắc chắn muốn hủy đơn hàng này? Toàn bộ số lượng sản phẩm sẽ được hoàn lại kho.",
             () => {
-              const res = Orders.cancelOrder(order.id, isAdmin ? "Admin hủy đơn" : "Khách hàng hủy đơn");
-              if (res.success) {
-                UI.showToast(res.message, "success");
-                initOrderDetailPage(); // Vẽ lại giao diện
-              } else {
-                UI.showToast(res.message, "error");
-              }
+              (async () => {
+                const res = Orders.cancelOrderAsync
+                  ? await Orders.cancelOrderAsync(order.id, isAdmin ? "Admin hủy đơn" : "Khách hàng hủy đơn")
+                  : Orders.cancelOrder(order.id, isAdmin ? "Admin hủy đơn" : "Khách hàng hủy đơn");
+                if (res.success) {
+                  UI.showToast(res.message, "success");
+                  initOrderDetailPage(); // Vẽ lại giao diện
+                } else {
+                  UI.showToast(res.message, "error");
+                }
+              })();
             }
           );
         });

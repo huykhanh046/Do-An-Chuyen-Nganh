@@ -93,6 +93,21 @@ window.HKStore = window.HKStore || {};
       }
 
       Cart.saveRawItems(items);
+
+      // Đồng bộ giỏ hàng xuống MySQL nếu đã đăng nhập
+      const currentUser = HK.Auth ? HK.Auth.getCurrentUser() : null;
+      if (currentUser && HK.MySQL && HK.MySQL.isOnline) {
+        HK.MySQL.addCartItem(productId, variantId, qty).then((res) => {
+          if (res && res.ok && res.data && Array.isArray(res.data.items)) {
+            Storage.setRaw(Cart.getStorageKey(), res.data.items);
+            Cart.updateBadge(false);
+            if (typeof document !== "undefined" && typeof CustomEvent === "function") {
+              document.dispatchEvent(new CustomEvent("hk:cart-updated"));
+            }
+          }
+        }).catch(() => {});
+      }
+
       return { success: true, message: `Đã thêm vào giỏ hàng (${variant.size} - ${variant.colorName}).` };
     },
 
@@ -117,9 +132,22 @@ window.HKStore = window.HKStore || {};
       const variant = product ? (product.variants || []).find((v) => v.id === variantId) : null;
       const stock = variant ? Number(variant.stock) || 0 : 0;
 
+      const syncCartQtyToMySQL = (finalQty) => {
+        const currentUser = HK.Auth ? HK.Auth.getCurrentUser() : null;
+        if (currentUser && HK.MySQL && HK.MySQL.isOnline) {
+          HK.MySQL.updateCartItem(variantId, finalQty).then((res) => {
+            if (res && res.ok && res.data && Array.isArray(res.data.items)) {
+              Storage.setRaw(Cart.getStorageKey(), res.data.items);
+              Cart.updateBadge(false);
+            }
+          }).catch(() => {});
+        }
+      };
+
       if (qty > stock) {
         items[index].quantity = stock;
         Cart.saveRawItems(items);
+        syncCartQtyToMySQL(stock);
         return {
           success: false,
           adjusted: true,
@@ -129,6 +157,7 @@ window.HKStore = window.HKStore || {};
 
       items[index].quantity = qty;
       Cart.saveRawItems(items);
+      syncCartQtyToMySQL(qty);
       return { success: true, message: "Đã cập nhật số lượng." };
     },
 
@@ -139,12 +168,27 @@ window.HKStore = window.HKStore || {};
         (i) => !(i.productId === productId && i.variantId === variantId)
       );
       Cart.saveRawItems(filtered);
+
+      const currentUser = HK.Auth ? HK.Auth.getCurrentUser() : null;
+      if (currentUser && HK.MySQL && HK.MySQL.isOnline) {
+        HK.MySQL.removeCartItem(variantId).then((res) => {
+          if (res && res.ok && res.data && Array.isArray(res.data.items)) {
+            Storage.setRaw(Cart.getStorageKey(), res.data.items);
+            Cart.updateBadge(false);
+          }
+        }).catch(() => {});
+      }
+
       return { success: true, message: "Đã xóa sản phẩm khỏi giỏ hàng." };
     },
 
     // Xóa sạch toàn bộ giỏ
     clearCart: function (customUserId = null) {
       Cart.saveRawItems([], customUserId);
+      const currentUser = HK.Auth ? HK.Auth.getCurrentUser() : null;
+      if (!customUserId && currentUser && HK.MySQL && HK.MySQL.isOnline) {
+        HK.MySQL.clearCart().catch(() => {});
+      }
     },
 
     // Tính toán chi tiết giỏ hàng và dữ liệu hiển thị (luôn lấy giá và tồn kho thời gian thực)

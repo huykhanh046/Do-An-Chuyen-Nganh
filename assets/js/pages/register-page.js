@@ -486,7 +486,9 @@
         btnVerifyOtp.textContent = "Đang khởi tạo tài khoản...";
       }
 
-      const regRes = Auth.registerVerifiedUser(pendingRegistrationData);
+      const regRes = Auth.registerVerifiedUserAsync
+        ? await Auth.registerVerifiedUserAsync(pendingRegistrationData)
+        : Auth.registerVerifiedUser(pendingRegistrationData);
 
       if (regRes.success) {
         clearInterval(countdownInterval);

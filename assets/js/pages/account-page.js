@@ -12,7 +12,10 @@
 
   let currentUser = null;
 
-  function initAccountPage() {
+  async function initAccountPage() {
+    if (HKStore.MySQL && HKStore.MySQL.ready) {
+      await HKStore.MySQL.ready;
+    }
     if (!Auth.requireAuth("account.html")) return;
 
     currentUser = Auth.getCurrentUser();
@@ -63,15 +66,18 @@
 
     const form = document.getElementById("profile-form");
     if (form) {
-      form.addEventListener("submit", (e) => {
+      form.addEventListener("submit", async (e) => {
         e.preventDefault();
         [nameInput, phoneInput].forEach((el) => UI.clearFieldError && UI.clearFieldError(el));
 
-        const res = Auth.updateProfile({
+        const profilePayload = {
           fullName: nameInput.value.trim(),
           phone: phoneInput.value.trim(),
           address: addressInput.value.trim()
-        });
+        };
+        const res = Auth.updateProfileAsync
+          ? await Auth.updateProfileAsync(profilePayload)
+          : Auth.updateProfile(profilePayload);
 
         if (res.success) {
           currentUser = res.user;
@@ -236,8 +242,10 @@
         const orderId = btn.getAttribute("data-id");
         UI.showConfirm(
           "Bạn có chắc chắn muốn hủy đơn hàng này? Tồn kho của các sản phẩm sẽ được tự động hoàn lại.",
-          () => {
-            const res = Orders.cancelOrder(orderId, "Khách hàng chủ động hủy qua trang cá nhân");
+          async () => {
+            const res = Orders.cancelOrderAsync
+              ? await Orders.cancelOrderAsync(orderId, "Khách hàng chủ động hủy qua trang cá nhân")
+              : Orders.cancelOrder(orderId, "Khách hàng chủ động hủy qua trang cá nhân");
             if (res.success) {
               UI.showToast(res.message, "success");
               renderOrdersHistory();
